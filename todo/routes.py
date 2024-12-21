@@ -15,18 +15,25 @@ app = create_app()
 @app.get('/')
 def home():
     # return 'Hello, Flask'
-    todo_list = ToDo.query.all()
-    return render_template('todo/index.html', todo_list=todo_list, title='Oboyudno')
+    todo_list = ToDo.query.order_by(ToDo.is_complete).all()
+    todo_tags = ToDo.query.distinct(ToDo.tag).group_by(ToDo.tag)
+    return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, title='CUBI Prot.')
 
 @app.post('/add')
 def add():
     title = request.form.get('title')
+    tag = request.form.get('tag')
     descr = request.form.get('descr')
-    new_todo = ToDo(title=title, descr=descr, is_complete=False)
+    new_todo = ToDo(title=title, descr=descr, tag=tag, is_complete=False)
     db.session.add(new_todo)
     db.session.commit()
     return redirect(url_for('home'))
 
+@app.get('/sort/<string:todo_tag>')
+def sort(todo_tag):
+    todo = ToDo.query.filter_by(tag=todo_tag).order_by(ToDo.is_complete).all()
+    todo_tags = ToDo.query.distinct(ToDo.tag).group_by(ToDo.tag)
+    return render_template('todo/index.html', todo_list=todo, todo_tags=todo_tags, title='CUBI Prot.')
 
 @app.get('/update/<int:todo_id>')
 def update(todo_id):

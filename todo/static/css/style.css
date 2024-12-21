@@ -1,0 +1,8 @@
+.header {
+    word-break: normal; /* Так длинные слова будут переноситься */
+  }
+
+body {
+    background-color: dimgrey;
+}
+
