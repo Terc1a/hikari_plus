@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Статистика</title>
+</head>
+<body>
+    <h1>Задачи</h1>
+    <div id='divPlotly'></div>
+    <div id="divPlotly_2"></div>
+
+    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+    <script>
+        var graphs = {{ graphJSON | safe }};
+        Plotly.newPlot('divPlotly', graphs);
+    </script>
+        <script>
+            var graphs2 = {{ graphJSON2 | safe }};
+            Plotly.newPlot('divPlotly_2', graphs2);
+        </script>
+</body>
+</html>
