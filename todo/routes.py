@@ -20,6 +20,7 @@ app = create_app()
 
 @app.get('/')
 def home():
+<<<<<<< HEAD
     current_date = datetime.datetime.now().strftime('%Y-%m-%d')
     todo_list = ToDo.query.order_by(ToDo.is_complete).all()
     todo_completed = ToDo.query.filter_by(is_complete=1).all()
@@ -29,6 +30,12 @@ def home():
     all = len(todo_list)
     todo_tags = ToDo.query.distinct(ToDo.tag).group_by(ToDo.tag)
     return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.')
+=======
+    # return 'Hello, Flask'
+    todo_list = ToDo.query.order_by(ToDo.is_complete).all()
+    todo_tags = ToDo.query.distinct(ToDo.tag).group_by(ToDo.tag)
+    return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, title='CUBI Prot.')
+>>>>>>> 6a5e3f32d37e1a68168baff77762be8c833aaa2c
 
 @app.post('/add')
 def add():
@@ -38,13 +45,18 @@ def add():
     title = request.form.get('title')
     tag = request.form.get('tag')
     descr = request.form.get('descr')
+<<<<<<< HEAD
     new_todo = ToDo(title=title, descr=descr, tag=tag,create_date=timenow, is_complete=False)
+=======
+    new_todo = ToDo(title=title, descr=descr, tag=tag, is_complete=False)
+>>>>>>> 6a5e3f32d37e1a68168baff77762be8c833aaa2c
     db.session.add(new_todo)
     db.session.commit()
     return redirect(url_for('home'))
 
 @app.get('/sort/<string:todo_tag>')
 def sort(todo_tag):
+<<<<<<< HEAD
     todo_list = ToDo.query.order_by(ToDo.is_complete).all()
     todo = ToDo.query.filter_by(tag=todo_tag).order_by(ToDo.is_complete).all()
     todo_completed = ToDo.query.filter_by(is_complete=1).all()
@@ -55,6 +67,11 @@ def sort(todo_tag):
     all = len(todo_list)
     todo_tags = ToDo.query.distinct(ToDo.tag).group_by(ToDo.tag)
     return render_template('todo/index.html', todo_list=todo, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.')
+=======
+    todo = ToDo.query.filter_by(tag=todo_tag).order_by(ToDo.is_complete).all()
+    todo_tags = ToDo.query.distinct(ToDo.tag).group_by(ToDo.tag)
+    return render_template('todo/index.html', todo_list=todo, todo_tags=todo_tags, title='CUBI Prot.')
+>>>>>>> 6a5e3f32d37e1a68168baff77762be8c833aaa2c
 
 @app.get('/update/<int:todo_id>')
 def update(todo_id):
