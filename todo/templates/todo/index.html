@@ -32,13 +32,16 @@
             {% block tags %}
             Теги:<br>
             {% for tag in todo_tags %}
-            <a href="/sort/{{ tag.tag }}">{{tag.tag}}<br></a>
+            <a href="/sort/{{ tag.title }}">{{tag.title}}<br></a>
             {% endfor %}
             -------------------<br>
             {% endblock %}
             <a href="#openModal" style="margin-top: 10%;">Создать задачу</a><br>
             <a href="/">Главная</a><br>
             <a href="/stats">Статистика</a><br>
+            <a href="/admin">Админка</a><br>
+            <a href="/uncompleted">Скрыть готовые</a>
+            -------------------<br>
         </div>
         <div style="margin-left: 5%;">
             Завершено: {{todo_completed}}<br>
@@ -65,11 +68,22 @@
                             <textarea id="story" name="descr" rows="5" cols="33" maxlength="1000"
                                 placeholder="Введите описание задачи"
                                 style="background-color: rgb(56, 55, 55); color: white;"></textarea><br>
-                            <input type="text" contenteditable="true" name="tag" placeholder="Введите тег"
-                                style="background-color: rgb(56, 55, 55); color: white;"><br>
+
+                                <select id="fruits" name="tags-list">
+                                    {% for tag in todo_tags %}
+
+                                    <option value={{tag.title}}>{{tag.title}}</option>
+                                    {% endfor %}
+
+                                  </select>
+
+                           <!--<input type="text" contenteditable="true" name="tag" placeholder="Введите тег"
+                                style="background-color: rgb(56, 55, 55); color: white;"><br>-->
+                            <!--Вместо текстового поля добавить выпадающий список с созданными проектами-->
                         </div>
                         <button class="ui teal basic button" type="submit"
                             style="margin-bottom: 10px; margin-left: 2.5%;">Добавить</button>
+
                     </form>
                 </div>
             </div>
@@ -85,7 +99,7 @@
             style="margin-left: 15%; margin-right: 25%; width: 80%; background-color: rgb(56, 55, 55);">
             <p class="ui big header" name="header" style="margin-bottom: 2.5%; color: white; ">
                 #{{todo.tag}}#<br>----------------------------<br>{{todo.title}}<br></p>
-            <div id="trunc" class="truncate">
+            <div id="trunc" class="truncate" style="color: white;">
                 <button id="themeToggle" class="btn-set">></button>
                 {{
                 todo.descr
@@ -93,7 +107,7 @@
             </div>
             {% if todo.is_complete == False %}
             <span class="ui gray label">В работе</span>
-            <a class="ui blue button" href="/change_content/{{todo.id}}">Изменить</a>
+            <a class="ui blue button" href="/get_task/{{todo.id}}">Изменить</a>
             <a class="ui primary basic button" href="/update/{{ todo.id }}">Завершить</a>
             {% else %}
             <span class="ui green label">Завершено</span>
@@ -135,5 +149,3 @@
         });
     });
 </script>
-
-

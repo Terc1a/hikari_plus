@@ -17,14 +17,11 @@
       <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
       <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
 
-<body style="background-color: black; font-family: Rubik;">
+<body style="background-color: black;">
       <script src="https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/Snow.min.js"></script>
       <!--<div id='divPlotly' style="width:30%; height: 30%; font-size: 12px;"></div>-->
 
-      <script>
-            var graphs = {{ graphJSON | safe }};
-            Plotly.newPlot('divPlotly', graphs);
-        </script>
+
 
       <script>
             new Snow();

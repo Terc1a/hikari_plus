@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, url_for, redirect
 from sqlalchemy import select
-from todo.models import ToDo, db
+from todo.models import ToDo, db, Tag
 import datetime
 import plotly.graph_objs as go
 import plotly.io as pio
@@ -18,9 +18,9 @@ def create_app():
 app = create_app()
 
 
+#Главная страница
 @app.get('/')
 def home():
-<<<<<<< HEAD
     current_date = datetime.datetime.now().strftime('%Y-%m-%d')
     todo_list = ToDo.query.order_by(ToDo.is_complete).all()
     todo_completed = ToDo.query.filter_by(is_complete=1).all()
@@ -28,14 +28,26 @@ def home():
     completed = len(todo_completed)
     uncompleted = len(todo_uncompleted)
     all = len(todo_list)
-    todo_tags = ToDo.query.distinct(ToDo.tag).group_by(ToDo.tag)
+    todo_tags = Tag.query.distinct(Tag.title)
+    for el in todo_tags:
+        print(el.title)
     return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.')
-=======
-    # return 'Hello, Flask'
+
+#Cкрываем выполненные
+@app.get('/uncompleted')
+def uncompleted():
+    current_date = datetime.datetime.now().strftime('%Y-%m-%d')
     todo_list = ToDo.query.order_by(ToDo.is_complete).all()
-    todo_tags = ToDo.query.distinct(ToDo.tag).group_by(ToDo.tag)
-    return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, title='CUBI Prot.')
->>>>>>> 6a5e3f32d37e1a68168baff77762be8c833aaa2c
+    todo_completed = ToDo.query.filter_by(is_complete=1).all()
+    todo_uncompleted = ToDo.query.filter_by(is_complete=0).all()
+    completed = len(todo_completed)
+    uncompleted = len(todo_uncompleted)
+    all = len(todo_list)
+    todo_tags = Tag.query.distinct(Tag.title)
+    for el in todo_tags:
+        print(el.title)
+    return render_template('todo/index.html', todo_list=todo_uncompleted, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.')
+
 
 @app.post('/add')
 def add():
@@ -43,35 +55,25 @@ def add():
     timed = (str(timed_raw)).rsplit('.', 2)
     timenow = timed[0]
     title = request.form.get('title')
-    tag = request.form.get('tag')
+    tag = request.form.get('tags-list')
     descr = request.form.get('descr')
-<<<<<<< HEAD
     new_todo = ToDo(title=title, descr=descr, tag=tag,create_date=timenow, is_complete=False)
-=======
-    new_todo = ToDo(title=title, descr=descr, tag=tag, is_complete=False)
->>>>>>> 6a5e3f32d37e1a68168baff77762be8c833aaa2c
     db.session.add(new_todo)
     db.session.commit()
     return redirect(url_for('home'))
 
 @app.get('/sort/<string:todo_tag>')
 def sort(todo_tag):
-<<<<<<< HEAD
     todo_list = ToDo.query.order_by(ToDo.is_complete).all()
     todo = ToDo.query.filter_by(tag=todo_tag).order_by(ToDo.is_complete).all()
     todo_completed = ToDo.query.filter_by(is_complete=1).all()
     todo_uncompleted = ToDo.query.filter(ToDo.is_complete.like('0')).filter(ToDo.tag.like(todo_tag)).all()
     completed = len(todo_completed)
-    print(todo_uncompleted)
     uncompleted = len(todo_uncompleted)
     all = len(todo_list)
-    todo_tags = ToDo.query.distinct(ToDo.tag).group_by(ToDo.tag)
+    todo_tags = Tag.query.distinct(Tag.title)
     return render_template('todo/index.html', todo_list=todo, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.')
-=======
-    todo = ToDo.query.filter_by(tag=todo_tag).order_by(ToDo.is_complete).all()
-    todo_tags = ToDo.query.distinct(ToDo.tag).group_by(ToDo.tag)
-    return render_template('todo/index.html', todo_list=todo, todo_tags=todo_tags, title='CUBI Prot.')
->>>>>>> 6a5e3f32d37e1a68168baff77762be8c833aaa2c
+
 
 @app.get('/update/<int:todo_id>')
 def update(todo_id):
@@ -84,46 +86,24 @@ def update(todo_id):
     db.session.commit()
     return redirect(url_for('home'))
 
-@app.route('/update_content/<int:todo_id>', methods=['GET', 'POST'])
-def update_content(todo_id):
+
+@app.get('/get_task/<int:todo_id>')
+def get_task(todo_id):
+    one_todo = ToDo.query.filter_by(id=todo_id).all()
+    return render_template('todo/modal.html', todo_list=one_todo)
+
+
+@app.post('/change_content/<int:todo_id>')
+def update_task(todo_id):
     timed_raw = datetime.datetime.now()
     timed = (str(timed_raw)).rsplit('.', 2)
-    timenow = timed[0]
-    title = request.form.get('title')
-    tag = request.form.get('tag')
-    descr = request.form.get('descr')
     todo = ToDo.query.filter_by(id=todo_id).first()
-    todo.is_complete = todo.is_complete
-    todo.create_date = timenow
-    todo.title = title
-    todo.tag = tag
-    todo.descr = descr
+    todo.title = request.form.get('title')
+    todo.tag = request.form.get('tag')
+    todo.descr = request.form.get('descr')
+    todo.create_date = timed[0]
     db.session.commit()
     return redirect(url_for('home'))
-
-@app.get('/change_content/<int:todo_id>')
-def update_task(todo_id):
-    todo_list = ToDo.query.filter_by(id=todo_id).order_by(ToDo.is_complete).all()
-    timed_raw = datetime.datetime.now()
-    timed = (str(timed_raw)).rsplit('.', 2)
-    timenow = timed[0]
-    title = request.form.get('title')
-    tag = request.form.get('tag')
-    descr = request.form.get('descr')
-    todo = ToDo.query.filter_by(id=todo_id).first()
-    todo.is_complete = todo.is_complete
-    todo.create_date = timenow
-    todo.title = title
-    todo.tag = tag
-    todo.descr = descr
-    db.session.commit()
-    return render_template('todo/modal.html', todo_list=todo_list)
-
-
-@app.get('/get_task')
-def get_task(todo_id):
-    pass
-
 
 @app.get('/delete/<int:todo_id>')
 def delete(todo_id):
@@ -137,6 +117,7 @@ def create():
     return render_template('todo/new_task.html')
 
 
+#Cтатистика
 @app.get('/stats')
 def stats():
     #Сбор данных по выполненным задачам
@@ -148,6 +129,22 @@ def stats():
     tag_counter = {}
     elem_count = {}
     data2 = []
+    data3 = []
+    data4 = []
+    uniq_date = []
+    counter = []
+    some_date = []
+
+    for el in todo_list:
+        if el.create_date is None:
+            pass
+        else:
+            dt = el.create_date.split(' ')
+            data3.append(dt[0])
+
+    for date in data3:
+        if date not in uniq_date:
+            uniq_date.append(date)
     todo_tags = ToDo.query.distinct(ToDo.tag).group_by(ToDo.tag)
     for el in todo_tags:
         tag.append(el.tag)
@@ -163,23 +160,91 @@ def stats():
         go.Bar( x=[len(todo_list)], y=[len(todo_completed)], name='Выполненные'),
         go.Bar( x=[len(todo_list)], y=[len(todo_uncompleted)], name='В работе'),     
     ])
+    
     fig.update_layout(legend_orientation="h",
                   legend=dict(x=.5, xanchor="center"),
                   title="Статистика по задачам",
                   xaxis_title="Задачи по статусам",
                   yaxis_title="Всего задач",
-                  margin=dict(l=0, r=0, t=50, b=0))
+                  margin=dict(l=0, r=0, t=50, b=0), template='plotly_dark')
     fig2 = go.Figure(data2)
     fig2.update_layout(legend_orientation="h",
                 legend=dict(x=.5, xanchor="center"),
                 title="Количество задач по тегам",
+                xaxis_title="Задачи по тегам",
+                yaxis_title="Задач с тегами",
+                margin=dict(l=0, r=0, t=50, b=0), template='plotly_dark')
+    
+    #Добавить 3 график, совмещающий в себе 2 других
+    fig3 = go.Figure()
+    for i in tag:
+        data4.append(go.Bar(x=[len(todo_list)], y=[elem_count.get(i)], name=f'{i}'))
+    for i in data4:
+        fig3.add_trace(i)
+    for i in elem_count:
+        some_date.append(elem_count.get(i))
+    fig3.add_trace(go.Scatter(
+    #количество задач по тегам разделено по дням
+    x= [len(todo_list)],#задач по тегам было создано
+    y= some_date,#задач по тегам было сделано
+    ))
+    for el in elem_count:
+        counter.append(go.Scatter(x=[len(todo_list)], y=[elem_count.get(el)], name=f'{el}'))
+    #fig3.add_trace(counter)
+
+
+    fig3.update_layout(legend_orientation="h",
+                legend=dict(x=.5, xanchor="center"),
+                title="Количество задач по тегам",
                 xaxis_title="Теги",
                 yaxis_title="Задач с тегами",
-                margin=dict(l=0, r=0, t=50, b=0))
-
+                margin=dict(l=0, r=0, t=50, b=0), 
+                template='plotly_dark',
+                )
 
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     graphJSON2 = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
+    graphJSON3 = json.dumps(fig3, cls=plotly.utils.PlotlyJSONEncoder)
+
     return render_template('todo/stats.html', graphJSON=graphJSON, graphJSON2=graphJSON2)
 
 
+
+#Админка
+@app.get('/admin')
+def admin():
+    tag_list = Tag.query.all()
+    for el in tag_list:
+        print(el.title)
+
+    return render_template('todo/admin.html', tag_list=tag_list)
+
+
+@app.post('/add_tag')
+def add_tag():
+    title = request.form.get('title')
+    descr = request.form.get('descr')
+    new_tag = Tag(title=title, descr=descr)
+    db.session.add(new_tag)
+    db.session.commit()
+    return redirect(url_for('admin'))
+
+@app.get('/get_tag/<int:tag_id>')
+def get_tag(tag_id):
+    one_tag = Tag.query.filter_by(id=tag_id).all()
+    return render_template('todo/tag_modal.html', tag_list=one_tag)
+
+@app.post('/change_tag/<int:tag_id>')
+def change_tag(tag_id):
+    tag = Tag.query.filter_by(id=tag_id).first()
+    tag.title = request.form.get('title')
+    tag.descr = request.form.get('descr')
+    db.session.commit()
+    return redirect(url_for('admin'))
+
+@app.get('/delete_tag/<int:tag_id>')
+def delete_tag(tag_id):
+    tag = Tag.query.filter_by(id=tag_id).first()
+    db.session.delete(tag)
+    db.session.commit()
+    return redirect(url_for('admin'))

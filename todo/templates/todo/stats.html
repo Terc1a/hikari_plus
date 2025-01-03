@@ -1,12 +1,22 @@
+
 <!DOCTYPE html>
 <html>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 <head>
     <title>Статистика</title>
 </head>
-<body>
+<body style="background-color: black;">
+
+    <div class="navigation"
+    style="color: white; background-color: rgb(56, 55, 55); width: 20%; height: 70%; margin-bottom: 1%; border-radius: 2.5px;">
+        <a href="/">Главная</a><br>
+        <a href="/stats">Статистика</a><br>
+        <a href="/admin">Админка</a><br>
+    </div>
     <h1>Задачи</h1>
     <div id='divPlotly'></div>
     <div id="divPlotly_2"></div>
+    <div id="divPlotly_3"></div>
 
     <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
     <script>
@@ -17,5 +27,9 @@
             var graphs2 = {{ graphJSON2 | safe }};
             Plotly.newPlot('divPlotly_2', graphs2);
         </script>
+                <script>
+                    var graphs3 = {{ graphJSON3 | safe }};
+                    Plotly.newPlot('divPlotly_3', graphs3);
+                </script>
 </body>
 </html>

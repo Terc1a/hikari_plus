@@ -21,27 +21,23 @@
         {% block content %}
 
 
-        {{todo_list.descr}}
-        {% for todo in todo_list %}
+        {% for tag in tag_list %}
         <div id="openModal2" class="modal">
-            {{todo.descr}}
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3 class="modal-title">Изменить задачу</h3>
-                        <a href="#close/{{todo.id}}" title="Close" class="close">×</a>
+                        <a href="#close/{{tag.id}}" title="Close" class="close">×</a>
                     </div>
                     <div class="modal-body">
-                        <form class="ui form" action="/change_content/{{todo.id}}" method="post"
+                        <form class="ui form" action="/change_tag/{{tag.id}}" method="post"
                             style="width: 100%; background-color: rgb(56, 55, 55);" name="creator">
                             <div class="field">
                                 <input type="text" name="title" placeholder="Введите название задачи"
-                                    style="background-color: rgb(56, 55, 55); color: white;" value="{{todo.title}}"><br>
+                                    style="background-color: rgb(56, 55, 55); color: white;" value="{{tag.title}}"><br>
                                 <textarea id="story" name="descr" rows="5" cols="33" maxlength="1000"
                                     placeholder="Введите описание задачи"
-                                    style="background-color: rgb(56, 55, 55); color: white;">{{todo.descr}}</textarea><br>
-                                <input type="text" contenteditable="true" name="tag" placeholder="Введите тег"
-                                    style="background-color: rgb(56, 55, 55); color: white;" value="{{todo.tag}}"><br>
+                                    style="background-color: rgb(56, 55, 55); color: white;">{{tag.descr}}</textarea><br>
                             </div>
                             <button class="ui teal basic button" type="submit"
                                 style="margin-bottom: 10px; margin-left: 2.5%;">Добавить</button>
