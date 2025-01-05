@@ -150,3 +150,5 @@ position: relative;
   white-space: nowrap;
 }
 
+/* hides the notifications area in CKEditor, a WYSIWYG text editor. */
+.cke_notifications_area  { display: none; }

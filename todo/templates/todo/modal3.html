@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ru">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style_modal.css') }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+<link href="https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/snow.min.css" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+    rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+
+<body style="background-color: black; font-family: Rubik;">
+    <script src="https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/Snow.min.js"></script>
+    <script src="https://cdn.ckeditor.com/4.10.0/standard/ckeditor.js"></script>
+        {{ ckeditor.load() }}
+        <form action="/print" method="post">
+            {{ ckeditor.create() }}
+            <input type="submit">
+        </form>
+
+</body>
+
+</html>

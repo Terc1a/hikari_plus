@@ -6,17 +6,20 @@ body {
     background-color: dimgrey;
 }
 
+/* hides the notifications area in CKEditor, a WYSIWYG text editor. */
+.cke_notifications_area  { display: none; }
+
 .modal {
-  position: fixed; /* фиксированное положение */
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  background: rgba(0,0,0,0.5); /* цвет фона */
-  z-index: 1050;
- 
+  background: rgba(0,0,0,0.5); /* цвет фона */ 
   margin: 0;
   padding: 0;
+  margin-left: 2.5%;
+  width: 60%;
+  height: 60%;
 }
 /* при отображении модального окно */
 .modal:target {

@@ -6,13 +6,17 @@ import plotly.graph_objs as go
 import plotly.io as pio
 import plotly.utils
 import json
+from flask_ckeditor import CKEditor
 
+ckeditor = CKEditor()
 
 def create_app():
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['VERSION_CHECK'] = False
     db.init_app(app)
+    ckeditor.init_app(app)
     return app
 
 app = create_app()
@@ -29,8 +33,6 @@ def home():
     uncompleted = len(todo_uncompleted)
     all = len(todo_list)
     todo_tags = Tag.query.distinct(Tag.title)
-    for el in todo_tags:
-        print(el.title)
     return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.')
 
 #Cкрываем выполненные
@@ -56,7 +58,7 @@ def add():
     timenow = timed[0]
     title = request.form.get('title')
     tag = request.form.get('tags-list')
-    descr = request.form.get('descr')
+    descr = request.form.get('ckeditor')
     new_todo = ToDo(title=title, descr=descr, tag=tag,create_date=timenow, is_complete=False)
     db.session.add(new_todo)
     db.session.commit()
@@ -90,7 +92,9 @@ def update(todo_id):
 @app.get('/get_task/<int:todo_id>')
 def get_task(todo_id):
     one_todo = ToDo.query.filter_by(id=todo_id).all()
-    return render_template('todo/modal.html', todo_list=one_todo)
+    todo_tags = Tag.query.distinct(Tag.title)
+
+    return render_template('todo/modal.html', todo_list=one_todo, todo_tags=todo_tags)
 
 
 @app.post('/change_content/<int:todo_id>')
@@ -100,7 +104,7 @@ def update_task(todo_id):
     todo = ToDo.query.filter_by(id=todo_id).first()
     todo.title = request.form.get('title')
     todo.tag = request.form.get('tag')
-    todo.descr = request.form.get('descr')
+    todo.descr = request.form.get('ckeditor')
     todo.create_date = timed[0]
     db.session.commit()
     return redirect(url_for('home'))
@@ -118,7 +122,7 @@ def create():
 
 
 #Cтатистика
-@app.get('/stats')
+@app.get('/task_stats')
 def stats():
     #Сбор данных по выполненным задачам
     todo_list = ToDo.query.order_by(ToDo.is_complete).all()
@@ -145,9 +149,10 @@ def stats():
     for date in data3:
         if date not in uniq_date:
             uniq_date.append(date)
-    todo_tags = ToDo.query.distinct(ToDo.tag).group_by(ToDo.tag)
+    #todo_tags = ToDo.query.distinct(ToDo.tag).group_by(ToDo.tag)
+    todo_tags = Tag.query.distinct(Tag.title)
     for el in todo_tags:
-        tag.append(el.tag)
+        tag.append(el.title)
     for i in tag:
         todo = ToDo.query.filter_by(tag=i).order_by(ToDo.is_complete).all()
         
@@ -248,3 +253,22 @@ def delete_tag(tag_id):
     db.session.delete(tag)
     db.session.commit()
     return redirect(url_for('admin'))
+
+@app.get('/get_detail/<int:todo_id>')
+def get_detail(todo_id):
+    one_todo = ToDo.query.filter_by(id=todo_id).all()
+    todo_tags = Tag.query.distinct(Tag.title)
+
+    return render_template('todo/modal2.html', todo_list=one_todo, todo_tags=todo_tags)
+
+#поиск заметки по названию
+@app.post('/search')
+def search():
+    search_bar = request.form.get('search_bar')
+    search = "%{}%".format(search_bar)
+    one_todo = ToDo.query.filter(ToDo.title.like(search)).all()
+    if not one_todo:
+            one_todo = ToDo.query.filter(ToDo.descr.like(search)).all()
+
+    return render_template('todo/index.html', todo_list=one_todo)
+

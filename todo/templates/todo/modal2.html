@@ -12,8 +12,6 @@
 
 <body style="background-color: black; font-family: Rubik;">
     <script src="https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/Snow.min.js"></script>
-    <script src="https://cdn.ckeditor.com/4.10.0/standard/ckeditor.js"></script>
-    {{ ckeditor.load() }}
 
     <head>
 
@@ -26,7 +24,6 @@
     </div>
     {% block content %}
     {% for todo in todo_list %}
-
     <div id="openModal2" class="modal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -34,24 +31,20 @@
                     <h3 class="modal-title">Изменить задачу</h3>
                                 </div>
                 <div class="modal-body">
-                    <form class="ui form" action="/change_content/{{todo.id}}" method="post"
+                    <form class="ui form" action="/get_task/{{todo.id}}" method="get"
                         style="width: 100%; background-color: rgb(56, 55, 55);" name="creator">
                         <div class="field">
-                            <input type="text" name="title" placeholder="Введите название задачи"
-                                style="background-color: rgb(56, 55, 55); color: white;" value="{{todo.title}}"><br>
-                            <!--<textarea id="story" name="descr" rows="5" cols="33" maxlength="1000"
-                                placeholder="Введите описание задачи"
-                                style="background-color: rgb(56, 55, 55); color: white;">{{todo.descr}}</textarea><br>-->
-
-                                {{ ckeditor.create(value=todo.descr)}}
-
-                            <input type="text" contenteditable="true" name="tag" placeholder="Введите тег"
-                                style="background-color: rgb(56, 55, 55); color: white;" value="{{todo.tag}}"><br>
+                            #{{todo.tag}}#<br>----------------------------<br>{{todo.title}}<br>-----------------------<br>{{todo.descr | safe}}<br>
                         </div>
                         <button class="ui teal basic button" type="submit"
-                            style="margin-bottom: 10px; margin-left: 2.5%;">Добавить</button>
-
-
+                            style="margin-bottom: 10px; margin-left: 2.5%;">Изменить</button>
+                            {% if todo.is_complete == False %}
+                            <a class="ui primary basic button" href="/update/{{ todo.id }}">Завершить</a>
+                            {% else %}
+                            <span class="ui green label">Завершено</span>
+                            <a class="ui blue button" href="/update/{{ todo.id }}">Возобновить</a>
+                            {% endif %}
+                            <a class="ui negative basic button" href="/delete/{{ todo.id }}">Удалить</a>
                     </form>
                 </div>
             </div>

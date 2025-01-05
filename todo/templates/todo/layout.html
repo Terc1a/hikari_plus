@@ -26,6 +26,18 @@
       <script>
             new Snow();
       </script>
+      <script>
+            document.addEventListener('DOMContentLoaded', function() {
+            if (typeof CKEDITOR !== 'undefined') {
+                // Find the instance of CKEditor and set the configuration
+                for (var instance in CKEDITOR.instances) {
+                    if (CKEDITOR.instances.hasOwnProperty(instance)) {
+                        CKEDITOR.instances[instance].config.versionCheck = false;
+                    }
+                }
+            }
+        });
+</script>
       {% block content %}
 
       {% endblock content %}

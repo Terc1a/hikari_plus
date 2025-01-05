@@ -23,14 +23,24 @@
         color: white;
     }
 </style>
+<script src="https://cdn.ckeditor.com/4.10.0/standard/ckeditor.js"></script>
+{{ ckeditor.load() }}
 <!--<h1 class="ui center aligned header" style="color: white; position: static;">Менеджер задач</h1>-->
 <img src="static/todo_logo_black.png" style="margin-left: 35%; margin-right: 25%;">
 <div style="margin-top: 2.5%; class:'ui container'; margin-left: 10%; margin-right: 10%; display: flex;">
+
     <div class="navigation"
         style="color: white; background-color: rgb(56, 55, 55); width: 20%; height: 70%; margin-bottom: 1%; border-radius: 2.5px;">
+        <form action="/search" method="post">
+            <input type="text" name="search_bar" placeholder="Поиск"
+                style="background-color: rgb(56, 55, 55); color: white;">
+
+            <button class="ui teal basic button" type="submit"
+                style="margin-bottom: 10px; margin-left: 2.5%;">Поиск</button>
+        </form>
         <div class="tags" style="margin-left: 5%;">
             {% block tags %}
-            Теги:<br>
+            Проекты:<br>
             {% for tag in todo_tags %}
             <a href="/sort/{{ tag.title }}">{{tag.title}}<br></a>
             {% endfor %}
@@ -38,7 +48,7 @@
             {% endblock %}
             <a href="#openModal" style="margin-top: 10%;">Создать задачу</a><br>
             <a href="/">Главная</a><br>
-            <a href="/stats">Статистика</a><br>
+            <a href="/task_stats">Статистика</a><br>
             <a href="/admin">Админка</a><br>
             <a href="/uncompleted">Скрыть готовые</a>
             -------------------<br>
@@ -65,19 +75,18 @@
                         <div class="field">
                             <input type="text" name="title" placeholder="Введите название задачи"
                                 style="background-color: rgb(56, 55, 55); color: white;"><br>
-                            <textarea id="story" name="descr" rows="5" cols="33" maxlength="1000"
-                                placeholder="Введите описание задачи"
-                                style="background-color: rgb(56, 55, 55); color: white;"></textarea><br>
+                            {{ ckeditor.create(value='Введите описание задачи')}}
 
-                                <select id="fruits" name="tags-list">
-                                    {% for tag in todo_tags %}
 
-                                    <option value={{tag.title}}>{{tag.title}}</option>
-                                    {% endfor %}
+                            <select id="fruits" name="tags-list">
+                                {% for tag in todo_tags %}
 
-                                  </select>
+                                <option value={{tag.title}}>{{tag.title}}</option>
+                                {% endfor %}
 
-                           <!--<input type="text" contenteditable="true" name="tag" placeholder="Введите тег"
+                            </select>
+
+                            <!--<input type="text" contenteditable="true" name="tag" placeholder="Введите тег"
                                 style="background-color: rgb(56, 55, 55); color: white;"><br>-->
                             <!--Вместо текстового поля добавить выпадающий список с созданными проектами-->
                         </div>
@@ -98,13 +107,8 @@
         <div class="ui segment"
             style="margin-left: 15%; margin-right: 25%; width: 80%; background-color: rgb(56, 55, 55);">
             <p class="ui big header" name="header" style="margin-bottom: 2.5%; color: white; ">
-                #{{todo.tag}}#<br>----------------------------<br>{{todo.title}}<br></p>
-            <div id="trunc" class="truncate" style="color: white;">
-                <button id="themeToggle" class="btn-set">></button>
-                {{
-                todo.descr
-                |safe}}
-            </div>
+                <a href="/get_detail/{{todo.id}}">#{{todo.tag}}#<br>----------------------------<br>{{todo.title}}<br>
+            </p></a>
             {% if todo.is_complete == False %}
             <span class="ui gray label">В работе</span>
             <a class="ui blue button" href="/get_task/{{todo.id}}">Изменить</a>
@@ -147,5 +151,18 @@
             document.body.style.overflow = 'visible';
             document.querySelector('#openModal2').style.marginLeft = '0px';
         });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof CKEDITOR !== 'undefined') {
+            // Find the instance of CKEditor and set the configuration
+            for (var instance in CKEDITOR.instances) {
+                if (CKEDITOR.instances.hasOwnProperty(instance)) {
+                    CKEDITOR.instances[instance].config.versionCheck = false;
+                }
+            }
+        }
     });
 </script>
