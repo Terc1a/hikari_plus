@@ -220,14 +220,12 @@ def project_stats():
     dates = []
     fig_create = []
     if request.method == 'GET':
-        
+
         return render_template('todo/project_stats.html', todo_tags=todo_tags)
     #по дефолту выводить график для самого первого проекта из запроса, по нажатию кнопки выводить график по выбранному
     if request.method == 'POST':
         tagss = request.form.get('tags-list')
         todo_completed = ToDo.query.filter_by(tag=tagss).all()
-
-        print(f'{len(todo_completed)} всего задач по тегу')
         for task in todo_completed:
             date = task.create_date.split(" ")[0]
             list_sorted.append({task.id:date})
@@ -244,7 +242,6 @@ def project_stats():
         keys = []
         values = []
         for i in matches:
-            print(i)
             key,value = list(i.items())[0]
             keys.append(key)
             values.append(value)

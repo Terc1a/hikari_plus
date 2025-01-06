@@ -27,6 +27,14 @@
 {{ ckeditor.load() }}
 <!--<h1 class="ui center aligned header" style="color: white; position: static;">Менеджер задач</h1>-->
 <img src="static/todo_logo_black.png" style="margin-left: 35%; margin-right: 25%;">
+<div class="dropdown">
+    <button class="dropbtn">| | |</button>
+    <div class="dropdown-content">
+    <option><a href="/">Главная</a></option>
+    <option><a href="/stats">Статистика</a></option>
+    <option> <a href="/admin">Админка</a></option>
+        </div>
+        </div>
 <div style="margin-top: 2.5%; class:'ui container'; margin-left: 10%; margin-right: 10%; display: flex;">
 
     <div class="navigation"
@@ -47,9 +55,6 @@
             -------------------<br>
             {% endblock %}
             <a href="#openModal" style="margin-top: 10%;">Создать задачу</a><br>
-            <a href="/">Главная</a><br>
-            <a href="/task_stats">Статистика</a><br>
-            <a href="/admin">Админка</a><br>
             <a href="/uncompleted">Скрыть готовые</a>
             -------------------<br>
         </div>

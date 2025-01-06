@@ -44,15 +44,17 @@
             color: white;
         }
     </style>
-
+        <div class="dropdown">
+            <button class="dropbtn">| | |</button>
+            <div class="dropdown-content">
+            <option><a href="/">Главная</a></option>
+            <option><a href="/stats">Статистика</a></option>
+            <option> <a href="/admin">Админка</a></option>
+                </div>
+                </div>
     <div class="content" style="  display: flex; margin-top: 2%; margin-left: 2%; margin-right: 2%; color: white;">
 
-        <div class="navigation"
-        style="color: white; background-color: rgb(56, 55, 55); width: 20%; height: 70%; margin-bottom: 1%; border-radius: 2.5px;">
-            <a href="/">Главная</a><br>
-            <a href="/stats">Статистика</a><br>
-            <a href="/admin">Админка</a><br>
-        </div>
+
 
         <div class="form" style="background-color:wheat;width: 30%;margin-left: 10%; margin-right: 60%;">
             {% block tags %}

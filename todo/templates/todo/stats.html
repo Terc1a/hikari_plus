@@ -7,12 +7,14 @@
 </head>
 <body style="background-color: black;">
 
-    <div class="navigation"
-    style="color: white; background-color: rgb(56, 55, 55); width: 20%; height: 70%; margin-bottom: 1%; border-radius: 2.5px;">
-        <a href="/">Главная</a><br>
-        <a href="/stats">Статистика</a><br>
-        <a href="/admin">Админка</a><br>
-    </div>
+    <div class="dropdown">
+        <button class="dropbtn">| | |</button>
+        <div class="dropdown-content">
+        <option><a href="/">Главная</a></option>
+        <option><a href="/stats">Статистика</a></option>
+        <option> <a href="/admin">Админка</a></option>
+            </div>
+            </div>
 
     <div class="pages" style="display: flex; background-color: rgb(56, 55, 55); padding: 1em;">
         <a href="/task_stats" style="margin-left: 5%; margin-right: 5%; background-color: green;">Все задачи</a>
