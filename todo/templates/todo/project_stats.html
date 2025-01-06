@@ -15,12 +15,22 @@
     </div>
 
     <div class="pages" style="display: flex; background-color: rgb(56, 55, 55); padding: 1em;">
-        <a href="/task_stats" style="margin-left: 5%; margin-right: 5%; background-color: green;">Все задачи</a>
-        <a href="/project_stats" style="margin-left: 5%; margin-right: 5%;">Задачи по проектам</a>
+        <a href="/task_stats" style="margin-left: 5%; margin-right: 5%; ">Все задачи</a>
+        <a href="/project_stats" style="margin-left: 5%; margin-right: 5%; background-color: green;">Задачи по проектам</a>
         <a href="/user_stats" style="margin-left: 5%; margin-right: 5%;">Задачи по пользователям</a>
     </div>
 
     <h1>Задачи</h1>
+    <form action="/project_stats" method="post">
+    <select id="fruits" name="tags-list">
+        {% for tag in todo_tags %}
+
+        <option value={{tag.title}}>{{tag.title}}</option>
+        {% endfor %}
+    </select>
+    <button class="ui teal basic button" type="submit"
+    style="margin-bottom: 10px; margin-left: 2.5%;">Выбрать</button>
+</form>
     <div id='divPlotly'></div>
     <div id="divPlotly_2"></div>
     <div id="divPlotly_3"></div>

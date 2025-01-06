@@ -213,6 +213,54 @@ def stats():
 
     return render_template('todo/stats.html', graphJSON=graphJSON, graphJSON2=graphJSON2)
 
+@app.route('/project_stats', methods=['POST', 'GET'])
+def project_stats():
+    todo_tags = Tag.query.distinct(Tag.title)
+    list_sorted = []
+    dates = []
+    fig_create = []
+    if request.method == 'GET':
+        
+        return render_template('todo/project_stats.html', todo_tags=todo_tags)
+    #по дефолту выводить график для самого первого проекта из запроса, по нажатию кнопки выводить график по выбранному
+    if request.method == 'POST':
+        tagss = request.form.get('tags-list')
+        todo_completed = ToDo.query.filter_by(tag=tagss).all()
+
+        print(f'{len(todo_completed)} всего задач по тегу')
+        for task in todo_completed:
+            date = task.create_date.split(" ")[0]
+            list_sorted.append({task.id:date})
+        for el in list_sorted:
+            for date in el.values():
+                if type(date) == list:
+                    dates += date
+                else:
+                    dates.append(date)
+    #получаю уникальные значения дат и количество задач по ним
+        dates_unique = set(dates)
+        matches = [{a:dates.count(a)} for a in sorted(dates_unique)]
+        fig3 = go.Figure()
+        keys = []
+        values = []
+        for i in matches:
+            print(i)
+            key,value = list(i.items())[0]
+            keys.append(key)
+            values.append(value)
+        fig_create = go.Scatter(x=keys, y=values, name=f'{tagss}')
+        fig3.add_trace(fig_create)
+        fig3.update_layout(legend_orientation="h",
+            legend=dict(x=.5, xanchor="center"),
+            title=f"Задачи по проекту {tagss}",
+            xaxis_title="Даты",
+            yaxis_title="Количество задач в день",
+            margin=dict(l=0, r=0, t=50, b=0), 
+            template='plotly_dark',
+            )
+        graphJSON = json.dumps(fig3, cls=plotly.utils.PlotlyJSONEncoder)
+        return render_template('todo/project_stats.html', todo_tags=todo_tags, graphJSON=graphJSON)
+
 
 
 #Админка
