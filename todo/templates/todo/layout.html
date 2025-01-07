@@ -17,27 +17,44 @@
       <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
       <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
 
-<body style="background-color: black;">
+<body
+      style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white{% endif %}">
       <script src="https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/Snow.min.js"></script>
       <!--<div id='divPlotly' style="width:30%; height: 30%; font-size: 12px;"></div>-->
 
 
 
+
       <script>
-            new Snow();
+            document.addEventListener('DOMContentLoaded', function () {
+                  if (typeof CKEDITOR !== 'undefined') {
+                        // Find the instance of CKEditor and set the configuration
+                        for (var instance in CKEDITOR.instances) {
+                              if (CKEDITOR.instances.hasOwnProperty(instance)) {
+                                    CKEDITOR.instances[instance].config.versionCheck = false;
+                              }
+                        }
+                  }
+            });
       </script>
+
       <script>
-            document.addEventListener('DOMContentLoaded', function() {
-            if (typeof CKEDITOR !== 'undefined') {
-                // Find the instance of CKEditor and set the configuration
-                for (var instance in CKEDITOR.instances) {
-                    if (CKEDITOR.instances.hasOwnProperty(instance)) {
-                        CKEDITOR.instances[instance].config.versionCheck = false;
-                    }
-                }
+            function getCookieValue(name) {
+                  let matches = document.cookie.match(new RegExp(
+                        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+                  ));
+                  return matches ? decodeURIComponent(matches[1]) : null;
             }
-        });
-</script>
+
+            var some = getCookieValue('snow_state'); 
+            if (some!= 'on') {
+                  console.log('Snow turned off')
+            }
+            else {
+                  new Snow();
+                  console.log('Snow turned on')
+            }
+      </script>
       {% block content %}
 
       {% endblock content %}

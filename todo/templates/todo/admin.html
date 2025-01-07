@@ -17,7 +17,7 @@
         rel="stylesheet">
     <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
 
-<body>
+    <body style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white{% endif %}">
     
     <script src="https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/Snow.min.js"></script>
     <!--<div id='divPlotly' style="width:30%; height: 30%; font-size: 12px;"></div>-->
@@ -48,7 +48,7 @@
             <button class="dropbtn">| | |</button>
             <div class="dropdown-content">
             <option><a href="/">Главная</a></option>
-            <option><a href="/stats">Статистика</a></option>
+            <option><a href="/task_stats">Статистика</a></option>
             <option> <a href="/admin">Админка</a></option>
                 </div>
                 </div>
@@ -120,8 +120,20 @@
             </div>
         </div>
     </div>
-    <button onclick="toggleTheme()" class="text-text-dark dark:text-text-light" style="margin-left: 2%;">Toggle Theme</button>
-    <button onclick="toggleSnow()" class="text-text-dark dark:text-text-light" style="margin-left: 2%;">Turn Off Snow</button>
+    Select Theme: <br>
+    <form action="/change_theme" method="post">
+        <select name="font" onchange="submit()">
+        <option value="black" {% if request.cookies.get('font') == 'black' %}selected{% endif %}>dark</option>
+        <option value="white" {% if request.cookies.get('font') == 'white' %}selected{% endif %}>light</option>
+        </select>    
+        </form>
+    Change snow state: <br>
+    <form action="/change_snow_state" method="post">
+        <select name="snow_state" onchange="submit()">
+            <option value="on" {% if request.cookies.get('snow_state') == 'on' %}selected{% endif %}>on</option>
+            <option value="off" {% if request.cookies.get('snow_state') == 'off' %}selected{% endif %}>off</option>
+            </select>  
+    </form>
 
 
 
@@ -153,3 +165,5 @@
 </body>
 
 </html>
+
+

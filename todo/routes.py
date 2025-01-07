@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, url_for, redirect
+from flask import Flask, request, render_template, url_for, redirect, make_response
 from sqlalchemy import select
 from todo.models import ToDo, db, Tag
 import datetime
@@ -21,7 +21,11 @@ def create_app():
 
 app = create_app()
 
-
+@app.route('/cookie/')
+def cookie():
+    res = make_response("Setting a cookie")
+    res.set_cookie('foo', 'bar', max_age=60*60*24*365*2)
+    return res
 #Главная страница
 @app.get('/')
 def home():
@@ -317,3 +321,24 @@ def search():
 
     return render_template('todo/index.html', todo_list=one_todo)
 
+
+@app.route('/change_theme', methods=['POST',  'GET'])
+def article():
+    if request.method == 'POST':
+        res = make_response("")
+        res.set_cookie("font", request.form.get('font'), 60*60*24*15)
+        res.headers['location'] = url_for('admin')
+        return res, 302
+
+    return render_template('todo/admin.html')
+
+
+@app.route('/change_snow_state', methods=['POST',  'GET'])
+def snow():
+    if request.method == 'POST':
+        res = make_response("")
+        res.set_cookie("snow_state", request.form.get('snow_state'), 60*60*24*15)
+        res.headers['location'] = url_for('admin')
+        return res, 302
+
+    return render_template('todo/admin.html')

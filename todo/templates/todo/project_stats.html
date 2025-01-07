@@ -5,13 +5,13 @@
 <head>
     <title>Статистика</title>
 </head>
-<body style="background-color: black;">
+<body style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white{% endif %}">
 
     <div class="dropdown">
         <button class="dropbtn">| | |</button>
         <div class="dropdown-content">
         <option><a href="/">Главная</a></option>
-        <option><a href="/stats">Статистика</a></option>
+        <option><a href="/task_stats">Статистика</a></option>
         <option> <a href="/admin">Админка</a></option>
             </div>
             </div>
