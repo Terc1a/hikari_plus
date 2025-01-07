@@ -50,8 +50,6 @@ def uncompleted():
     uncompleted = len(todo_uncompleted)
     all = len(todo_list)
     todo_tags = Tag.query.distinct(Tag.title)
-    for el in todo_tags:
-        print(el.title)
     return render_template('todo/index.html', todo_list=todo_uncompleted, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.')
 
 
@@ -221,16 +219,20 @@ def stats():
 def project_stats():
     todo_tags = Tag.query.distinct(Tag.title)
     list_sorted = []
+    list_sorted2 = []
     dates = []
+    dates2 = []
     fig_create = []
+    counter = []
     if request.method == 'GET':
 
         return render_template('todo/project_stats.html', todo_tags=todo_tags)
     #по дефолту выводить график для самого первого проекта из запроса, по нажатию кнопки выводить график по выбранному
     if request.method == 'POST':
         tagss = request.form.get('tags-list')
-        todo_completed = ToDo.query.filter_by(tag=tagss).all()
-        for task in todo_completed:
+        tasks_on_tag = ToDo.query.filter_by(tag=tagss).all()
+        #Для графа с созданными задачами
+        for task in tasks_on_tag:
             date = task.create_date.split(" ")[0]
             list_sorted.append({task.id:date})
         for el in list_sorted:
@@ -249,18 +251,44 @@ def project_stats():
             key,value = list(i.items())[0]
             keys.append(key)
             values.append(value)
-        fig_create = go.Scatter(x=keys, y=values, name=f'{tagss}')
-        fig3.add_trace(fig_create)
-        fig3.update_layout(legend_orientation="h",
-            legend=dict(x=.5, xanchor="center"),
-            title=f"Задачи по проекту {tagss}",
-            xaxis_title="Даты",
-            yaxis_title="Количество задач в день",
-            margin=dict(l=0, r=0, t=50, b=0), 
-            template='plotly_dark',
-            )
-        graphJSON = json.dumps(fig3, cls=plotly.utils.PlotlyJSONEncoder)
-        return render_template('todo/project_stats.html', todo_tags=todo_tags, graphJSON=graphJSON)
+        counter.append(go.Scatter(x=keys, y=values, name=f'{tagss}'))
+        #Для графа с завершенными задачами
+        tasks_completed = ToDo.query.filter_by(tag=tagss).filter_by(is_complete=1).all()
+        for task in tasks_completed:
+            print(task, 'task')
+            date = task.close_date.split(" ")[0]
+            list_sorted2.append({task.id:date})
+        for el in list_sorted2:
+            for date in el.values():
+                if type(date) == list:
+                    dates2 += date
+                else:
+                    dates2.append(date)
+        dates_unique2 = set(dates2)
+        matches2 = [{a:dates2.count(a)} for a in sorted(dates_unique2)]
+        keys2 = []
+        values2 = []
+        for i in matches2:
+            key,value = list(i.items())[0]
+            keys2.append(key)
+            values2.append(value)
+        counter.append(go.Scatter(x=keys2, y=values2, name=f'{tagss} completed'))
+        #fig_create = go.Scatter(x=keys, y=values, name=f'{tagss}')
+    
+        #fig3.add_trace(counter)
+    fig3.update_layout(legend_orientation="h",
+        legend=dict(x=.5, xanchor="center"),
+        title=f"Задачи по проекту {tagss}",
+        xaxis_title="Даты",
+        yaxis_title="Количество задач в день",
+        margin=dict(l=0, r=0, t=50, b=0), 
+        template='plotly_dark',
+        )
+    for el in counter:
+
+        fig3.add_trace(el)
+    graphJSON = json.dumps(fig3, cls=plotly.utils.PlotlyJSONEncoder)
+    return render_template('todo/project_stats.html', todo_tags=todo_tags, graphJSON=graphJSON)
 
 
 
@@ -268,9 +296,6 @@ def project_stats():
 @app.get('/admin')
 def admin():
     tag_list = Tag.query.all()
-    for el in tag_list:
-        print(el.title)
-
     return render_template('todo/admin.html', tag_list=tag_list)
 
 

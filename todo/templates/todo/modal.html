@@ -19,11 +19,16 @@
 
     </head>
 <div class="content" style="  display: flex; margin-top: 2%; margin-left: 2%; margin-right: 2%; color: white;">
-    <div class="navigation" style="color: white; background-color: rgb(56, 55, 55); width: 20%; height: 10%; margin-bottom: 1%; border-radius: 2.5px;">
-        <a href="/">Главная</a><br>
-        <a href="/stats">Статистика</a><br>
-        <a href="/admin">Админка</a><br>
-    </div>
+    <div class="dropdown">
+        <button class="dropbtn">| | |</button>
+        <div class="dropdown-content">
+            <li>
+        <a href="/">Главная</a>
+       <a href="/task_stats">Статистика</a>
+        <a href="/admin">Админка</a>
+    </li>
+            </div>
+            </div>
     {% block content %}
     {% for todo in todo_list %}
 
