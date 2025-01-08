@@ -3,5 +3,16 @@
 {% block content %}
 
 <h1 style="margin-left: 10%;">Что нового?</h1>
-
+<div class name="News">
+<div class name="news_body" style="margin-left: 15%;">
+    <div class="form2" style="background-color:wheat;width: 80%; margin-right: 10%; padding: 2.5%;">
+        {% block posts %}
+        Новости: <br>
+        {% for post in news_list %}
+        <h3>{{post.title}}</h3>{{post.descr | safe}}<br>{{post.version}}<br>{{post.create_date}}<br>{{post.is_send}}
+        {% endfor %}
+        {% endblock %}
+    </div>
+</div>
+</div>
 {% endblock content %}

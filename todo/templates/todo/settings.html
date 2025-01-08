@@ -1,0 +1,21 @@
+{% extends 'todo/layout.html' %}
+ {% block content %}
+Выберите тему: <br>
+<form action="/change_theme" method="post">
+    <select name="font" onchange="submit()">
+        <option value="">---</option>
+
+    <option value="black" {% if request.cookies.get('font') == 'black' %}selected{% endif %}>dark</option>
+    <option value="white" {% if request.cookies.get('font') == 'white' %}selected{% endif %}>light</option>
+    </select>    
+    </form>
+Анимации на фоне: <br>
+<form action="/change_snow_state" method="post">
+    <select name="snow_state" onchange="submit()">
+        <option value="">---</option>
+        <option value="on" {% if request.cookies.get('snow_state') == 'on' %}selected{% endif %}>on</option>
+        <option value="off" {% if request.cookies.get('snow_state') == 'off' %}selected{% endif %}>off</option>
+        </select>  
+</form>
+
+{% endblock content %}

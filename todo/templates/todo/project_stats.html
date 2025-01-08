@@ -1,23 +1,6 @@
+{% extends 'todo/layout.html' %}
 
-<!DOCTYPE html>
-<html>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-<head>
-    <title>Статистика</title>
-</head>
-<body style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white{% endif %}">
-
-    <div class="dropdown">
-        <button class="dropbtn">| | |</button>
-        <div class="dropdown-content">
-            <li>
-                <a href="/">Главная</a>
-               <a href="/task_stats">Статистика</a>
-                <a href="/admin">Админка</a>
-            </li>
-            </div>
-            </div>
-
+{% block content %}
     <div class="pages" style="display: flex; background-color: rgb(56, 55, 55); padding: 1em;">
         <a href="/task_stats" style="margin-left: 5%; margin-right: 5%; ">Все задачи</a>
         <a href="/project_stats" style="margin-left: 5%; margin-right: 5%; background-color: green;">Задачи по проектам</a>
@@ -52,5 +35,4 @@
                     var graphs3 = {{ graphJSON3 | safe }};
                     Plotly.newPlot('divPlotly_3', graphs3);
                 </script>
-</body>
-</html>
+{% endblock content %}

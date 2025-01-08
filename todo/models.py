@@ -18,3 +18,11 @@ class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100))
     descr = db.Column(db.String(1000))
+
+class News(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100))
+    descr = db.Column(db.String(1000))
+    version = db.Column(db.String(10))
+    create_date = db.Column(db.String(25))
+    to_send = db.Column(db.Boolean)

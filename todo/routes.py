@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, url_for, redirect, make_response
 from sqlalchemy import select
-from todo.models import ToDo, db, Tag
+from todo.models import ToDo, db, Tag, News
 import datetime
 import plotly.graph_objs as go
 import plotly.io as pio
@@ -296,7 +296,8 @@ def project_stats():
 @app.get('/admin')
 def admin():
     tag_list = Tag.query.all()
-    return render_template('todo/admin.html', tag_list=tag_list)
+    news_list = News.query.all()
+    return render_template('todo/admin.html', tag_list=tag_list, news_list=news_list)
 
 
 @app.post('/add_tag')
@@ -346,16 +347,19 @@ def search():
 
     return render_template('todo/index.html', todo_list=one_todo)
 
+@app.route('/settings')
+def settings():
+    return render_template('todo/settings.html')
 
 @app.route('/change_theme', methods=['POST',  'GET'])
 def article():
     if request.method == 'POST':
         res = make_response("")
         res.set_cookie("font", request.form.get('font'), 60*60*24*15)
-        res.headers['location'] = url_for('admin')
+        res.headers['location'] = url_for('settings')
         return res, 302
 
-    return render_template('todo/admin.html')
+    return render_template('todo/settings.html')
 
 
 @app.route('/change_snow_state', methods=['POST',  'GET'])
@@ -363,11 +367,27 @@ def snow():
     if request.method == 'POST':
         res = make_response("")
         res.set_cookie("snow_state", request.form.get('snow_state'), 60*60*24*15)
-        res.headers['location'] = url_for('admin')
+        res.headers['location'] = url_for('settings')
         return res, 302
 
-    return render_template('todo/admin.html')
+    return render_template('todo/settings.html')
 
 @app.route('/release')
 def release():
-    return render_template('todo/about.html')
+    news_list = News.query.all()
+
+    return render_template('todo/about.html', news_list=news_list)
+
+@app.post('/create_news')
+def create_news():
+    timed_raw = datetime.datetime.now()
+    timed = (str(timed_raw)).rsplit('.', 2)
+    timenow = timed[0]
+    title = request.form.get('title')
+    version = request.form.get('version')
+    descr = request.form.get('ckeditor')
+    to_send = False
+    new_post = News(title=title, descr=descr, version=version,create_date=timenow, to_send=to_send)
+    db.session.add(new_post)
+    db.session.commit()
+    return redirect(url_for('admin'))

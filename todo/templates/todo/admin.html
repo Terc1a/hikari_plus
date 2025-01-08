@@ -1,6 +1,7 @@
 {% extends 'todo/layout.html' %}
 <!doctype html>
 <html lang="ru">
+{{ ckeditor.load() }}
 
 <head>
     <meta charset="UTF-8">
@@ -20,14 +21,14 @@
     <body style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white{% endif %}">
     
     <script src="https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/Snow.min.js"></script>
-    <!--<div id='divPlotly' style="width:30%; height: 30%; font-size: 12px;"></div>-->
     {% block content %}
-    
+    {{ ckeditor.load() }}
+
     <div class="content" style="  display: flex; margin-top: 2%; margin-left: 2%; margin-right: 2%; color: white;">
 
 
 
-        <div class="form" style="background-color:wheat;width: 30%;margin-left: 10%; margin-right: 60%;">
+        <div class="form" style="background-color:wheat;width: 30%;margin-left: 10%; margin-right: 10%;">
             {% block tags %}
             Теги:<br>
             {% for tag in tag_list %}
@@ -36,10 +37,17 @@
             {% endfor %}
             {% endblock %}
             -----------------------------<br>
-            <a href="#openModal">Создать тег</a><br>
 
         </div>
 
+        <div class="form2" style="background-color:wheat;width: 30%; margin-right: 10%;">
+            {% block posts %}
+            Новости: <br>
+            {% for post in news_list %}
+            {{post.title}}<br>{{post.descr | safe}}<br>{{post.version}}<br>{{post.create_date}}<br>{{post.is_send}}
+            {% endfor %}
+            {% endblock %}
+        </div>
 
         <div id="openModal" class="modal">
             <div class="modal-dialog">
@@ -90,24 +98,39 @@
                 </div>
             </div>
         </div>
-    </div>
-    Select Theme: <br>
-    <form action="/change_theme" method="post">
-        <select name="font" onchange="submit()">
-            <option value="">---</option>
 
-        <option value="black" {% if request.cookies.get('font') == 'black' %}selected{% endif %}>dark</option>
-        <option value="white" {% if request.cookies.get('font') == 'white' %}selected{% endif %}>light</option>
-        </select>    
-        </form>
-    Change snow state: <br>
-    <form action="/change_snow_state" method="post">
-        <select name="snow_state" onchange="submit()">
-            <option value="">---</option>
-            <option value="on" {% if request.cookies.get('snow_state') == 'on' %}selected{% endif %}>on</option>
-            <option value="off" {% if request.cookies.get('snow_state') == 'off' %}selected{% endif %}>off</option>
-            </select>  
-    </form>
+        <div id="openModal3" class="modal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Новая статья</h3>
+                        <a href="#close" title="Close" class="close">×</a>
+                    </div>
+                    <div class="modal-body">
+                        <form class="ui form" action="/create_news" method="post"
+                            style="width: 100%; background-color: rgb(56, 55, 55);" name="creator">
+                            <div class="field">
+                                <input type="text" name="title" placeholder="Введите название новости"
+                                    style="background-color: rgb(56, 55, 55); color: white;"><br>
+                                    {{ ckeditor.create(value='Введите описание новости')}}
+                                    <input type="text" name="version" placeholder="Введите номер версии"
+                                    style="background-color: rgb(56, 55, 55); color: white;"><br>  
+                            </div>
+                            <button class="ui teal basic button" type="submit"
+                                style="margin-bottom: 10px; margin-left: 2.5%;">Добавить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    Создать тег: <br>
+    <a href="#openModal">Создать тег</a><br>
+
+    Cоздать новость: <br>
+    <a href="#openModal3">Создать новость</a><br>
 
 
 
