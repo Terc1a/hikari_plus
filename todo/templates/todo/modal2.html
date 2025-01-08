@@ -1,63 +1,79 @@
-<!doctype html>
-<html lang="ru">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style_modal.css') }}">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
-<link href="https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/snow.min.css" rel="stylesheet">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
-    rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
-<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+{% extends 'todo/layout.html' %}
 
-<body style="background-color: black; font-family: Rubik;">
-    <script src="https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/Snow.min.js"></script>
 
-    <head>
+{% block content %}
+{{ ckeditor.load() }}
 
-    </head>
-<div class="content" style="  display: flex; margin-top: 2%; margin-left: 2%; margin-right: 2%; color: white;">
-    <div class="dropdown">
-        <button class="dropbtn">| | |</button>
-        <div class="dropdown-content">
-            <li>
-        <a href="/">Главная</a>
-       <a href="/task_stats">Статистика</a>
-        <a href="/admin">Админка</a>
-    </li>
+{% for todo in todo_list %}
+
+</div>
+<div class="modal-body">
+    <form class="ui form" action="#openModal" method="get"
+        style="width: 60%; background-color: rgb(56, 55, 55); margin-left: 20%; margin-right: 20%;" name="creator">
+
+        <div class="field" style="padding: 2.5%">
+            #{{todo.tag}}#<br>----------------------------<br>{{todo.title}}<br>-----------------------<br>{{todo.descr
+            | safe}}<br>
+        </div>
+        <button class="ui teal basic button" type="submit"
+            style="margin-bottom: 10px; margin-left: 2.5%;">Изменить</button>
+        {% if todo.is_complete == False %}
+        <a class="ui primary basic button" href="/update/{{ todo.id }}">Завершить</a>
+        {% else %}
+        <span class="ui green label">Завершено</span>
+        <a class="ui blue button" href="/update/{{ todo.id }}">Возобновить</a>
+        {% endif %}
+        <a class="ui negative basic button" href="/delete/{{ todo.id }}">Удалить</a>
+    </form>
+</div>
+
+
+
+<div id="openModal" class="modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Новая задача</h3>
+                <a href="#close" title="Close" class="close">×</a>
             </div>
+            <div class="modal-body">
+                <form class="ui form" action="/add" method="post"
+                    style="width: 100%; background-color: rgb(56, 55, 55);" name="creator">
+                    <div class="field">
+                        <input type="text" name="title" placeholder="Введите название задачи"
+                                style="background-color: rgb(56, 55, 55); color: white;" value="{{todo.title}}"><br>
+                        {{ ckeditor.create(value=todo.descr)}}
+
+
+                        <input type="text" contenteditable="true" name="tag" placeholder="Введите тег"
+                                style="background-color: rgb(56, 55, 55); color: white;" value="{{todo.tag}}"><br>
+
+                        <!--<input type="text" contenteditable="true" name="tag" placeholder="Введите тег"
+                            style="background-color: rgb(56, 55, 55); color: white;"><br>-->
+                        <!--Вместо текстового поля добавить выпадающий список с созданными проектами-->
+                    </div>
+                    <button class="ui teal basic button" type="submit"
+                        style="margin-bottom: 10px; margin-left: 2.5%;">Добавить</button>
+
+                </form>
             </div>
-    {% block content %}
-    {% for todo in todo_list %}
-    <div id="openModal2" class="modal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">Изменить задачу</h3>
-                                </div>
-                <div class="modal-body">
-                    <form class="ui form" action="/get_task/{{todo.id}}" method="get"
-                        style="width: 100%; background-color: rgb(56, 55, 55);" name="creator">
-                        <div class="field">
-                            #{{todo.tag}}#<br>----------------------------<br>{{todo.title}}<br>-----------------------<br>{{todo.descr | safe}}<br>
-                        </div>
-                        <button class="ui teal basic button" type="submit"
-                            style="margin-bottom: 10px; margin-left: 2.5%;">Изменить</button>
-                            {% if todo.is_complete == False %}
-                            <a class="ui primary basic button" href="/update/{{ todo.id }}">Завершить</a>
-                            {% else %}
-                            <span class="ui green label">Завершено</span>
-                            <a class="ui blue button" href="/update/{{ todo.id }}">Возобновить</a>
-                            {% endif %}
-                            <a class="ui negative basic button" href="/delete/{{ todo.id }}">Удалить</a>
-                    </form>
-                </div>
-            </div>
-            {% endfor %}
         </div>
     </div>
 </div>
-    {% endblock content %}
-</body>
+{% endfor %}
 
-</html>
+{% endblock content %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var scrollbar = document.body.clientWidth - window.innerWidth + 'px';
+        console.log(scrollbar);
+        document.querySelector('[href="#openModal"]').addEventListener('click', function () {
+            document.body.style.overflow = 'hidden';
+            document.querySelector('#openModal').style.marginLeft = scrollbar;
+        });
+        document.querySelector('[href="#close"]').addEventListener('click', function () {
+            document.body.style.overflow = 'visible';
+            document.querySelector('#openModal').style.marginLeft = '0px';
+        });
+    });
+</script>

@@ -7,7 +7,7 @@
     <meta name="viewport"
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>{{ title if title else '- Базовый шаблон' }} </title>
+    <title>{{ title if title else 'Админ-панель' }} </title>
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/snow.min.css" rel="stylesheet">
@@ -22,38 +22,7 @@
     <script src="https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/Snow.min.js"></script>
     <!--<div id='divPlotly' style="width:30%; height: 30%; font-size: 12px;"></div>-->
     {% block content %}
-    <style>
-        a:link {
-            text-decoration: none;
-            color: white;
     
-        }
-    
-        a:visited {
-            text-decoration: none;
-            color: white;
-        }
-    
-        a:hover {
-            text-decoration: underline;
-            color: white;
-        }
-    
-        a:active {
-            text-decoration: underline;
-            color: white;
-        }
-    </style>
-        <div class="dropdown">
-            <button class="dropbtn">| | |</button>
-            <div class="dropdown-content">
-                <li>
-                    <a href="/">Главная</a>
-                   <a href="/task_stats">Статистика</a>
-                    <a href="/admin">Админка</a>
-                </li>   
-                </div>
-                </div>
     <div class="content" style="  display: flex; margin-top: 2%; margin-left: 2%; margin-right: 2%; color: white;">
 
 

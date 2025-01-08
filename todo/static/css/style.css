@@ -5,6 +5,7 @@
 body {
   font-family: Rubik;
   transition: background-color 0.3s ease;
+  margin: 0;
 }
 
 body.light {
@@ -193,3 +194,5 @@ position: relative;
 
 /* Изменение цвета фона кнопки раскрывающегося списка при отображении содержимого раскрывающегося списка */
 .dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+

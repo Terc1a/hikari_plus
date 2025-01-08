@@ -4,6 +4,7 @@
 
 body {
     background-color: dimgrey;
+    margin: 0;
 }
 
 /* hides the notifications area in CKEditor, a WYSIWYG text editor. */

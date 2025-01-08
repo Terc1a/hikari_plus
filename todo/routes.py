@@ -251,7 +251,7 @@ def project_stats():
             key,value = list(i.items())[0]
             keys.append(key)
             values.append(value)
-        counter.append(go.Scatter(x=keys, y=values, name=f'{tagss}'))
+        counter.append(go.Scatter(x=keys, y=values, name=f'Создано'))
         #Для графа с завершенными задачами
         tasks_completed = ToDo.query.filter_by(tag=tagss).filter_by(is_complete=1).all()
         for task in tasks_completed:
@@ -272,7 +272,7 @@ def project_stats():
             key,value = list(i.items())[0]
             keys2.append(key)
             values2.append(value)
-        counter.append(go.Scatter(x=keys2, y=values2, name=f'{tagss} completed'))
+        counter.append(go.Scatter(x=keys2, y=values2, name=f'Завершено'))
         #fig_create = go.Scatter(x=keys, y=values, name=f'{tagss}')
     
         #fig3.add_trace(counter)
@@ -367,3 +367,7 @@ def snow():
         return res, 302
 
     return render_template('todo/admin.html')
+
+@app.route('/release')
+def release():
+    return render_template('todo/about.html')
