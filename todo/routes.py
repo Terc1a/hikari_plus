@@ -30,9 +30,9 @@ def cookie():
 @app.get('/')
 def home():
     current_date = datetime.datetime.now().strftime('%Y-%m-%d')
-    todo_list = ToDo.query.order_by(ToDo.is_complete).all()
-    todo_completed = ToDo.query.filter_by(is_complete=1).all()
-    todo_uncompleted = ToDo.query.filter_by(is_complete=0).all()
+    todo_list = ToDo.query.order_by(ToDo.is_complete).order_by(ToDo.id.desc()).all()
+    todo_completed = ToDo.query.filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
+    todo_uncompleted = ToDo.query.filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
     completed = len(todo_completed)
     uncompleted = len(todo_uncompleted)
     all = len(todo_list)
@@ -43,9 +43,9 @@ def home():
 @app.get('/uncompleted')
 def uncompleted():
     current_date = datetime.datetime.now().strftime('%Y-%m-%d')
-    todo_list = ToDo.query.order_by(ToDo.is_complete).all()
-    todo_completed = ToDo.query.filter_by(is_complete=1).all()
-    todo_uncompleted = ToDo.query.filter_by(is_complete=0).all()
+    todo_list = ToDo.query.order_by(ToDo.is_complete).order_by(ToDo.id.desc()).all()
+    todo_completed = ToDo.query.filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
+    todo_uncompleted = ToDo.query.filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
     completed = len(todo_completed)
     uncompleted = len(todo_uncompleted)
     all = len(todo_list)
@@ -218,15 +218,79 @@ def stats():
 @app.route('/project_stats', methods=['POST', 'GET'])
 def project_stats():
     todo_tags = Tag.query.distinct(Tag.title)
+    tasks_all = ToDo.query.all()
+    tasks_completed = ToDo.query.filter_by(is_complete=1).all()
+
     list_sorted = []
     list_sorted2 = []
     dates = []
     dates2 = []
-    fig_create = []
     counter = []
-    if request.method == 'GET':
 
-        return render_template('todo/project_stats.html', todo_tags=todo_tags)
+    if request.method == 'GET':
+        data_list_created = []
+        data_list_completed = []
+        dates_created = []
+        dates_completed = []
+        counter = []
+        #Для созданных задач
+        for task in tasks_all:
+            date = task.create_date.split(" ")[0]
+            data_list_created.append({task.id:date})
+        for el in data_list_created:
+            for date in el.values():
+                if type(date) == list:
+                    dates_created += date
+                else:
+                    dates_created.append(date)
+    #получаю уникальные значения дат и количество задач по ним
+        dates_unique = set(dates_created)
+        matches = [{a:dates_created.count(a)} for a in sorted(dates_unique)]
+        fig3 = go.Figure()
+        keys = []
+        values = []
+        for i in matches:
+            key,value = list(i.items())[0]
+            keys.append(key)
+            values.append(value)
+        counter.append(go.Scatter(x=keys, y=values, name=f'Создано'))
+
+        #Для завершенных задач
+        for task in tasks_completed:
+            print(task, 'task')
+            date = task.close_date.split(" ")[0]
+            data_list_completed.append({task.id:date})
+        for el in data_list_completed:
+            for date in el.values():
+                if type(date) == list:
+                    dates_completed += date
+                else:
+                    dates_completed.append(date)
+        dates_unique2 = set(dates_completed)
+        matches2 = [{a:dates_completed.count(a)} for a in sorted(dates_completed)]
+        keys2 = []
+        values2 = []
+        for i in matches2:
+            key,value = list(i.items())[0]
+            keys2.append(key)
+            values2.append(value)
+        counter.append(go.Scatter(x=keys2, y=values2, name=f'Завершено'))
+            #Отрисовка графов    
+        fig3.update_layout(legend_orientation="h",
+            legend=dict(x=.5, xanchor="center"),
+            title=f"Задачи по всем проектам",
+            xaxis_title="Даты",
+            yaxis_title="Количество задач в день",
+            margin=dict(l=0, r=0, t=50, b=0), 
+            template='plotly_dark',
+            )
+
+        for el in counter:
+
+            fig3.add_trace(el)
+        graphJSON = json.dumps(fig3, cls=plotly.utils.PlotlyJSONEncoder)
+        return render_template('todo/project_stats.html', todo_tags=todo_tags, graphJSON=graphJSON)
+    
     #по дефолту выводить график для самого первого проекта из запроса, по нажатию кнопки выводить график по выбранному
     if request.method == 'POST':
         tagss = request.form.get('tags-list')
@@ -273,9 +337,7 @@ def project_stats():
             keys2.append(key)
             values2.append(value)
         counter.append(go.Scatter(x=keys2, y=values2, name=f'Завершено'))
-        #fig_create = go.Scatter(x=keys, y=values, name=f'{tagss}')
-    
-        #fig3.add_trace(counter)
+
     fig3.update_layout(legend_orientation="h",
         legend=dict(x=.5, xanchor="center"),
         title=f"Задачи по проекту {tagss}",
@@ -391,3 +453,13 @@ def create_news():
     db.session.add(new_post)
     db.session.commit()
     return redirect(url_for('admin'))
+
+
+@app.route("/login")
+def login():
+    return render_template("todo/login.html", title="Авторизация")
+
+
+@app.route("/register")
+def register():
+    return render_template("todo/register.html", title="Регистрация")

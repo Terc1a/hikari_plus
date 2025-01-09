@@ -11,7 +11,7 @@
     <form action="/project_stats" method="post">
     <select id="fruits" name="tags-list">
         {% for tag in todo_tags %}
-
+        
         <option value={{tag.title}}>{{tag.title}}</option>
         {% endfor %}
     </select>
