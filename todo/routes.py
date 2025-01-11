@@ -1,31 +1,39 @@
-from flask import Flask, request, render_template, url_for, redirect, make_response
+from flask import Flask, request, render_template, url_for, redirect, make_response, flash, session
 from sqlalchemy import select
-from todo.models import ToDo, db, Tag, News
+from todo.models import ToDo, db, Tag, News, Users
 import datetime
 import plotly.graph_objs as go
 import plotly.io as pio
 import plotly.utils
 import json
 from flask_ckeditor import CKEditor
+import flask_login
+from flask_login import current_user, login_user, login_required
+from werkzeug.security import generate_password_hash, check_password_hash
+from todo.userlogin import UserLogin
 
 ckeditor = CKEditor()
+login_manager = flask_login.LoginManager()
 
 def create_app():
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['VERSION_CHECK'] = False
+    app.secret_key = 'a1dcbe59291f58c089qwer4feaf8ee8e2f44f05cdd4465e0d9c726938b2eeaab'
     db.init_app(app)
     ckeditor.init_app(app)
+    login_manager.init_app(app)
     return app
 
 app = create_app()
 
-@app.route('/cookie/')
-def cookie():
-    res = make_response("Setting a cookie")
-    res.set_cookie('foo', 'bar', max_age=60*60*24*365*2)
-    return res
+@login_manager.user_loader
+def load_user(user_id):
+    print("load_user")
+    return db.session.get(Users, int(user_id))
+
+
 #Главная страница
 @app.get('/')
 def home():
@@ -455,11 +463,40 @@ def create_news():
     return redirect(url_for('admin'))
 
 
-@app.route("/login")
+@app.route("/login", methods=["POST", "GET"])
 def login():
+    if request.method == "POST":
+        user = Users.query.filter_by(username=request.form['name']).first()
+        if user and check_password_hash(user.password, request.form['psw']):
+            return redirect(url_for('home'))
+ 
+        flash("Неверная пара логин/пароль", "error")
+ 
     return render_template("todo/login.html", title="Авторизация")
 
 
-@app.route("/register")
+
+@app.route("/register", methods=["POST", "GET"])
 def register():
+    if request.method == 'POST':
+        timed_raw = datetime.datetime.now()
+        timed = (str(timed_raw)).rsplit('.', 2)
+        timenow = timed[0]
+        if len(request.form.get('name')) > 4 and len(request.form.get('email')) > 4 \
+        and len(request.form.get('psw')) >4 and request.form.get('psw') == request.form.get('psw2'):
+            hash = generate_password_hash(request.form['psw'])
+            check_usermail_exist = Users.query.filter_by(email=request.form.get('email')).all()
+            check_username_exist = Users.query.filter_by(username=request.form.get('name')).all()
+            if check_usermail_exist:
+                flash('Пользователь с данной почтой уже существует')
+            elif check_username_exist:
+                flash('Пользователь с данным логином уже существует')
+            else:
+                add_user = Users(username=request.form.get('name'), email=request.form.get('email'), password=hash, register_date=timenow)
+                db.session.add(add_user)
+                db.session.commit()
+                return redirect(url_for('home'))
+        else:
+            flash('Длина каждого поля не может быть меньше 4 символов')
+            
     return render_template("todo/register.html", title="Регистрация")
