@@ -17,17 +17,23 @@ CREATE TABLE IF NOT EXISTS tag (
 CREATE TABLE IF NOT EXISTS to_do (
 	id INTEGER NOT NULL, 
 	title VARCHAR(100), 
-	tag VARCHAR(50), 
+	tag_id INTEGER NOT NULL, 
 	descr VARCHAR(1000), 
 	create_date VARCHAR(25), 
 	close_date VARCHAR(25), 
 	is_complete BOOLEAN, 
 	PRIMARY KEY (id)
 );
-INSERT INTO "news" ("id","title","descr","version","create_date","to_send") VALUES (1,'Добавлен раздел "Что нового"','<p>На этой странице будет публиковаться информация об обновлениях и различных нововведениях, связанных с этим проектом, а так же уведомления о различных скидках и акциях</p>
-','0.22','2025-01-09 04:36:32',0);
-INSERT INTO "news" ("id","title","descr","version","create_date","to_send") VALUES (2,'Тестовая','<p>Введите описание новости</p>
-','0.22','2025-01-09 04:37:27',0);
+CREATE TABLE IF NOT EXISTS users (
+	id INTEGER NOT NULL, 
+	username VARCHAR(100), 
+	email VARCHAR(100), 
+	password VARCHAR(100), 
+	register_date VARCHAR(100), 
+	PRIMARY KEY (id)
+);
+INSERT INTO "news" ("id","title","descr","version","create_date","to_send") VALUES (1,'Тестовая новость','<p>Введите описание новости</p>
+','0.24','2025-01-11 17:47:27',0);
 INSERT INTO "tag" ("id","title","descr") VALUES (2,'Health','Проект по здоровью.<br>В него входят задачи, связанные с моим здоровьем');
 INSERT INTO "tag" ("id","title","descr") VALUES (3,'Life','Проект по моей жизни.<br>
 В него входят задачи, связанные с моей бытовой жизнью');
@@ -39,6 +45,7 @@ INSERT INTO "tag" ("id","title","descr") VALUES (6,'TodoApp_list','Задачи 
 Cодержит в себе задачи по странице со списком задач');
 INSERT INTO "tag" ("id","title","descr") VALUES (7,'Finance','Содержит в себе задачи по финансовым вопросам');
 INSERT INTO "tag" ("id","title","descr") VALUES (8,'TodoApp_stats','Проект содержит в себе задачи по тегам');
+INSERT INTO "tag" ("id","title","descr") VALUES (9,'Daily','Включает в себя ежедневные задачи');
 INSERT INTO "to_do" ("id","title","tag","descr","create_date","close_date","is_complete") VALUES (2,'Создать возможность указывать тему помимо названия задачи','TodoApp','В будущем хочу чтобы все задачи были разделены по отдельным страницам в зависимости от тематики','2024-12-20 00:00:00','2025-01-03 19:34:00',1);
 INSERT INTO "to_do" ("id","title","tag","descr","create_date","close_date","is_complete") VALUES (3,'Добавить анимированные снежинки на фон сайта','TodoApp','','2024-12-20 00:00:00','2025-01-03 19:34:00',1);
 INSERT INTO "to_do" ("id","title","tag","descr","create_date","close_date","is_complete") VALUES (5,'Выводить список задач рекурсивно','TodoApp','Задачи должны выводиться в обратном порядке(сорт по айди от большего к меньшему)','2024-12-20 00:00:00','2025-01-03 19:34:00',1);
@@ -156,15 +163,18 @@ INSERT INTO "to_do" ("id","title","tag","descr","create_date","close_date","is_c
 INSERT INTO "to_do" ("id","title","tag","descr","create_date","close_date","is_complete") VALUES (44,'Починить положение кнопки меню на странице модальных окон','TodoApp','<p>Там откуда-то берется margin 8, непонятно откуда именно</p>
 ','2025-01-08 19:48:24','2025-01-08 19:54:30',1);
 INSERT INTO "to_do" ("id","title","tag","descr","create_date","close_date","is_complete") VALUES (45,'Добавить функцию создания новостей в админке','TodoApp_admin','<p>Аналогично созданию задачи, но с выводом на about.html</p>
-','2025-01-09 03:38:32','2025-01-09 04:52:32',1);
-INSERT INTO "to_do" ("id","title","tag","descr","create_date","close_date","is_complete") VALUES (46,'Создать архив с настройками системы','Life','<p>Собрать список конфигов, настроек, плагинов, алиасов, ключей, которые есть в моей системе и которые потребуются после переустановки и залить их в приватную репу на гите</p>
-','2025-01-09 04:46:54',NULL,0);
-INSERT INTO "to_do" ("id","title","tag","descr","create_date","close_date","is_complete") VALUES (47,'Добавить график на страницу проектов','TodoApp_stats','<p>Если не выбран ни один проект(то есть отправляется get) - отображать статистику создания/закрытия задач по всем проектам сразу</p>
-','2025-01-09 04:49:36','2025-01-09 21:24:35',1);
-INSERT INTO "to_do" ("id","title","tag","descr","create_date","close_date","is_complete") VALUES (48,'Инвертировать выводимые задачи','TodoApp_list','<p>Вверху списка выводить последние созданные невыполненные задачи</p>
-','2025-01-09 20:08:17','2025-01-09 20:08:20',1);
-INSERT INTO "to_do" ("id","title","tag","descr","create_date","close_date","is_complete") VALUES (49,'Про тесты','TodoApp','<p>Когда добавлю авторизацию и свяжу ее со всем остальным проектом, нужно будет:<br />
-1. Создать форму обратной связи<br />
-2. Прикрепить баннер на странице создания аккаунта/создания проектов/создания задач со словами о том, что все созданное в рамках этой тестовой версии может быть утрачено при релизе и если юзер хочет сохранить свои данные, пусть напишет мне</p>
-','2025-01-09 22:20:37',NULL,0);
+','2025-01-09 03:38:32',NULL,0);
+INSERT INTO "to_do" ("id","title","tag","descr","create_date","close_date","is_complete") VALUES (46,'План на сегодня','Life','<ul>
+	<li>Разобраться как работает регистрация/авторизация</li>
+	<li>Написать свою(безопасную!!) регистрацию/авторизацию</li>
+	<li>Собрать данные по своей системе в одно место и пульнуть в гит</li>
+</ul>
+','2025-01-11 04:10:37',NULL,0);
+INSERT INTO "to_do" ("id","title","tag","descr","create_date","close_date","is_complete") VALUES (47,'Написать сервис аналитики для сайта','TodoApp','<p>Сервис должен уметь отслеживать:<br />
+1. Количество посетителей сайта(дни, часы, месяцы, года, стандарт в общем)<br />
+2. Время, проводимое на сайте(не знаю как такое отслеживать)<br />
+<br />
+Данные сервис должен выводить мне в админ-панель в виде графиков</p>
+','2025-01-11 18:10:37',NULL,0);
+INSERT INTO "users" ("id","username","email","password","register_date") VALUES (1,'v0storg','tercialounge@gmail.com','scrypt:32768:8:1$4JJxG95qxeZzWHA3$be45b4e3e17558e4b58f40864f5d8d7b7505107829b7ebefb2e19fb548c065e80bbe0049cc74854c1dc05b8e8a1dfda6e978633e76ccbaf23629470865f90185','2025-01-10 16:47:50');
 COMMIT;

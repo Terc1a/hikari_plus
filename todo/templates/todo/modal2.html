@@ -1,5 +1,5 @@
 {% extends 'todo/layout.html' %}
-
+{% include 'todo/menu.html' %}
 
 {% block content %}
 {{ ckeditor.load() }}
@@ -12,7 +12,7 @@
         style="width: 60%; background-color: rgb(56, 55, 55); margin-left: 20%; margin-right: 20%;" name="creator">
 
         <div class="field" style="padding: 2.5%">
-            #{{todo.tag}}#<br>----------------------------<br>{{todo.title}}<br>-----------------------<br>{{todo.descr
+            <br>----------------------------<br>{{todo.title}}<br>-----------------------<br>{{todo.descr
             | safe}}<br>
         </div>
         <button class="ui teal basic button" type="submit"
@@ -33,20 +33,17 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Новая задача</h3>
+                <h3 class="modal-title">Изменить</h3>
                 <a href="#close" title="Close" class="close">×</a>
             </div>
             <div class="modal-body">
-                <form class="ui form" action="/add" method="post"
+                <form class="ui form" action="/change_content/{{todo.id}}" method="post"
                     style="width: 100%; background-color: rgb(56, 55, 55);" name="creator">
                     <div class="field">
                         <input type="text" name="title" placeholder="Введите название задачи"
                                 style="background-color: rgb(56, 55, 55); color: white;" value="{{todo.title}}"><br>
                         {{ ckeditor.create(value=todo.descr)}}
 
-
-                        <input type="text" contenteditable="true" name="tag" placeholder="Введите тег"
-                                style="background-color: rgb(56, 55, 55); color: white;" value="{{todo.tag}}"><br>
 
                         <!--<input type="text" contenteditable="true" name="tag" placeholder="Введите тег"
                             style="background-color: rgb(56, 55, 55); color: white;"><br>-->

@@ -1,7 +1,8 @@
 {% extends 'todo/layout.html' %}
+{% include 'todo/menu.html' %} 
+
 
 {% block content %}
-
 <script src="https://cdn.ckeditor.com/4.10.0/standard/ckeditor.js"></script>
 {{ ckeditor.load() }}
 <!--<h1 class="ui center aligned header" style="color: white; position: static;">Менеджер задач</h1>-->
@@ -93,7 +94,7 @@
         <div class="ui segment"
             style="margin-left: 15%; margin-right: 25%; width: 80%; background-color: rgb(56, 55, 55);">
             <p class="ui big header" name="header" style="margin-bottom: 2.5%; color: white; ">
-                <a href="/get_detail/{{todo.id}}" style="color: white">#{{todo.tag}}#<br>----------------------------<br>{{todo.title}}<br>
+                <a href="/get_detail/{{todo.id}}" style="color: white">{{todo.title}}<br>
             </p></a>
             {% if todo.is_complete == False %}
             <span class="ui gray label">В работе</span>

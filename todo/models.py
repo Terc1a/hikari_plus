@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_login import UserMixin
 
 db = SQLAlchemy()
 migrate = Migrate(db)
@@ -7,7 +8,7 @@ migrate = Migrate(db)
 class ToDo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100))
-    tag = db.Column(db.String(50))
+    tag_id = db.Column(db.Integer)
     descr = db.Column(db.String(1000))
     create_date = db.Column(db.String(25))
     close_date = db.Column(db.String(25))
@@ -16,6 +17,7 @@ class ToDo(db.Model):
 
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    uid = db.Column(db.Integer)
     title = db.Column(db.String(100))
     descr = db.Column(db.String(1000))
 
@@ -27,7 +29,7 @@ class News(db.Model):
     create_date = db.Column(db.String(25))
     to_send = db.Column(db.Boolean)
 
-class Users(db.Model):
+class Users(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100))
     email = db.Column(db.String(100))

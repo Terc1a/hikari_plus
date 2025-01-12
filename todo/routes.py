@@ -8,13 +8,16 @@ import plotly.utils
 import json
 from flask_ckeditor import CKEditor
 import flask_login
-from flask_login import current_user, login_user, login_required
+from flask_login import current_user, login_user, login_required, UserMixin, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from todo.userlogin import UserLogin
 
 ckeditor = CKEditor()
 login_manager = flask_login.LoginManager()
 
+class User(UserMixin):
+    def __init__(self, user_id):
+        self.id = user_id
 def create_app():
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -27,38 +30,56 @@ def create_app():
     return app
 
 app = create_app()
-
 @login_manager.user_loader
 def load_user(user_id):
-    print("load_user")
-    return db.session.get(Users, int(user_id))
+    user = db.session.get(Users, int(user_id))
+    return user
 
+@login_manager.unauthorized_handler
+def unauthorized():
+    # do stuff
+    return render_template('todo/login.html')
 
 #Главная страница
 @app.get('/')
+@login_required
 def home():
-    current_date = datetime.datetime.now().strftime('%Y-%m-%d')
-    todo_list = ToDo.query.order_by(ToDo.is_complete).order_by(ToDo.id.desc()).all()
-    todo_completed = ToDo.query.filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
-    todo_uncompleted = ToDo.query.filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
-    completed = len(todo_completed)
-    uncompleted = len(todo_uncompleted)
-    all = len(todo_list)
-    todo_tags = Tag.query.distinct(Tag.title)
-    return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.')
+
+    if current_user:
+        current_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
+        tags_ids = []
+        for el in get_curr_user_tags:
+            tags_ids.append(el.id)
+        todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).order_by(ToDo.id.desc()).all()
+        todo_completed = ToDo.query.filter_by(is_complete=1, id=current_user.id).order_by(ToDo.id.desc()).all()
+        todo_uncompleted = ToDo.query.filter_by(is_complete=0, id=current_user.id).order_by(ToDo.id.desc()).all()
+        completed = len(todo_completed)
+        uncompleted = len(todo_uncompleted)
+        all = len(todo_list)
+        todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
+        return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.')
+    else:
+        return redirect(url_for('todo/login.html'))
+
+
+
 
 #Cкрываем выполненные
 @app.get('/uncompleted')
 def uncompleted():
     current_date = datetime.datetime.now().strftime('%Y-%m-%d')
-    todo_list = ToDo.query.order_by(ToDo.is_complete).order_by(ToDo.id.desc()).all()
-    todo_completed = ToDo.query.filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
-    todo_uncompleted = ToDo.query.filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+    get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
+    tags_ids = []
+    for el in get_curr_user_tags:
+        tags_ids.append(el.id)
+    todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+    todo_completed = ToDo.query.filter_by(is_complete=1, id=current_user.id).order_by(ToDo.id.desc()).all()
+    todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
     completed = len(todo_completed)
-    uncompleted = len(todo_uncompleted)
     all = len(todo_list)
-    todo_tags = Tag.query.distinct(Tag.title)
-    return render_template('todo/index.html', todo_list=todo_uncompleted, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.')
+    todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
+    return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=todo_uncompleted, todo_all=all, title='CUBI Prot.')
 
 
 @app.post('/add')
@@ -67,24 +88,29 @@ def add():
     timed = (str(timed_raw)).rsplit('.', 2)
     timenow = timed[0]
     title = request.form.get('title')
-    tag = request.form.get('tags-list')
+    get_tag = Tag.query.filter_by(title=request.form.get('tags-list'), uid=current_user.id).first()
+    tag_id = get_tag.id
     descr = request.form.get('ckeditor')
-    new_todo = ToDo(title=title, descr=descr, tag=tag,create_date=timenow, is_complete=False)
+    new_todo = ToDo(title=title, descr=descr, tag_id=tag_id,create_date=timenow, is_complete=False)
     db.session.add(new_todo)
     db.session.commit()
     return redirect(url_for('home'))
 
 @app.get('/sort/<string:todo_tag>')
 def sort(todo_tag):
-    todo_list = ToDo.query.order_by(ToDo.is_complete).all()
-    todo = ToDo.query.filter_by(tag=todo_tag).order_by(ToDo.is_complete).all()
+    get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
+    tags_ids = []
+    tags_ids = []
+    for el in get_curr_user_tags:
+        tags_ids.append(el.id)
+    todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
     todo_completed = ToDo.query.filter_by(is_complete=1).all()
-    todo_uncompleted = ToDo.query.filter(ToDo.is_complete.like('0')).filter(ToDo.tag.like(todo_tag)).all()
+    todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
     completed = len(todo_completed)
     uncompleted = len(todo_uncompleted)
     all = len(todo_list)
-    todo_tags = Tag.query.distinct(Tag.title)
-    return render_template('todo/index.html', todo_list=todo, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.')
+    todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
+    return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.')
 
 
 @app.get('/update/<int:todo_id>')
@@ -102,7 +128,7 @@ def update(todo_id):
 @app.get('/get_task/<int:todo_id>')
 def get_task(todo_id):
     one_todo = ToDo.query.filter_by(id=todo_id).all()
-    todo_tags = Tag.query.distinct(Tag.title)
+    todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
 
     return render_template('todo/modal.html', todo_list=one_todo, todo_tags=todo_tags)
 
@@ -113,7 +139,7 @@ def update_task(todo_id):
     timed = (str(timed_raw)).rsplit('.', 2)
     todo = ToDo.query.filter_by(id=todo_id).first()
     todo.title = request.form.get('title')
-    todo.tag = request.form.get('tag')
+    #todo.tag = request.form.get('tag')
     todo.descr = request.form.get('ckeditor')
     todo.create_date = timed[0]
     db.session.commit()
@@ -126,18 +152,20 @@ def delete(todo_id):
     db.session.commit()
     return redirect(url_for('home'))
 
-@app.get('/create')
-def create():
-    return render_template('todo/new_task.html')
 
 
 #Cтатистика
 @app.get('/task_stats')
 def stats():
     #Сбор данных по выполненным задачам
-    todo_list = ToDo.query.order_by(ToDo.is_complete).all()
-    todo_completed = ToDo.query.filter_by(is_complete=True).all()
-    todo_uncompleted = ToDo.query.filter_by(is_complete=False).all()
+    get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
+    tags_ids = []
+    tags_ids = []
+    for el in get_curr_user_tags:
+        tags_ids.append(el.id)
+    todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+    todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).all()
+    todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
     #Cбор данных по тегам
     tag = []
     tag_counter = {}
@@ -160,16 +188,24 @@ def stats():
         if date not in uniq_date:
             uniq_date.append(date)
     #todo_tags = ToDo.query.distinct(ToDo.tag).group_by(ToDo.tag)
-    todo_tags = Tag.query.distinct(Tag.title)
+    todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
     for el in todo_tags:
-        tag.append(el.title)
+        todo = ToDo.query.filter_by(tag_id=el.id).order_by(ToDo.is_complete).all()
+        if todo:
+            print(todo)
+            tag.append(el.id)
+       
+        else:
+            pass
     for i in tag:
-        todo = ToDo.query.filter_by(tag=i).order_by(ToDo.is_complete).all()
-        
-        tag_counter.update({f'{i}':todo})
+        todo = ToDo.query.filter_by(tag_id=i).order_by(ToDo.is_complete).all()
+        if todo:
+            tag_counter.update({f'{i}':todo})
+        else:
+            pass
     for i in tag:
-        elem_count.update({f'{i}': len(tag_counter.get(i))})
-        data2.append(go.Bar(x=[len(todo_list)], y=[elem_count.get(i)], name=f'{i}'))
+        elem_count.update({f'{i}': len(tag_counter.get(f'{i}'))})
+        data2.append(go.Bar(x=[len(todo_list)], y=[elem_count.get(f'{i}')], name=f'{i}'))
     fig = go.Figure(data=[
         go.Bar(x=[len(todo_list)], y=[len(todo_list)], name='Все'),
         go.Bar( x=[len(todo_list)], y=[len(todo_completed)], name='Выполненные'),
@@ -225,9 +261,13 @@ def stats():
 
 @app.route('/project_stats', methods=['POST', 'GET'])
 def project_stats():
-    todo_tags = Tag.query.distinct(Tag.title)
-    tasks_all = ToDo.query.all()
-    tasks_completed = ToDo.query.filter_by(is_complete=1).all()
+    todo_tags = Tag.query.filter_by(uid=current_user.id).all()
+    get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
+    tags_ids = []
+    for el in get_curr_user_tags:
+        tags_ids.append(el.id)
+    tasks_all = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+    tasks_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).all()
 
     list_sorted = []
     list_sorted2 = []
@@ -302,7 +342,13 @@ def project_stats():
     #по дефолту выводить график для самого первого проекта из запроса, по нажатию кнопки выводить график по выбранному
     if request.method == 'POST':
         tagss = request.form.get('tags-list')
-        tasks_on_tag = ToDo.query.filter_by(tag=tagss).all()
+        todo_tags = Tag.query.filter_by(uid=current_user.id, title=tagss).all()
+        get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
+        tags_ids = []
+        for el in get_curr_user_tags:
+            tags_ids.append(el.id)
+        #tasks_all = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+        tasks_on_tag = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).all()
         #Для графа с созданными задачами
         for task in tasks_on_tag:
             date = task.create_date.split(" ")[0]
@@ -325,7 +371,7 @@ def project_stats():
             values.append(value)
         counter.append(go.Scatter(x=keys, y=values, name=f'Создано'))
         #Для графа с завершенными задачами
-        tasks_completed = ToDo.query.filter_by(tag=tagss).filter_by(is_complete=1).all()
+        tasks_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).all()
         for task in tasks_completed:
             print(task, 'task')
             date = task.close_date.split(" ")[0]
@@ -365,16 +411,17 @@ def project_stats():
 #Админка
 @app.get('/admin')
 def admin():
-    tag_list = Tag.query.all()
-    news_list = News.query.all()
-    return render_template('todo/admin.html', tag_list=tag_list, news_list=news_list)
+    todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
+   #news_list = News.query.all()
+    return render_template('todo/admin.html', tag_list=todo_tags)
 
 
 @app.post('/add_tag')
 def add_tag():
     title = request.form.get('title')
     descr = request.form.get('descr')
-    new_tag = Tag(title=title, descr=descr)
+    uid = current_user.id
+    new_tag = Tag(title=title, descr=descr, uid=uid)
     db.session.add(new_tag)
     db.session.commit()
     return redirect(url_for('admin'))
@@ -402,18 +449,22 @@ def delete_tag(tag_id):
 @app.get('/get_detail/<int:todo_id>')
 def get_detail(todo_id):
     one_todo = ToDo.query.filter_by(id=todo_id).all()
-    todo_tags = Tag.query.distinct(Tag.title)
+    todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
 
     return render_template('todo/modal2.html', todo_list=one_todo, todo_tags=todo_tags)
 
 #поиск заметки по названию
 @app.post('/search')
 def search():
+    get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
+    tags_ids = []
+    for el in get_curr_user_tags:
+        tags_ids.append(el.id)
     search_bar = request.form.get('search_bar')
     search = "%{}%".format(search_bar)
-    one_todo = ToDo.query.filter(ToDo.title.like(search)).all()
+    one_todo = ToDo.query.filter(ToDo.title.like(search), ToDo.tag_id.in_((tags_ids))).all()
     if not one_todo:
-            one_todo = ToDo.query.filter(ToDo.descr.like(search)).all()
+            one_todo = ToDo.query.filter(ToDo.descr.like(search), ToDo.tag_id.in_((tags_ids))).all()
 
     return render_template('todo/index.html', todo_list=one_todo)
 
@@ -465,14 +516,19 @@ def create_news():
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
+    if request.method == "GET":
+        return render_template('todo/login.html')
     if request.method == "POST":
         user = Users.query.filter_by(username=request.form['name']).first()
         if user and check_password_hash(user.password, request.form['psw']):
+            print(f'logged in by {user.id}') 
+            user = User(user.id) 
+            login_user(user)
             return redirect(url_for('home'))
- 
+
         flash("Неверная пара логин/пароль", "error")
  
-    return render_template("todo/login.html", title="Авторизация")
+    # return render_template("todo/login.html", title="Авторизация")
 
 
 
@@ -500,3 +556,9 @@ def register():
             flash('Длина каждого поля не может быть меньше 4 символов')
             
     return render_template("todo/register.html", title="Регистрация")
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))

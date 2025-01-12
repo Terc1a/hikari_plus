@@ -1,4 +1,5 @@
 {% extends 'todo/layout.html' %}
+{% include '/todo/menu.html' %}
 <!doctype html>
 <html lang="ru">
 {{ ckeditor.load() }}
@@ -40,14 +41,14 @@
 
         </div>
 
-        <div class="form2" style="background-color:wheat;width: 30%; margin-right: 10%;">
+        <!--<div class="form2" style="background-color:wheat;width: 30%; margin-right: 10%;">
             {% block posts %}
             Новости: <br>
             {% for post in news_list %}
             {{post.title}}<br>{{post.descr | safe}}<br>{{post.version}}<br>{{post.create_date}}<br>{{post.is_send}}
             {% endfor %}
             {% endblock %}
-        </div>
+        </div>-->
 
         <div id="openModal" class="modal">
             <div class="modal-dialog">
@@ -129,8 +130,8 @@
     Создать тег: <br>
     <a href="#openModal">Создать тег</a><br>
 
-    Cоздать новость: <br>
-    <a href="#openModal3">Создать новость</a><br>
+    <!--Cоздать новость: <br>
+    <a href="#openModal3">Создать новость</a><br>-->
 
 
 
