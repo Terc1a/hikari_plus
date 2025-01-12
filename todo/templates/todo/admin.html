@@ -11,7 +11,6 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{ title if title else 'Админ-панель' }} </title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/snow.min.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,8 +18,9 @@
         rel="stylesheet">
     <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
 
-    <body style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white{% endif %}">
-    
+<body
+    style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white{% endif %}">
+
     <script src="https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/Snow.min.js"></script>
     {% block content %}
     {{ ckeditor.load() }}
@@ -52,8 +52,16 @@
 
         <div id="openModal" class="modal">
             <div class="modal-dialog">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                {% for message in messages %}
+                {{ message }}
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
                 <div class="modal-content">
                     <div class="modal-header">
+
                         <h3 class="modal-title">Новый тег</h3>
                         <a href="#close" title="Close" class="close">×</a>
                     </div>
@@ -113,9 +121,9 @@
                             <div class="field">
                                 <input type="text" name="title" placeholder="Введите название новости"
                                     style="background-color: rgb(56, 55, 55); color: white;"><br>
-                                    {{ ckeditor.create(value='Введите описание новости')}}
-                                    <input type="text" name="version" placeholder="Введите номер версии"
-                                    style="background-color: rgb(56, 55, 55); color: white;"><br>  
+                                {{ ckeditor.create(value='Введите описание новости')}}
+                                <input type="text" name="version" placeholder="Введите номер версии"
+                                    style="background-color: rgb(56, 55, 55); color: white;"><br>
                             </div>
                             <button class="ui teal basic button" type="submit"
                                 style="margin-bottom: 10px; margin-left: 2.5%;">Добавить</button>
@@ -163,5 +171,3 @@
 </body>
 
 </html>
-
-

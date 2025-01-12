@@ -1,11 +1,20 @@
 {% extends 'todo/layout.html' %} 
 {% block content %}
-<form action="/login" method="post" class="form-contact" name="login">
-<p><label>Email: </label> <input type="text" name="name" value="" requied />
-<p><label>Пароль: </label> <input type="password" name="psw" value="" requied />
-<p><input type="checkbox" name="remainme" /> Запомнить меня
-<p><input type="submit" name="login"  value="Войти" {% if request.cookies.get('login') == 'Войти' %}selected{% endif %}/>
-<hr align=left width="300px">
-<p><a href="{{url_for('register')}}">Регистрация</a>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+   {% for message in messages %}
+      {{ message }}
+   {% endfor %}
+{% endif %}
+{% endwith %}
+<div id="wrapper">
+<form action="/login" method="post" class="form-contact" name="login" id="signin">
+    <input type="text" id="user" name="name" placeholder="Логин" />
+    <input type="password" id="pass" name="psw" placeholder="Пароль" />
+<!--<p><input type="checkbox" name="remainme" /> Запомнить меня-->
+    <button type="submit" name="login">></button>
+<!--<p><input type="submit" name="login"  value="Войти" {% if request.cookies.get('login') == 'Войти' %}selected{% endif %}/>-->
+<p><a href="{{url_for('register')}}">Регистрация</a></p>
 </form>
+</div>
 {% endblock %}

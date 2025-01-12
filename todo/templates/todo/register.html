@@ -8,11 +8,13 @@
    {% endfor %}
 {% endif %}
 {% endwith %}
-<form action="/register" method="post" class="form-contact">
-<p><label>Имя: </label> <input type="text" name="name" value="" requied />
-<p><label>Email: </label> <input type="text" name="email" value="" requied />
-<p><label>Пароль: </label> <input type="password" name="psw" value="" requied />
-<p><label>Повтор пароля: </label> <input type="password" name="psw2" value="" requied />
-<p><input type="submit" value="Регистрация" />
+<div id="wrapper">
+<form action="/register" method="post" class="form-contact" id="signin">
+<input type="text" name="name" value="" placeholder="Логин" requied />
+<input type="email" name="email" value="" placeholder="Адрес электронной почты" requied />
+<input type="password" name="psw" value="" placeholder="Пароль" requied />
+<input type="password" name="psw2" value="" placeholder="Повтор пароля" requied />
+<button type="submit" name="login">></button>
 </form>
+</div>
 {% endblock %}

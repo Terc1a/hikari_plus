@@ -10,7 +10,7 @@
         {% block posts %}
         Новости: <br>
         {% for post in news_list %}
-        <h3>{{post.title}}</h3>{{post.descr | safe}}<br>{{post.version}}<br>{{post.create_date}}<br>{{post.is_send}}
+        <h3>{{post.title}}</h3>{{post.descr | safe}}<br>Версия: {{post.version}}<br>Дата: {{post.create_date}}<br>{{post.is_send}}
         {% endfor %}
         {% endblock %}
     </div>
