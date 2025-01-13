@@ -1,11 +1,13 @@
 from flask import Flask, request, render_template, url_for, redirect, make_response, flash, session
 from sqlalchemy import select
 from todo.models import ToDo, db, Tag, News, Users
-import datetime
+from datetime import datetime
+from time import gmtime, strftime
 import plotly.graph_objs as go
 import plotly.io as pio
 import plotly.utils
 import json
+import pytz
 from flask_ckeditor import CKEditor
 import flask_login
 from flask_login import current_user, login_user, login_required, UserMixin, logout_user
@@ -46,11 +48,48 @@ def unauthorized():
 def home():
 
     if current_user:
-        current_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        #Смотреть дату в timed_raw и в gmt-0, и если timed_raw < gmt && gmt >= 5AM, то is_complete=0 where is_cycle=checked
+        timed_raw = datetime.now()        
+        GMT = pytz.timezone("Etc/GMT")
+        dt_gmt = GMT.localize(timed_raw)
+        dt_gmt = timed_raw.astimezone(GMT)
         get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
         tags_ids = []
         for el in get_curr_user_tags:
             tags_ids.append(el.id)
+        #Откат цикличных задач(в 00 GMT или же 03 MSC)
+        cycle = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_cycle='checked').order_by(ToDo.id.desc()).all()
+        for task in cycle:
+            el = task.create_date
+            print(el.month, 'el month')
+            print(el.day, 'el day')
+            print(dt_gmt.month, 'gmt month')
+            print(dt_gmt.day, 'gmt day')
+            print(dt_gmt.hour, 'gmt hour')
+            print(timed_raw)
+            if el.month > dt_gmt.month and el.day > dt_gmt.day:
+                if el.day >= dt_gmt.day and dt_gmt.hour >= 0:
+                        print(task.title, '1')
+                        task.is_complete = not task.is_complete
+                        task.create_date = timed_raw
+                        task.close_date = datetime(9999, 12, 31, 00, 00, 00, 000000)
+                        db.session.commit()
+            elif el.month == dt_gmt.month and el.day < dt_gmt.day and dt_gmt.hour >= 0:
+                for task in cycle:
+                    print(task.title, '2')
+                    task.is_complete = not task.is_complete
+                    task.create_date = timed_raw
+                    task.close_date = datetime(9999, 12, 31, 00, 00, 00, 000000)
+                    db.session.commit()            
+            else:
+                if el.day < dt_gmt.day and dt_gmt.hour >= 0:
+                    for task in cycle:
+                        print(task.title, '3')
+                        task.is_complete = not task.is_complete
+                        task.create_date = timed_raw
+                        task.close_date = datetime(9999, 12, 31, 00, 00, 00, 000000)
+                        db.session.commit()
+        #Рендер списков задач                   
         todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).order_by(ToDo.id.desc()).all()
         todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
         todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
@@ -69,7 +108,6 @@ def home():
 @app.get('/uncompleted')
 @login_required
 def uncompleted():
-    current_date = datetime.datetime.now().strftime('%Y-%m-%d')
     get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
     tags_ids = []
     for el in get_curr_user_tags:
@@ -88,18 +126,22 @@ def uncompleted():
 @app.post('/add')
 @login_required
 def add():
-    timed_raw = datetime.datetime.now()
-    timed = (str(timed_raw)).rsplit('.', 2)
-    timenow = timed[0]
+    timed_raw = datetime.now()
+
     title = request.form.get('title')
-    print(request.form.get('tags-list'))
+    is_cycle = request.form.get('checker')
+    print(is_cycle)
     get_tag = Tag.query.filter_by(title=request.form.get('tags-list'), uid=current_user.id).first()
-    print(get_tag.id)
     tag_id = get_tag.id
     descr = request.form.get('ckeditor')
-    new_todo = ToDo(title=title, descr=descr, tag_id=tag_id,create_date=timenow, is_complete=False)
-    db.session.add(new_todo)
-    db.session.commit()
+    if is_cycle == None:
+        new_todo = ToDo(title=title, descr=descr, tag_id=tag_id,create_date=timed_raw, is_complete=False)
+        db.session.add(new_todo)
+        db.session.commit()
+    else:
+        new_todo = ToDo(title=title, descr=descr, tag_id=tag_id,create_date=timed_raw, is_complete=False, is_cycle=is_cycle)
+        db.session.add(new_todo)
+        db.session.commit()
     return redirect(url_for('home'))
 
 
@@ -107,7 +149,7 @@ def add():
 @app.get('/sort/<string:todo_tag>')
 @login_required
 def sort(todo_tag):
-    get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
+    get_curr_user_tags = Tag.query.filter_by(uid=current_user.id, title=todo_tag).all()
     tags_ids = []
     tags_ids = []
     for el in get_curr_user_tags:
@@ -115,9 +157,10 @@ def sort(todo_tag):
     todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
     todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).all()
     todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+    todo_list_all = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).all()
     completed = len(todo_completed)
     uncompleted = len(todo_uncompleted)
-    all = len(todo_list)
+    all = len(todo_list_all)
     todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
     return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.')
 
@@ -126,12 +169,10 @@ def sort(todo_tag):
 @app.get('/update/<int:todo_id>')
 @login_required
 def update(todo_id):
-    timed_raw = datetime.datetime.now()
-    timed = (str(timed_raw)).rsplit('.', 2)
-    timenow = timed[0]
+    timed_raw = datetime.now()
     todo = ToDo.query.filter_by(id=todo_id).first()
     todo.is_complete = not todo.is_complete
-    todo.close_date = timenow
+    todo.close_date = timed_raw
     db.session.commit()
     return redirect(url_for('home'))
 
@@ -150,13 +191,12 @@ def get_task(todo_id):
 @app.post('/change_content/<int:todo_id>')
 @login_required
 def update_task(todo_id):
-    timed_raw = datetime.datetime.now()
-    timed = (str(timed_raw)).rsplit('.', 2)
+    timed_raw = datetime.now()
     todo = ToDo.query.filter_by(id=todo_id).first()
     todo.title = request.form.get('title')
     #todo.tag = request.form.get('tag')
     todo.descr = request.form.get('ckeditor')
-    todo.create_date = timed[0]
+    todo.create_date = timed_raw
     db.session.commit()
     return redirect(url_for('home'))
 
@@ -564,14 +604,13 @@ def release():
 @app.post('/create_news')
 @login_required
 def create_news():
-    timed_raw = datetime.datetime.now()
-    timed = (str(timed_raw)).rsplit('.', 2)
-    timenow = timed[0]
+    timed_raw = datetime.now()
+
     title = request.form.get('title')
     version = request.form.get('version')
     descr = request.form.get('ckeditor')
     to_send = False
-    new_post = News(title=title, descr=descr, version=version,create_date=timenow, to_send=to_send)
+    new_post = News(title=title, descr=descr, version=version,create_date=timed_raw, to_send=to_send)
     db.session.add(new_post)
     db.session.commit()
     return redirect(url_for('admin'))
@@ -593,14 +632,12 @@ def login():
         flash("Неверная пара логин/пароль", "error")
  
 
-
 #Регистрируемся
 @app.route("/register", methods=["POST", "GET"])
 def register():
     if request.method == 'POST':
-        timed_raw = datetime.datetime.now()
-        timed = (str(timed_raw)).rsplit('.', 2)
-        timenow = timed[0]
+        timed_raw = datetime.now()
+
         if len(request.form.get('name')) > 4 and len(request.form.get('email')) > 4 \
         and len(request.form.get('psw')) >4 and request.form.get('psw') == request.form.get('psw2'):
             hash = generate_password_hash(request.form['psw'])
@@ -611,7 +648,7 @@ def register():
             elif check_username_exist:
                 flash('Пользователь с данным логином уже существует')
             else:
-                add_user = Users(username=request.form.get('name'), email=request.form.get('email'), password=hash, register_date=timenow)
+                add_user = Users(username=request.form.get('name'), email=request.form.get('email'), password=hash, register_date=timed_raw)
                 tag_title = 'CUBI'
                 tag_descr = 'Ознакомительный проект, который поможет освоиться в системе'
                 task_title = 'Ознакомиться с системой'
@@ -623,7 +660,7 @@ def register():
                 db.session.add(add_tag)
                 db.session.commit()
                 get_tag = Tag.query.filter_by(uid=get_uid.id).filter_by(title=tag_title).first()
-                add_task = ToDo(title=task_title, descr=task_descr, tag_id=get_tag.id,create_date=timenow, is_complete=False)
+                add_task = ToDo(title=task_title, descr=task_descr, tag_id=get_tag.id,create_date=timed_raw, is_complete=False)
                 db.session.add(add_task)
                 db.session.commit()
 
@@ -635,6 +672,8 @@ def register():
             
     return render_template("todo/register.html", title="Регистрация")
 
+
+#Выходим из системы
 @app.route("/logout")
 @login_required
 def logout():

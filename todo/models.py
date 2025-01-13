@@ -10,10 +10,11 @@ class ToDo(db.Model):
     title = db.Column(db.String(100))
     tag_id = db.Column(db.Integer)
     descr = db.Column(db.String(1000))
-    create_date = db.Column(db.String(25))
-    close_date = db.Column(db.String(25))
+    create_date = db.Column(db.DateTime)
+    close_date = db.Column(db.DateTime)
     is_complete = db.Column(db.Boolean)
-
+    is_cycle = db.Column(db.String(25))
+    cycle_series = db.Column(db.Integer)
 
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
