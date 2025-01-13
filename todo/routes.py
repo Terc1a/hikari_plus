@@ -146,6 +146,7 @@ def add():
 @app.route('/sort/<string:todo_tag>', methods=['POST', 'GET'])
 @login_required
 def sort(todo_tag):
+    print(todo_tag)
     if request.method == 'GET':
         default_value = 0
         get_curr_user_tags = Tag.query.filter_by(uid=current_user.id, title=todo_tag).all()
@@ -168,7 +169,7 @@ def sort(todo_tag):
             if check_flag == '1':
                 return redirect(url_for('home'))    
             else:
-                get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
+                get_curr_user_tags = Tag.query.filter_by(uid=current_user.id, title=todo_tag).all()
                 tags_ids = []
                 for el in get_curr_user_tags:
                     tags_ids.append(el.id)

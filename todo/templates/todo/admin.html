@@ -18,37 +18,45 @@
         rel="stylesheet">
     <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
 
-<body
-    style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white{% endif %}">
+<body>
 
     <script src="https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/Snow.min.js"></script>
     {% block content %}
     {{ ckeditor.load() }}
 
-    <div class="content" style="  display: flex; margin-top: 2%; margin-left: 2%; margin-right: 2%; color: white;">
+    <div class="content" style="  display: flex; margin-top: 2%; margin-left: 2%; margin-right: 2%;">
 
 
 
-        <div class="form" style="background-color:wheat;width: 30%;margin-left: 10%; margin-right: 10%;">
+        <div class="form" style="width: 30%;margin-left: 10%; margin-right: 10%;">
             {% block tags %}
             Теги:<br>
             {% for tag in tag_list %}
             <a>{{tag.title}}</a> <a href="/get_tag/{{tag.id}}">Ch</a> <a href="/delete_tag/{{ tag.id }}">Del</a>
             <br>
             {% endfor %}
-            {% endblock %}
             -----------------------------<br>
+            Создать тег: <br>
+            <a href="#openModal">Создать тег</a><br>
+            {% endblock %}
+            
 
         </div>
 
-        <!--<div class="form2" style="background-color:wheat;width: 30%; margin-right: 10%;">
-            {% block posts %}
+        <div class="form2" style="{% if news_list %}width: 30%; margin-right: 10%; {% endif %}">
+            {% block news %}
+            {% if news_list %}
+
             Новости: <br>
             {% for post in news_list %}
             {{post.title}}<br>{{post.descr | safe}}<br>{{post.version}}<br>{{post.create_date}}<br>{{post.is_send}}
             {% endfor %}
+            -----------------------------<br>
+            Cоздать новость: <br>
+            <a href="#openModal3">Создать новость</a><br>
+            {% endif %}
             {% endblock %}
-        </div>-->
+        </div>
 
         <div id="openModal" class="modal">
             <div class="modal-dialog">
@@ -135,11 +143,8 @@
 
     </div>
 
-    Создать тег: <br>
-    <a href="#openModal">Создать тег</a><br>
 
-    <!--Cоздать новость: <br>
-    <a href="#openModal3">Создать новость</a><br>-->
+
 
 
 

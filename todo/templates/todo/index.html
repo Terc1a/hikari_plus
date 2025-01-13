@@ -1,22 +1,12 @@
 {% extends 'todo/layout.html' %}
-{% include 'todo/menu.html' %} 
+{% include 'todo/menu.html' %}
 
 
 {% block content %}
 <script src="https://cdn.ckeditor.com/4.10.0/standard/ckeditor.js"></script>
 {{ ckeditor.load() }}
-<!--<h1 class="ui center aligned header" style="color: white; position: static;">Менеджер задач</h1>-->
 <img src="static/todo_logo_black.png" style="margin-left: 35%; margin-right: 25%;">
-<!--<div class="dropdown">
-    <button class="dropbtn">| | |</button>
-    <div class="dropdown-content">
-        <li>
-    <a href="/">Главная</a>
-   <a href="/task_stats">Статистика</a>
-    <a href="/admin">Админка</a>
-</li>
-        </div>
-        </div>-->
+
 <div style="margin-top: 2.5%; class:'ui container'; margin-left: 10%; margin-right: 10%; display: flex;">
 
     <div class="navigation"
@@ -38,10 +28,9 @@
             {% endblock %}
             <a href="#openModal" style="margin-top: 10%;">Создать задачу</a><br>
             <form method="post">
-                <button type="submit" id="hider" name="hider"
-                 value={{default_value}}>Скрыть готовые</button>
+                <button type="submit" id="hider" name="hider" value={{default_value}}>Скрыть готовые</button>
             </form>
-            
+
             -------------------<br>
         </div>
         <div style="margin-left: 5%;">
@@ -78,7 +67,44 @@
                             </select>
                             <label><input name="checker" type="checkbox" value="checked">Цикличная</label>
                         </div>
-                        
+
+
+                        <button class="ui teal basic button" type="submit"
+                            style="margin-bottom: 10px; margin-left: 2.5%;">Добавить</button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Тут нужно собрать окно изменения задачи и редиректить на него из окна просмотра задачи при нажатии кнопки Изменить-->
+    <div id="openModal2" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Новая задача</h3>
+                    <a href="#close" title="Close" class="close">×</a>
+                </div>
+                <div class="modal-body">
+                    <form class="ui form" action="/add" method="post"
+                        style="width: 100%; background-color: rgb(56, 55, 55);" name="creator">
+                        <div class="field">
+                            <input type="text" name="title" placeholder="Введите название задачи"
+                                style="background-color: rgb(56, 55, 55); color: white;"><br>
+                            {{ ckeditor.create(value='Введите описание задачи')}}
+
+
+                            <select id="fruits" name="tags-list">
+                                {% for tag in todo_tags %}
+
+                                <option value="{{tag.title}}">{{tag.title}}</option>
+                                {% endfor %}
+
+                            </select>
+                            <label><input name="checker" type="checkbox" value="checked">Цикличная</label>
+                        </div>
+
 
                         <button class="ui teal basic button" type="submit"
                             style="margin-bottom: 10px; margin-left: 2.5%;">Добавить</button>
@@ -90,15 +116,16 @@
     </div>
 
 
-
+    {% for todo in todo_list %}
     <div class="contentt" style="width: 100%;">
-
-        {% for todo in todo_list %}
+        <!--В рамках этого блока вставить openModal, который будет открывать задачу подробно-->
         <div class="ui segment"
             style="margin-left: 15%; margin-right: 25%; width: 80%; background-color: rgb(56, 55, 55);">
             <p class="ui big header" name="header" style="margin-bottom: 2.5%; color: white; ">
-                <a href="/get_detail/{{todo.id}}" style="color: white">{{todo.title}}<br>
+                <!--<a href="/get_detail/{{todo.id}}" style="color: white">{{todo.title}}<br>-->
+                <a href="#openModal3/{{todo.id}}" style="color: white">{{todo.title}}<br>
             </p></a>
+
             {% if todo.is_complete == False %}
             <span class="ui gray label">В работе</span>
             <!--<a class="ui blue button" href="/get_task/{{todo.id}}">Изменить</a>-->
@@ -108,10 +135,55 @@
             <a class="ui blue button" href="/update/{{ todo.id }}">Возобновить</a>
             {% endif %}
             <a class="ui negative basic button" href="/delete/{{ todo.id }}">Удалить</a>
+            <div id="openModal3/{{todo.id}}" class="modal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title">{{todo.title}}</h3>
+                            <a href="#close" title="Close" class="close">×</a>
+                        </div>
+                        <div class="modal-body">
+                            <form class="ui form" action="/add" method="post"
+                                style="width: 100%; background-color: rgb(56, 55, 55);" name="creator">
+                                <div class="field">
+                                    {{todo.descr| safe}}<br>
+                                    {% if todo.is_complete == False %}
+                                    <span class="ui gray label">В работе</span>
+                                    <a class="ui blue button" href="/get_task/{{todo.id}}">Изменить</a>
+                                    <a class="ui primary basic button" href="/update/{{ todo.id }}">Завершить</a>
+                                    {% else %}
+                                    <span class="ui green label">Завершено</span>
+                                    <a class="ui blue button" href="/update/{{ todo.id }}">Возобновить</a>
+                                    {% endif %}
+                                    <a class="ui negative basic button" href="/delete/{{ todo.id }}">Удалить</a>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Открытие просмотра задачи-->
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    var scrollbar = document.body.clientWidth - window.innerWidth + 'px';
+                    var test = {{todo.id | safe}};
+                    document.querySelector(`[href="#openModal3/${test}"]`).addEventListener('click', function () {
+                        document.body.style.overflow = 'hidden';
+                        document.querySelector(`#openModal3/${test}`).style.marginLeft = scrollbar;
+                    });
+                    document.querySelector('[href="#close"]').addEventListener('click', function () {
+                        document.body.style.overflow = 'visible';
+                        document.querySelector(`#openModal3/${test}`).style.marginLeft = '0px';
+                    });
+                });
+            </script>
         </div>
-        {% endfor %}
+
     </div>
+    {% endfor %}
 </div>
+
+
 {% endblock content %}
 
 <script>
@@ -143,6 +215,8 @@
         });
     });
 </script>
+
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
