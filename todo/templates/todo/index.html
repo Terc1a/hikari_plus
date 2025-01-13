@@ -37,7 +37,11 @@
             -------------------<br>
             {% endblock %}
             <a href="#openModal" style="margin-top: 10%;">Создать задачу</a><br>
-            <a href="/uncompleted">Скрыть готовые</a>
+            <form method="post">
+                <button type="submit" id="hider" name="hider"
+                 value={{default_value}}>Скрыть готовые</button>
+            </form>
+            
             -------------------<br>
         </div>
         <div style="margin-left: 5%;">

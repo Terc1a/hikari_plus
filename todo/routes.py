@@ -30,7 +30,6 @@ def create_app():
     ckeditor.init_app(app)
     login_manager.init_app(app)
     return app
-
 app = create_app()
 @login_manager.user_loader
 def load_user(user_id):
@@ -42,84 +41,83 @@ def unauthorized():
     # do stuff
     return render_template('todo/login.html')
 
+
+
 #Главная страница
-@app.get('/')
+@app.route('/', methods=['POST', 'GET'])
 @login_required
+
 def home():
-
-    if current_user:
-        #Смотреть дату в timed_raw и в gmt-0, и если timed_raw < gmt && gmt >= 5AM, то is_complete=0 where is_cycle=checked
-        timed_raw = datetime.now()        
-        GMT = pytz.timezone("Etc/GMT")
-        dt_gmt = GMT.localize(timed_raw)
-        dt_gmt = timed_raw.astimezone(GMT)
-        get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
-        tags_ids = []
-        for el in get_curr_user_tags:
-            tags_ids.append(el.id)
-        #Откат цикличных задач(в 00 GMT или же 03 MSC)
-        cycle = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_cycle='checked').order_by(ToDo.id.desc()).all()
-        for task in cycle:
-            el = task.create_date
-            print(el.month, 'el month')
-            print(el.day, 'el day')
-            print(dt_gmt.month, 'gmt month')
-            print(dt_gmt.day, 'gmt day')
-            print(dt_gmt.hour, 'gmt hour')
-            print(timed_raw)
-            if el.month > dt_gmt.month and el.day > dt_gmt.day:
-                if el.day >= dt_gmt.day and dt_gmt.hour >= 0:
-                        print(task.title, '1')
-                        task.is_complete = not task.is_complete
-                        task.create_date = timed_raw
-                        task.close_date = datetime(9999, 12, 31, 00, 00, 00, 000000)
-                        db.session.commit()
-            elif el.month == dt_gmt.month and el.day < dt_gmt.day and dt_gmt.hour >= 0:
-                for task in cycle:
-                    print(task.title, '2')
-                    task.is_complete = not task.is_complete
-                    task.create_date = timed_raw
-                    task.close_date = datetime(9999, 12, 31, 00, 00, 00, 000000)
-                    db.session.commit()            
-            else:
-                if el.day < dt_gmt.day and dt_gmt.hour >= 0:
+    if request.method == 'GET':
+        if current_user:
+            #Смотреть дату в timed_raw и в gmt-0, и если timed_raw < gmt && gmt >= 5AM, то is_complete=0 where is_cycle=checked
+            timed_raw = datetime.now()        
+            GMT = pytz.timezone("Etc/GMT")
+            dt_gmt = GMT.localize(timed_raw)
+            dt_gmt = timed_raw.astimezone(GMT)
+            get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
+            tags_ids = []
+            default_value = 0
+            for el in get_curr_user_tags:
+                tags_ids.append(el.id)
+            #Откат цикличных задач(в 00 GMT или же 03 MSC)
+            cycle = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_cycle='checked').order_by(ToDo.id.desc()).all()
+            for task in cycle:
+                el = task.create_date
+                if el.month > dt_gmt.month and el.day > dt_gmt.day:
+                    if el.day >= dt_gmt.day and dt_gmt.hour >= 0:
+                            print(task.title, '1')
+                            task.is_complete = not task.is_complete
+                            task.create_date = timed_raw
+                            task.close_date = datetime(9999, 12, 31, 00, 00, 00, 000000)
+                            db.session.commit()
+                elif el.month == dt_gmt.month and el.day < dt_gmt.day and dt_gmt.hour >= 0:
                     for task in cycle:
-                        print(task.title, '3')
+                        print(task.title, '2')
                         task.is_complete = not task.is_complete
                         task.create_date = timed_raw
                         task.close_date = datetime(9999, 12, 31, 00, 00, 00, 000000)
-                        db.session.commit()
-        #Рендер списков задач                   
-        todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).order_by(ToDo.id.desc()).all()
-        todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
-        todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
-        completed = len(todo_completed)
-        uncompleted = len(todo_uncompleted)
-        all = len(todo_list)
-        todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
-        return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.')
-    else:
-        return redirect(url_for('todo/login.html'))
-
-
-
-
-#Cкрываем выполненные
-@app.get('/uncompleted')
-@login_required
-def uncompleted():
-    get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
-    tags_ids = []
-    for el in get_curr_user_tags:
-        tags_ids.append(el.id)
-    todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
-    todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
-    todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
-    completed = len(todo_completed)
-    uncompleted = len(todo_uncompleted)
-    all = len(todo_list)
-    todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
-    return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,  title='CUBI Prot.')
+                        db.session.commit()            
+                else:
+                    if el.day < dt_gmt.day and dt_gmt.hour >= 0:
+                        for task in cycle:
+                            print(task.title, '3')
+                            task.is_complete = not task.is_complete
+                            task.create_date = timed_raw
+                            task.close_date = datetime(9999, 12, 31, 00, 00, 00, 000000)
+                            db.session.commit()
+            #Рендер списков задач                   
+            todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).order_by(ToDo.id.desc()).all()
+            todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
+            todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+            completed = len(todo_completed)
+            uncompleted = len(todo_uncompleted)
+            all = len(todo_list)
+            todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
+            return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.', default_value=default_value)
+        else:
+            return redirect(url_for('todo/login.html'))
+    if request.method == 'POST':
+        if current_user:
+            check_flag = request.form.get('hider')
+            if check_flag == '1':
+                return redirect(url_for('home'))    
+            else:
+                get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
+                tags_ids = []
+                for el in get_curr_user_tags:
+                    tags_ids.append(el.id)
+                todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+                todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
+                todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+                completed = len(todo_completed)
+                uncompleted = len(todo_uncompleted)
+                default_value = 1
+                all = len(todo_list)
+                todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
+                return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,  title='CUBI Prot.', default_value=default_value)
+        else:
+            return redirect(url_for('todo/login.html'))
 
 
 #Создаем пост
