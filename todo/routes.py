@@ -128,7 +128,6 @@ def add():
 
     title = request.form.get('title')
     is_cycle = request.form.get('checker')
-    print(is_cycle)
     get_tag = Tag.query.filter_by(title=request.form.get('tags-list'), uid=current_user.id).first()
     tag_id = get_tag.id
     descr = request.form.get('ckeditor')
@@ -144,24 +143,46 @@ def add():
 
 
 #Сортируем по проектам
-@app.get('/sort/<string:todo_tag>')
+@app.route('/sort/<string:todo_tag>', methods=['POST', 'GET'])
 @login_required
 def sort(todo_tag):
-    get_curr_user_tags = Tag.query.filter_by(uid=current_user.id, title=todo_tag).all()
-    tags_ids = []
-    tags_ids = []
-    for el in get_curr_user_tags:
-        tags_ids.append(el.id)
-    todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
-    todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).all()
-    todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
-    todo_list_all = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).all()
-    completed = len(todo_completed)
-    uncompleted = len(todo_uncompleted)
-    all = len(todo_list_all)
-    todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
-    return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.')
-
+    if request.method == 'GET':
+        default_value = 0
+        get_curr_user_tags = Tag.query.filter_by(uid=current_user.id, title=todo_tag).all()
+        tags_ids = []
+        tags_ids = []
+        for el in get_curr_user_tags:
+            tags_ids.append(el.id)
+        todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).order_by(ToDo.id.desc()).all()
+        todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).all()
+        todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+        todo_list_all = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).all()
+        completed = len(todo_completed)
+        uncompleted = len(todo_uncompleted)
+        all = len(todo_list_all)
+        todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
+        return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.', default_value=default_value)
+    if request.method == 'POST':
+        if current_user:
+            check_flag = request.form.get('hider')
+            if check_flag == '1':
+                return redirect(url_for('home'))    
+            else:
+                get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
+                tags_ids = []
+                for el in get_curr_user_tags:
+                    tags_ids.append(el.id)
+                todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+                todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
+                todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+                completed = len(todo_completed)
+                uncompleted = len(todo_uncompleted)
+                default_value = 1
+                all = len(todo_list)
+                todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
+                return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,  title='CUBI Prot.', default_value=default_value)
+        else:        
+            return redirect(url_for('todo/login.html'))
 
 #Изменяем статус задачи
 @app.get('/update/<int:todo_id>')
@@ -238,7 +259,7 @@ def stats():
         if el.create_date is None:
             pass
         else:
-            dt = el.create_date.split(' ')
+            dt = str(el.create_date).split(' ')
             data3.append(dt[0])
 
     for date in data3:
@@ -249,7 +270,6 @@ def stats():
     for el in todo_tags:
         todo = ToDo.query.filter_by(tag_id=el.id).order_by(ToDo.is_complete).all()
         if todo:
-            print(todo)
             tag.append(el.id)
        
         else:
@@ -343,7 +363,7 @@ def project_stats():
         counter = []
         #Для созданных задач
         for task in tasks_all:
-            date = task.create_date.split(" ")[0]
+            date = str(task.create_date).split(" ")[0]
             data_list_created.append({task.id:date})
         for el in data_list_created:
             for date in el.values():
@@ -365,8 +385,7 @@ def project_stats():
 
         #Для завершенных задач
         for task in tasks_completed:
-            print(task, 'task')
-            date = task.close_date.split(" ")[0]
+            date = str(task.close_date).split(" ")[0]
             data_list_completed.append({task.id:date})
         for el in data_list_completed:
             for date in el.values():
@@ -411,7 +430,7 @@ def project_stats():
         tasks_on_tag = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).all()
         #Для графа с созданными задачами
         for task in tasks_on_tag:
-            date = task.create_date.split(" ")[0]
+            date = str(task.create_date).split(" ")[0]
             list_sorted.append({task.id:date})
         for el in list_sorted:
             for date in el.values():
@@ -433,8 +452,7 @@ def project_stats():
         #Для графа с завершенными задачами
         tasks_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).all()
         for task in tasks_completed:
-            print(task, 'task')
-            date = task.close_date.split(" ")[0]
+            date = str(task.close_date).split(" ")[0]
             list_sorted2.append({task.id:date})
         for el in list_sorted2:
             for date in el.values():
@@ -678,3 +696,9 @@ def logout():
     session.pop('username', None)
     logout_user()
     return redirect(url_for('login'))
+
+
+#Рендерим страницу с гайдами
+@app.route('/guides')
+def guides():
+    return render_template('todo/guides.html', title='Гайды')

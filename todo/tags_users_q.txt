@@ -1,0 +1,22 @@
+INSERT INTO "tag" ("id","uid","title","descr") VALUES (3,2,'some','some'),
+ (4,1,'Health','Проект по здоровью. В него входят задачи, связанные с моим здоровьем'),
+ (5,1,'Life','Проект по моей жизни. В него входят задачи, связанные с моей бытовой жизнью'),
+ (6,1,'TodoApp','Проект менеджера задач. Включает в себя задачи по данному проекту'),
+ (7,1,'TodoApp_admin','Проект по админке менеджера задач. Содержит в себе задачи по админке менеджера'),
+ (8,1,'TodoApp_list','Проект по основной странице менеджера задач. Содержит в себе задачи по странице со списком задач'),
+ (9,1,'Finance','Содержит в себе задачи по финансовым вопросам'),
+ (10,1,'TodoApp_stats','Cодержит в себе задачи по тегам'),
+ (11,1,'Daily','Содержит в себе ежедневные задачи'),
+ (13,4,'CUBI','Ознакомительный проект, который поможет освоиться в системе'),
+ (14,5,'CUBI','Ознакомительный проект, который поможет освоиться в системе'),
+ (15,5,'Тег 1','Тестовый тег(?)'),
+ (16,4,'Тег 2','рдлор'),
+ (17,4,'боба абоба','ооо');
+
+INSERT INTO "users" ("id","username","email","password","register_date") VALUES (1,'asasa','tercialounge@gmail.com','scrypt:32768:8:1$zfsMsrdL77brzyT1$10a9b7159cb257a016fb5f8e662d074f1ef89b27ea75ca77c217ad2e89f00ca7abf5ed7e546eba7bb411c74d99a5da0196142d2d0d8d507036020946bb6c718a','2025-01-11 21:15:41'),
+ (2,'qwerty','gamenixcoc@gmail.com','scrypt:32768:8:1$LVYgo3JlNdrrIdiQ$0fab5b5e1368e5d195e477c7d58dbe0c71ee1b43948cd08e70b7a933e2726614fb9ad3a8be6c0b68da4f6240205c46348f218bcf1058bbace08c2753a5ac925c','2025-01-11 21:39:32'),
+ (3,'testoviy','testoviy@gmail.com','scrypt:32768:8:1$rdaECDzyGs5uEGmf$5bbf997c9e70731e6186a4e2447eaf55d47320554d678ce792853545a8cd43f20a839076f8fe207d21e492b6f72205b95be5ef070843202e885cbf83acc7c7fe','2025-01-12 14:35:33'),
+ (4,'sosiska','sosiska@gmail.com','scrypt:32768:8:1$OaGC0sDl6c6VRqnb$328f12c1f2df0a04d6ce18fe4ce9be302f21e07cc572cd2ccd5465674a6d44a727ad5cecc198cdcc11597643dfe6330f80e1a3a004ad95fa435f4ecfc648590a','2025-01-12 15:20:15'),
+ (5,'capitansogo','alexfake95@gmail.com','scrypt:32768:8:1$u1MSgY6L4VOTGOQ8$6878941d5774464c9291edf18c18c42eb6843a338f10baa02c3629a139d6e8996e56063fc6a79a088dd624c667e7a418f5394be8c7015e9413d388172a4db12f','2025-01-12 22:04:07');
+ 
+update to_do set create_date='2025-01-11 23:02:00.000000' where is_complete=1;
