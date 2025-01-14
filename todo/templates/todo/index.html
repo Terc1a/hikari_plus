@@ -7,7 +7,7 @@
 {{ ckeditor.load() }}
 <img src="static/todo_logo_black.png" style="margin-left: 35%; margin-right: 25%;">
 
-<div style="margin-top: 2.5%; class:'ui container'; margin-left: 10%; margin-right: 10%; display: flex;">
+<div class='ui container' style="margin-top: 2.5%;  margin-left: 10%; margin-right: 10%; display: flex;">
 
     <div class="navigation"
         style="color: white; background-color: rgb(56, 55, 55); width: 20%; height: 70%; margin-bottom: 1%; border-radius: 2.5px;">
@@ -79,41 +79,7 @@
     </div>
 
     <!--Тут нужно собрать окно изменения задачи и редиректить на него из окна просмотра задачи при нажатии кнопки Изменить-->
-    <div id="openModal2" class="modal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 class="modal-title">Новая задача</h3>
-                    <a href="#close" title="Close" class="close">×</a>
-                </div>
-                <div class="modal-body">
-                    <form class="ui form" action="/add" method="post"
-                        style="width: 100%; background-color: rgb(56, 55, 55);" name="creator">
-                        <div class="field">
-                            <input type="text" name="title" placeholder="Введите название задачи"
-                                style="background-color: rgb(56, 55, 55); color: white;"><br>
-                            {{ ckeditor.create(value='Введите описание задачи')}}
 
-
-                            <select id="fruits" name="tags-list">
-                                {% for tag in todo_tags %}
-
-                                <option value="{{tag.title}}">{{tag.title}}</option>
-                                {% endfor %}
-
-                            </select>
-                            <label><input name="checker" type="checkbox" value="checked">Цикличная</label>
-                        </div>
-
-
-                        <button class="ui teal basic button" type="submit"
-                            style="margin-bottom: 10px; margin-left: 2.5%;">Добавить</button>
-
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
 
     {% for todo in todo_list %}
@@ -122,35 +88,35 @@
         <div class="ui segment"
             style="margin-left: 15%; margin-right: 25%; width: 80%; background-color: rgb(56, 55, 55);">
             <p class="ui big header" name="header" style="margin-bottom: 2.5%; color: white; ">
-                <!--<a href="/get_detail/{{todo.id}}" style="color: white">{{todo.title}}<br>-->
-                <a href="#openModal3/{{todo.id}}" style="color: white">{{todo.title}}<br>
+                <a href="#openModal3/{{todo.id}}" style="color: white">{{todo.title |safe}}<br>
             </p></a>
 
             {% if todo.is_complete == False %}
             <span class="ui gray label">В работе</span>
             <!--<a class="ui blue button" href="/get_task/{{todo.id}}">Изменить</a>-->
-            <a class="ui primary basic button" href="/update/{{ todo.id }}">Завершить</a>
+            <a class="ui primary basic button" href="/finish/{{ todo.id }}">Завершить</a>
             {% else %}
             <span class="ui green label">Завершено</span>
             <a class="ui blue button" href="/update/{{ todo.id }}">Возобновить</a>
             {% endif %}
             <a class="ui negative basic button" href="/delete/{{ todo.id }}">Удалить</a>
+            <!--Открываем описание задачи в модальном окне-->
             <div id="openModal3/{{todo.id}}" class="modal">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h3 class="modal-title">{{todo.title}}</h3>
-                            <a href="#close" title="Close" class="close">×</a>
+                            <a href="" title="Close" class="close">×</a>
                         </div>
                         <div class="modal-body">
-                            <form class="ui form" action="/add" method="post"
-                                style="width: 100%; background-color: rgb(56, 55, 55);" name="creator">
+                            <form class="ui form" method="post" style="width: 100%; background-color: rgb(56, 55, 55);"
+                                name="creator">
                                 <div class="field">
                                     {{todo.descr| safe}}<br>
                                     {% if todo.is_complete == False %}
                                     <span class="ui gray label">В работе</span>
-                                    <a class="ui blue button" href="/get_task/{{todo.id}}">Изменить</a>
-                                    <a class="ui primary basic button" href="/update/{{ todo.id }}">Завершить</a>
+                                    <a class="ui blue button" href="#openModal2/{{todo.id}}">Изменить</a>
+                                    <a class="ui primary basic button" href="/finish/{{ todo.id }}">Завершить</a>
                                     {% else %}
                                     <span class="ui green label">Завершено</span>
                                     <a class="ui blue button" href="/update/{{ todo.id }}">Возобновить</a>
@@ -161,24 +127,75 @@
                         </div>
                     </div>
                 </div>
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        var elem = document.querySelector('[href="#openModal3"]');
+                        var canLink = elem ? elem.href : "";
+                        if (canLink !== "") {
+                            document.querySelector('[href="#openModal3"]').addEventListener('click', function () {
+                                document.modal2.style.overflow = 'hidden';
+                            });
+                            document.querySelector('[href="#close"]').addEventListener('click', function () {
+                                document.modal2.style.overflow = 'visible';
+                            });
+                        }
+        
+                    });
+                </script>
             </div>
-            <!--Открытие просмотра задачи-->
-            <script>
-                document.addEventListener("DOMContentLoaded", function () {
-                    var scrollbar = document.body.clientWidth - window.innerWidth + 'px';
-                    var test = {{todo.id | safe}};
-                    document.querySelector(`[href="#openModal3/${test}"]`).addEventListener('click', function () {
-                        document.body.style.overflow = 'hidden';
-                        document.querySelector(`#openModal3/${test}`).style.marginLeft = scrollbar;
-                    });
-                    document.querySelector('[href="#close"]').addEventListener('click', function () {
-                        document.body.style.overflow = 'visible';
-                        document.querySelector(`#openModal3/${test}`).style.marginLeft = '0px';
-                    });
-                });
-            </script>
+            <!--Открываем редактирование задачи в модальном окне-->
         </div>
 
+        <div id="openModal2/{{todo.id}}" class="modal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3 class="modal-title">Изменить задачу</h3>
+                        <a href="/" title="Close" class="close">×</a>
+                    </div>
+                    <div class="modal-body">
+                        <form class="ui form" action="/change_content/{{todo.id}}" method="post"
+                            style="width: 100%; background-color: rgb(56, 55, 55);" name="creator">
+                            <div class="field">
+                                <input type="text" name="title" value="{{todo.title}}"
+                                    style="background-color: rgb(56, 55, 55); color: white;"><br>
+                                {{ ckeditor.create(value=todo.descr)}}
+
+
+                                <!--<select id="fruits" name="tags-list">
+                                    {% for tag in todo_tags %}
+                                    <option value="{{tag.title}}">{{tag.title}}</option>
+                                    {% endfor %}
+
+                                </select>-->
+                            </div>
+
+
+                            <button class="ui teal basic button" type="submit"
+                                style="margin-bottom: 10px; margin-left: 2.5%;">Изменить</button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                var elem = document.querySelector('[href="#openModal2"]');
+                var canLink = elem ? elem.href : "";
+                if (canLink !== "") {
+                    document.querySelector('[href="#openModal2"]').addEventListener('click', function () {
+                        document.modal2.style.overflow = 'hidden';
+                    });
+                    document.querySelector('[href="#close"]').addEventListener('click', function () {
+                        document.modal2.style.overflow = 'visible';
+                    });
+                }
+
+            });
+        </script>
     </div>
     {% endfor %}
 </div>
@@ -188,31 +205,17 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        var scrollbar = document.body.clientWidth - window.innerWidth + 'px';
-        console.log(scrollbar);
-        document.querySelector('[href="#openModal"]').addEventListener('click', function () {
-            document.body.style.overflow = 'hidden';
-            document.querySelector('#openModal').style.marginLeft = scrollbar;
-        });
-        document.querySelector('[href="#close"]').addEventListener('click', function () {
-            document.body.style.overflow = 'visible';
-            document.querySelector('#openModal').style.marginLeft = '0px';
-        });
-    });
-</script>
+        var elem = document.querySelector('[href="#openModal"]');
+        var canLink = elem ? elem.href : "";
+        if (canLink !== "") {
+            document.querySelector('[href="#openModal"]').addEventListener('click', function () {
+                document.modal2.style.overflow = 'hidden';
+            });
+            document.querySelector('[href="#close"]').addEventListener('click', function () {
+                document.modal2.style.overflow = 'visible';
+            });
+        }
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var scrollbar = document.body.clientWidth - window.innerWidth + 'px';
-        console.log(scrollbar);
-        document.querySelector('[href="/update_content/{{todo.id}}"]').addEventListener('click', function () {
-            document.body.style.overflow = 'hidden';
-            document.querySelector('#openModal2').style.marginLeft = scrollbar;
-        });
-        document.querySelector('[href="#close"]').addEventListener('click', function () {
-            document.body.style.overflow = 'visible';
-            document.querySelector('#openModal2').style.marginLeft = '0px';
-        });
     });
 </script>
 

@@ -64,6 +64,7 @@ def home():
             cycle = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_cycle='checked').order_by(ToDo.id.desc()).all()
             for task in cycle:
                 el = task.create_date
+                el2 = task.close_date
                 if el.month > dt_gmt.month and el.day > dt_gmt.day:
                     if el.day >= dt_gmt.day and dt_gmt.hour >= 0:
                             print(task.title, '1')
@@ -86,6 +87,12 @@ def home():
                             task.create_date = timed_raw
                             task.close_date = datetime(9999, 12, 31, 00, 00, 00, 000000)
                             db.session.commit()
+                delta = (timed_raw - task.close_date).days
+                if delta == 0:
+                    pass
+                else:
+                    task.cycle_series = 0
+                    db.session.commit()
             #Рендер списков задач                   
             todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).order_by(ToDo.id.desc()).all()
             todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
@@ -136,7 +143,8 @@ def add():
         db.session.add(new_todo)
         db.session.commit()
     else:
-        new_todo = ToDo(title=title, descr=descr, tag_id=tag_id,create_date=timed_raw, is_complete=False, is_cycle=is_cycle)
+        cycle_series = 0
+        new_todo = ToDo(title=title, descr=descr, tag_id=tag_id,create_date=timed_raw, is_complete=False, is_cycle=is_cycle, cycle_series=cycle_series)
         db.session.add(new_todo)
         db.session.commit()
     return redirect(url_for('home'))
@@ -146,7 +154,6 @@ def add():
 @app.route('/sort/<string:todo_tag>', methods=['POST', 'GET'])
 @login_required
 def sort(todo_tag):
-    print(todo_tag)
     if request.method == 'GET':
         default_value = 0
         get_curr_user_tags = Tag.query.filter_by(uid=current_user.id, title=todo_tag).all()
@@ -191,11 +198,31 @@ def sort(todo_tag):
 def update(todo_id):
     timed_raw = datetime.now()
     todo = ToDo.query.filter_by(id=todo_id).first()
+    title_change = todo.title
+    todo.title = title_change[3:-4]
     todo.is_complete = not todo.is_complete
     todo.close_date = timed_raw
     db.session.commit()
     return redirect(url_for('home'))
 
+@app.get('/finish/<int:todo_id>')
+@login_required
+def finish(todo_id):
+    timed_raw = datetime.now()
+    todo = ToDo.query.filter_by(id=todo_id).first()
+    some = todo.title
+    if "</" in some:
+        pass
+    else:
+        todo.title = f'<s>{some}</s>'
+    test = todo.is_cycle
+    if todo.is_cycle=='checked':
+        todo.cycle_series +=1
+        
+    todo.is_complete = 1
+    todo.close_date = timed_raw
+    db.session.commit()
+    return redirect(url_for('home'))    
 
 #Получаем задачу
 @app.get('/get_task/<int:todo_id>')
@@ -214,7 +241,7 @@ def update_task(todo_id):
     timed_raw = datetime.now()
     todo = ToDo.query.filter_by(id=todo_id).first()
     todo.title = request.form.get('title')
-    #todo.tag = request.form.get('tag')
+    #todo.tag = request.form.get('tags-list')
     todo.descr = request.form.get('ckeditor')
     todo.create_date = timed_raw
     db.session.commit()
