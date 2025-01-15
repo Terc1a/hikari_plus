@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, url_for, redirect, make_response, flash, session
+from flask import Flask, request, render_template, url_for, redirect, make_response, flash, session, send_from_directory
 from sqlalchemy import select
 from todo.models import ToDo, db, Tag, News, Users
 from datetime import datetime
@@ -12,11 +12,14 @@ from flask_ckeditor import CKEditor
 import flask_login
 from flask_login import current_user, login_user, login_required, UserMixin, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from todo.userlogin import UserLogin
+from werkzeug.utils import secure_filename
+import os
 
 ckeditor = CKEditor()
 login_manager = flask_login.LoginManager()
-
+UPLOAD_FOLDER = '/path/to/the/uploads'
+# расширения файлов, которые разрешено загружать
+ALLOWED_EXTENSIONS = {'mp4'}
 class User(UserMixin):
     def __init__(self, user_id):
         self.id = user_id
@@ -25,23 +28,34 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['VERSION_CHECK'] = False
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     app.secret_key = 'a1dcbe59291f58c089qwer4feaf8ee8e2f44f05cdd4465e0d9c726938b2eeaab'
     db.init_app(app)
     ckeditor.init_app(app)
     login_manager.init_app(app)
     return app
 app = create_app()
+
+
 @login_manager.user_loader
 def load_user(user_id):
     user = db.session.get(Users, int(user_id))
     return user
+
 
 @login_manager.unauthorized_handler
 def unauthorized():
     # do stuff
     return render_template('todo/login.html')
 
-
+class timedt:
+    timed = datetime.now()        
+    GMT = pytz.timezone("Etc/GMT")
+    dt = GMT.localize(timed)
+    dt = timed.astimezone(GMT)
+    def time_checker(self):
+        return self.timed, self.dt
+         
 
 #Главная страница
 @app.route('/', methods=['POST', 'GET'])
@@ -51,10 +65,9 @@ def home():
     if request.method == 'GET':
         if current_user:
             #Смотреть дату в timed_raw и в gmt-0, и если timed_raw < gmt && gmt >= 5AM, то is_complete=0 where is_cycle=checked
-            timed_raw = datetime.now()        
-            GMT = pytz.timezone("Etc/GMT")
-            dt_gmt = GMT.localize(timed_raw)
-            dt_gmt = timed_raw.astimezone(GMT)
+            print(timedt().timed)
+            timed_raw = timedt().timed
+            dt_gmt = timedt().dt
             get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
             tags_ids = []
             default_value = 0
@@ -131,8 +144,7 @@ def home():
 @app.post('/add')
 @login_required
 def add():
-    timed_raw = datetime.now()
-
+    timed_raw = timedt().timed
     title = request.form.get('title')
     is_cycle = request.form.get('checker')
     get_tag = Tag.query.filter_by(title=request.form.get('tags-list'), uid=current_user.id).first()
@@ -196,7 +208,7 @@ def sort(todo_tag):
 @app.get('/update/<int:todo_id>')
 @login_required
 def update(todo_id):
-    timed_raw = datetime.now()
+    timed_raw = timedt().timed
     todo = ToDo.query.filter_by(id=todo_id).first()
     title_change = todo.title
     todo.title = title_change[3:-4]
@@ -208,7 +220,7 @@ def update(todo_id):
 @app.get('/finish/<int:todo_id>')
 @login_required
 def finish(todo_id):
-    timed_raw = datetime.now()
+    timed_raw = timedt().timed
     todo = ToDo.query.filter_by(id=todo_id).first()
     some = todo.title
     if "</" in some:
@@ -238,7 +250,7 @@ def get_task(todo_id):
 @app.post('/change_content/<int:todo_id>')
 @login_required
 def update_task(todo_id):
-    timed_raw = datetime.now()
+    timed_raw = timedt().timed
     todo = ToDo.query.filter_by(id=todo_id).first()
     todo.title = request.form.get('title')
     #todo.tag = request.form.get('tags-list')
@@ -648,8 +660,7 @@ def release():
 @app.post('/create_news')
 @login_required
 def create_news():
-    timed_raw = datetime.now()
-
+    timed_raw = timedt().timed
     title = request.form.get('title')
     version = request.form.get('version')
     descr = request.form.get('ckeditor')
@@ -680,7 +691,7 @@ def login():
 @app.route("/register", methods=["POST", "GET"])
 def register():
     if request.method == 'POST':
-        timed_raw = datetime.now()
+        timed_raw = timedt().timed
 
         if len(request.form.get('name')) > 4 and len(request.form.get('email')) > 4 \
         and len(request.form.get('psw')) >4 and request.form.get('psw') == request.form.get('psw2'):
@@ -730,3 +741,42 @@ def logout():
 @app.route('/guides')
 def guides():
     return render_template('todo/guides.html', title='Гайды')
+
+
+#Загрузка файлов - пока неактуально
+#Проверяем, что файл имеет подходящее расширение
+def allowed_ext(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+#Загружаем файл на сервер
+@app.post('/upload_video')
+@login_required
+def upload(filename):
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('Файл не может быть загружен')
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            flash('Файл не выбран')
+            return redirect(request.url)
+        if file and allowed_ext(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return redirect(url_for('download_file', name=filename))
+    return '''
+    <!doctype html>
+    <title>Загрузить новый файл</title>
+    <h1>Загрузить новый файл</h1>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+    </html>
+    '''
+
+@app.route('/uploads/<name>')
+def download_file(name):
+    return send_from_directory(app.config["UPLOAD_FOLDER"], name)
+
