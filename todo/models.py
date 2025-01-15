@@ -15,8 +15,16 @@ class ToDo(db.Model):
     is_complete = db.Column(db.Boolean)
     is_cycle = db.Column(db.String(25))
     cycle_series = db.Column(db.Integer)
+    time_to_complete = db.Column(db.String(100))
 
 class Tag(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    uid = db.Column(db.Integer)
+    ws_id = db.Column(db.Integer)
+    title = db.Column(db.String(100))
+    descr = db.Column(db.String(1000))
+
+class Workspace(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     uid = db.Column(db.Integer)
     title = db.Column(db.String(100))

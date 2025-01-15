@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, url_for, redirect, make_response, flash, session, send_from_directory
 from sqlalchemy import select
-from todo.models import ToDo, db, Tag, News, Users
+from todo.models import ToDo, db, Tag, News, Users, Workspace
 from datetime import datetime
 from time import gmtime, strftime
 import plotly.graph_objs as go
@@ -20,9 +20,19 @@ login_manager = flask_login.LoginManager()
 UPLOAD_FOLDER = '/path/to/the/uploads'
 # расширения файлов, которые разрешено загружать
 ALLOWED_EXTENSIONS = {'mp4'}
+
 class User(UserMixin):
     def __init__(self, user_id):
         self.id = user_id
+
+class timedt:
+    timed = datetime.now()        
+    GMT = pytz.timezone("Etc/GMT")
+    dt = GMT.localize(timed)
+    dt = timed.astimezone(GMT)
+    def time_checker(self):
+        return self.timed, self.dt
+
 def create_app():
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -34,6 +44,7 @@ def create_app():
     ckeditor.init_app(app)
     login_manager.init_app(app)
     return app
+
 app = create_app()
 
 
@@ -42,30 +53,19 @@ def load_user(user_id):
     user = db.session.get(Users, int(user_id))
     return user
 
-
 @login_manager.unauthorized_handler
 def unauthorized():
     # do stuff
     return render_template('todo/login.html')
 
-class timedt:
-    timed = datetime.now()        
-    GMT = pytz.timezone("Etc/GMT")
-    dt = GMT.localize(timed)
-    dt = timed.astimezone(GMT)
-    def time_checker(self):
-        return self.timed, self.dt
-         
 
 #Главная страница
 @app.route('/', methods=['POST', 'GET'])
 @login_required
-
 def home():
     if request.method == 'GET':
         if current_user:
             #Смотреть дату в timed_raw и в gmt-0, и если timed_raw < gmt && gmt >= 5AM, то is_complete=0 where is_cycle=checked
-            print(timedt().timed)
             timed_raw = timedt().timed
             dt_gmt = timedt().dt
             get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
@@ -107,14 +107,17 @@ def home():
                     task.cycle_series = 0
                     db.session.commit()
             #Рендер списков задач                   
-            todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).order_by(ToDo.id.desc()).all()
+            todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+            todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.id.desc()).all()
+            todoc_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
+            todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
             todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
             todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
             completed = len(todo_completed)
             uncompleted = len(todo_uncompleted)
-            all = len(todo_list)
+            all = len(todo_list1)
             todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
-            return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.', default_value=default_value)
+            return render_template('todo/index.html', todo_list=todo_list, todoc_list=todoc_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.', default_value=default_value, workspace_list = todo_workspaces)
         else:
             return redirect(url_for('todo/login.html'))
     if request.method == 'POST':
@@ -128,12 +131,13 @@ def home():
                 for el in get_curr_user_tags:
                     tags_ids.append(el.id)
                 todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+                todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.id.desc()).all()
                 todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
                 todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
                 completed = len(todo_completed)
                 uncompleted = len(todo_uncompleted)
                 default_value = 1
-                all = len(todo_list)
+                all = len(todo_list1)
                 todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
                 return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,  title='CUBI Prot.', default_value=default_value)
         else:
@@ -173,7 +177,9 @@ def sort(todo_tag):
         tags_ids = []
         for el in get_curr_user_tags:
             tags_ids.append(el.id)
-        todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).order_by(ToDo.id.desc()).all()
+        todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+        todoc_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
+        todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
         todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).all()
         todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
         todo_list_all = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).all()
@@ -181,7 +187,7 @@ def sort(todo_tag):
         uncompleted = len(todo_uncompleted)
         all = len(todo_list_all)
         todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
-        return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.', default_value=default_value)
+        return render_template('todo/index.html', todo_list=todo_list, todoc_list=todoc_list, todo_workspaces=todo_workspaces, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.', default_value=default_value)
     if request.method == 'POST':
         if current_user:
             check_flag = request.form.get('hider')
@@ -193,14 +199,17 @@ def sort(todo_tag):
                 for el in get_curr_user_tags:
                     tags_ids.append(el.id)
                 todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+                todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.id.desc()).all()
+                todoc_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
+                todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
                 todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
                 todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
                 completed = len(todo_completed)
                 uncompleted = len(todo_uncompleted)
                 default_value = 1
-                all = len(todo_list)
+                all = len(todo_list1)
                 todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
-                return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,  title='CUBI Prot.', default_value=default_value)
+                return render_template('todo/index.html', todo_list=todo_list, todoc_list=todoc_list, todo_workspaces=todo_workspaces, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,  title='CUBI Prot.', default_value=default_value)
         else:        
             return redirect(url_for('todo/login.html'))
 
@@ -220,9 +229,11 @@ def update(todo_id):
 @app.get('/finish/<int:todo_id>')
 @login_required
 def finish(todo_id):
+    #Считать сколько времени ушло на задачу через close_date - create_date
     timed_raw = timedt().timed
     todo = ToDo.query.filter_by(id=todo_id).first()
     some = todo.title
+    delta = (timed_raw - todo.create_date)
     if "</" in some:
         pass
     else:
@@ -233,6 +244,7 @@ def finish(todo_id):
         
     todo.is_complete = 1
     todo.close_date = timed_raw
+    todo.time_to_complete = f'{delta}'
     db.session.commit()
     return redirect(url_for('home'))    
 
@@ -708,10 +720,16 @@ def register():
                 tag_descr = 'Ознакомительный проект, который поможет освоиться в системе'
                 task_title = 'Ознакомиться с системой'
                 task_descr = 'Бла-бла-бла'
+                ws_title = 'CUBI'
+                ws_descr = 'Проекты, связанные с CUBI'
                 db.session.add(add_user)
                 db.session.commit()
                 get_uid = Users.query.filter_by(username=request.form.get('name')).first()
-                add_tag = Tag(uid=get_uid.id,title=tag_title, descr=tag_descr)
+                add_ws = Workspace(uid=get_uid.id, title=ws_title, descr=ws_descr)
+                db.session.add(add_ws)
+                db.session.commit()
+                get_ws = Workspace.query.filter_by(username=request.form.get('name')).first()
+                add_tag = Tag(uid=get_uid.id,ws_id=get_ws.id,title=tag_title, descr=tag_descr)
                 db.session.add(add_tag)
                 db.session.commit()
                 get_tag = Tag.query.filter_by(uid=get_uid.id).filter_by(title=tag_title).first()
