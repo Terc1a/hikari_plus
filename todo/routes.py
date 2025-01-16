@@ -68,7 +68,11 @@ def home():
             #Смотреть дату в timed_raw и в gmt-0, и если timed_raw < gmt && gmt >= 5AM, то is_complete=0 where is_cycle=checked
             timed_raw = timedt().timed
             dt_gmt = timedt().dt
-            get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
+            ws_ids = []
+            get_curr_ws = Workspace.query.filter_by(uid=current_user.id).all()
+            for ws in get_curr_ws:
+                ws_ids.append(ws.id)
+            get_curr_user_tags = Tag.query.filter(Tag.ws_id.in_((ws_ids))).all()
             tags_ids = []
             default_value = 0
             for el in get_curr_user_tags:
@@ -126,7 +130,11 @@ def home():
             if check_flag == '1':
                 return redirect(url_for('home'))    
             else:
-                get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
+                ws_ids = []
+                get_curr_ws = Workspace.query.filter_by(uid=current_user.id).all()
+                for ws in get_curr_ws:
+                    ws_ids.append(ws.id)
+                get_curr_user_tags = Tag.query.filter(Tag.ws_id.in_((ws_ids))).all()
                 tags_ids = []
                 for el in get_curr_user_tags:
                     tags_ids.append(el.id)
@@ -473,10 +481,10 @@ def project_stats():
     #по дефолту выводить график для самого первого проекта из запроса, по нажатию кнопки выводить график по выбранному
     if request.method == 'POST':
         tagss = request.form.get('tags-list')
-        todo_tags = Tag.query.filter_by(uid=current_user.id, title=tagss).all()
+        todo_tags = Tag.query.filter_by(uid=current_user.id).all()
         get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
         tags_ids = []
-        for el in get_curr_user_tags:
+        for el in todo_tags:
             tags_ids.append(el.id)
         #tasks_all = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
         tasks_on_tag = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).all()
@@ -521,7 +529,7 @@ def project_stats():
             keys2.append(key)
             values2.append(value)
         counter.append(go.Scatter(x=keys2, y=values2, name=f'Завершено'))
-
+    print(tagss)
     fig3.update_layout(legend_orientation="h",
         legend=dict(x=.5, xanchor="center"),
         title=f"Задачи по проекту {tagss}",

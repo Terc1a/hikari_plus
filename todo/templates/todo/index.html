@@ -16,7 +16,8 @@
             Рабочие области:
             {% for workspace in workspace_list %}
             <a href="">{{workspace.title}}</a>
-            {% endfor %}
+            {% endfor %}<br>
+            <a href="/add_ws" style="margin-left: 35%; margin-right: 25%;">+</a>
             {% endblock %}
         </div>
 
@@ -28,6 +29,7 @@
                 <a href="/sort/{{ tag.title }}">{{tag.title}}<br></a>
                 {% endfor %}
                 -------------------<br>
+                <a href="/add_ws" style="margin-left: 35%; margin-right: 25%;">+</a>
                 {% endblock %}
                 <a href="#openModal" style="margin-top: 10%;">Создать задачу</a><br>
                 <!--<form method="post">

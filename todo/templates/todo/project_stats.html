@@ -13,7 +13,7 @@
     <select id="fruits" name="tags-list">
         {% for tag in todo_tags %}
         
-        <option value={{tag.title}}>{{tag.title}}</option>
+        <option value='{{tag.title}}'>{{tag.title}}</option>
         {% endfor %}
     </select>
     <button class="ui teal basic button" type="submit"
