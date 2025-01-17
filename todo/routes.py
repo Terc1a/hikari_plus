@@ -74,9 +74,11 @@ def home():
                 ws_ids.append(ws.id)
             get_curr_user_tags = Tag.query.filter(Tag.ws_id.in_((ws_ids))).all()
             tags_ids = []
+            tags_names = []
             default_value = 0
             for el in get_curr_user_tags:
                 tags_ids.append(el.id)
+                tags_names.append(el.title)
             #Откат цикличных задач(в 00 GMT или же 03 MSC)
             cycle = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_cycle='checked').order_by(ToDo.id.desc()).all()
             for task in cycle:
@@ -110,9 +112,24 @@ def home():
                 else:
                     task.cycle_series = 0
                     db.session.commit()
-            #Рендер списков задач                   
+            #Рендер списков задач  
+                        
             todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
             todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.id.desc()).all()
+            #Формируем список проектов и задач на отправку
+            result = {}
+            for tag in tags_ids:
+                for row in todo_list1:
+                    if tag == row.tag_id: 
+                        tag_name = Tag.query.filter_by(id=row.tag_id).first()
+                        if tag_name.title in result:
+                            value = [result.get(f'{tag_name.title}')]
+                            result[f'{tag_name.title}'].append(row.title)
+                        else:
+                            result[f'{tag_name.title}'] = [row.title]
+
+            for el in result:
+                print(len(result[el]))
             todoc_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
             todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
             todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
@@ -121,7 +138,7 @@ def home():
             uncompleted = len(todo_uncompleted)
             all = len(todo_list1)
             todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
-            return render_template('todo/index.html', todo_list=todo_list, todoc_list=todoc_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.', default_value=default_value, workspace_list = todo_workspaces)
+            return render_template('todo/index.html', todo_list=todo_list1, todoc_list=todoc_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.', default_value=default_value, workspace_list = todo_workspaces, result=result)
         else:
             return redirect(url_for('todo/login.html'))
     if request.method == 'POST':
