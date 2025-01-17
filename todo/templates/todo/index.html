@@ -7,10 +7,11 @@
 
 
 
-<div class='container' style="background-color: rgb(56, 55, 55);display: grid; grid-template-columns:20% 80%;">
+<div class='container' style="background-color: rgb(56, 55, 55);display: grid; grid-template-columns:10% 90%;">
 
 
-    <div class="workspaces" style="color: white; background-color: gray; margin-right: 2%; grid-column-start: 1; ">
+    <div class="workspaces"
+        style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% endif %}margin-right: 2%; grid-column-start: 1; ">
         {% block workspaces %}
         Рабочие области:<br>
         {% for workspace in workspace_list %}
@@ -19,28 +20,109 @@
         <a href="/add_ws" style="margin-left: 35%; margin-right: 25%;">+</a>
         {% endblock %}
     </div>
-
-    <div class="tasks_area" style="color: white; background-color: gray; grid-column-start: 2;">
+    <div class="tasks_area"
+        style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% endif %}grid-column-start: 2;">
         {% block tasks %}
         <div class="list"
-            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 300px));grid-auto-flow: column; overflow-x: scroll; overflow-y: scroll; height: 90vh;">
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 260px));grid-auto-flow: column; overflow-x: scroll; overflow-y: scroll; height: 90vh;">
             {% for tag, task in result.items() %}
-            <div class="task_head" style="margin-right: 10%;">
-                    {{tag}}
-                    <br>--------<br>
-                    <div class="task_body">
-                        {% for todo in todo_list %}
-                        {% for title in task %}
-                            {% if todo.title == title %}
-                            <br><a href="/get_task/{{todo.id}}">{{title |safe}}</a><br>
-                            {% endif %}
-                            {% endfor %} 
-                            {% endfor %}                 
+            <div class="task_head" style="padding-left: 10px;">
+                <p
+                    style="background-color: rgb(56, 55, 55); text-align: center; position:static; z-index: 1050; margin-bottom: 2.5%;">
+                    {{tag}}</p>
+                {% for todo in todo_list %}
+                {% for title in task %}
+                {% if todo.title == title %}
+                <div class="task_body"
+                    style="{% if todo.is_complete==True %}background-color:green;{%else%}background-color: blue;{%endif%} text-align: center;width: 250px; height: 60px; padding-bottom: 5%; padding-left: 2%; padding-right: 2%; border: solid; border-radius: 6px; border-width: thin; margin-bottom: 2.5%; -webkit-box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);-moz-box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2); align-items: center; justify-content: center; position: relative;">
+                    
+                        <button id="myBtn"
+                        style="border: none; background: none; cursor: pointer; color: white;">
+                        {{title|safe}}
+                    </button>
+                    <div id="myModal" class="modal">
+                        <div class="modal-content">
+                            <span class="close" id="close">&times;</span>
+                            {{todo.descr| safe}}
+                        </div>
                     </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            // это то модальное окно, с которым и будем работать
+                            const modal = document.querySelector('#myModal');
+    
+                            // назначаем обработчик события для клика по кнопке открытия окна
+                            document.querySelector('#myBtn').addEventListener('click', openModal);
+                            
+                            /*
+                             * Обработчик события клика по кнопке открытия модального окна
+                             */
+                            function openModal() {
+                                modal.classList.add('modal-open');
+                                // обработчики событий, которые работают, когда окно открыто
+                                attachModalEvents();
+                                console.log('huy')
+                            }
+    
+                            /*
+                             * Функция назначает обработчики событий к элементам модального окна при открытии
+                             */
+                            function attachModalEvents() {
+                                // закрывать модальное окно при нажатии на крестик
+                                modal.querySelector('.close').addEventListener('click', closeModal);
+                                // закрывать модальное окно при нажатии клавиши Escape
+                                document.addEventListener('keydown', handleEscape);
+                                // закрывать модальное окно при клике вне контента модального окна
+                                modal.addEventListener('click', handleOutside);
+                            }
+    
+                            /*
+                             * Обработчик события клика по кнопке закрытия модального окна
+                             */
+                            function closeModal() {
+                                modal.classList.remove('modal-open');
+                                // окно закрыто, эти обработчики событий больше не нужны
+                                detachModalEvents();
+                            }
+    
+                            /*
+                             * Функция удаляет обработчики событий к элементам модального окна при закрытии
+                             */
+                            function detachModalEvents() {
+                                modal.querySelector('.close').removeEventListener('click', closeModal);
+                                document.removeEventListener('keydown', handleEscape);
+                                modal.removeEventListener('click', handleOutside);
+                            }
+    
+                            /*
+                             * Функция закрывает модальное окно при нажатии клавиши Escape
+                             */
+                            function handleEscape(event) {
+                                if (event.key === 'Escape') {
+                                    closeModal();
+                                }
+                            }
+    
+                            /*
+                             * Функция закрывает модальное окно при клике вне контента модального окна
+                             */
+                            function handleOutside(event) {
+                                const isClickInside = !!event.target.closest('.modal-content');
+                                if (!isClickInside) {
+                                    closeModal();
+                                }
+                            }
+                        });
+                    </script>
                 </div>
 
+                {% endif %}
                 {% endfor %}
-            
+                {% endfor %}
+
+            </div>
+            {% endfor %}
+
         </div>
 
 
@@ -82,3 +164,4 @@
         }
     });
 </script>
+

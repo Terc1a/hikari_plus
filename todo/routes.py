@@ -115,7 +115,7 @@ def home():
             #Рендер списков задач  
                         
             todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
-            todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.id.desc()).all()
+            todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).all()
             #Формируем список проектов и задач на отправку
             result = {}
             for tag in tags_ids:
@@ -128,8 +128,6 @@ def home():
                         else:
                             result[f'{tag_name.title}'] = [row.title]
 
-            for el in result:
-                print(len(result[el]))
             todoc_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
             todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
             todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
