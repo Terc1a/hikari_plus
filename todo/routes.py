@@ -421,7 +421,7 @@ def project_stats():
     tags_ids = []
     for el in get_curr_user_tags:
         tags_ids.append(el.id)
-    tasks_all = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+    tasks_all = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).all()
     tasks_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).all()
 
     list_sorted = []
@@ -496,6 +496,8 @@ def project_stats():
     #по дефолту выводить график для самого первого проекта из запроса, по нажатию кнопки выводить график по выбранному
     if request.method == 'POST':
         tagss = request.form.get('tags-list')
+        print(tagss)
+        #Где-то между 500 и 510 строкой проблема. Я получаю имя тега, но почему-то не фильтрую по нему
         todo_tags = Tag.query.filter_by(uid=current_user.id).all()
         get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
         tags_ids = []
@@ -544,7 +546,6 @@ def project_stats():
             keys2.append(key)
             values2.append(value)
         counter.append(go.Scatter(x=keys2, y=values2, name=f'Завершено'))
-    print(tagss)
     fig3.update_layout(legend_orientation="h",
         legend=dict(x=.5, xanchor="center"),
         title=f"Задачи по проекту {tagss}",
@@ -669,7 +670,6 @@ def search():
                 if tag == row.tag_id: 
                     tag_name = Tag.query.filter_by(id=row.tag_id).first()
                     if tag_name.title in result:
-                        value = [result.get(f'{tag_name.title}')]
                         result[f'{tag_name.title}'].append(row.title)
                     else:
                         result[f'{tag_name.title}'] = [row.title]
