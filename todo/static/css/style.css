@@ -1,49 +1,107 @@
 .header {
     word-break: normal; /* Так длинные слова будут переноситься */
-  }
+}
 
-@font-face{
-font-family: Roboto-Regular;
-src: url('/fonts/Roboto-Regular.ttf') format("truetype");
+@font-face {
+    font-family: Roboto-Regular;
+    src: url('/fonts/Roboto-Regular.ttf') format("truetype");
 }
 
 body {
-	font-family: Roboto-Regular;
-  transition: background-color 0.3s ease;
-  margin: 0;
+    font-family: Roboto-Regular;
+    transition: background-color 0.3s ease;
+    margin: 0;
 }
 
 body.light {
-  background-color: #ffffff;
-  color: #000000;
+    background-color: #ffffff;
+    color: #000000;
 }
 
 body.dark {
-  background-color: #121212;
-  color: #ffffff;
+    background-color: #121212;
+    color: #ffffff;
 }
 
 a:link {
-  color: white;
-  text-decoration: underline;
-  cursor: pointer;
+    color: white;
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 a:hover {
-  color: white;
+    color: white;
+}
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 2000;
+    overflow-y: auto;
+}
+
+.modal-container {
+    background: rgb(56, 56, 56);
+    width: 80%;
+    max-width: 700px;
+    margin: 50px auto;
+    border-radius: 8px;
+    position: relative;
+    padding: 20px;
+    color: white;
+}
+
+.modal-close {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #aaa;
+    transition: color 0.3s;
+}
+
+.modal-close:hover {
+    color: white;
+}
+
+.modal-body {
+    margin-top: 20px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.task-button {
+    width: 100%;
+    text-align: left;
+    padding: 10px;
+    border: none;
+    background: none;
+    color: white;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.task-button:hover {
+    opacity: 0.8;
 }
 
 /* Затемнение всей страницы при открытии окна */
 .modal {
     display: none;
     position: fixed;
-    z-index: 1;
+    z-index: 9999;
     left: 0;
     top: 0;
     width: 100%;
     height: 80%;
     overflow: auto; /* разрешаем прокрутку */
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 /* Добавляется при открытии окна */
@@ -53,12 +111,12 @@ a:hover {
 
 /* Содержимое модального окна */
 .modal-content {
-    background-color: rgb(56,56,56);
+    background-color: rgb(56, 56, 56);
     margin: 15% auto; /* отступ сверху и центрирование по горизонтали */
     padding: 20px;
     border: 1px solid #888;
     width: 60%;
-	height: 50%;
+    height: 50%;
 }
 
 /* Кнопка закрытия модального окна */
@@ -78,22 +136,24 @@ a:hover {
 
 
 .truncate2 {
-  max-width: 20em;
-  max-height: 2em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    max-width: 20em;
+    max-height: 2em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* hides the notifications area in CKEditor, a WYSIWYG text editor. */
-.cke_notifications_area  { display: none; }
+.cke_notifications_area {
+    display: none;
+}
 
 .dropbtn {
-  background-color: #4CAF50;
-  color: white;
-  padding: 16px;
-  font-size: 16px;
-  border: none;
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
 }
 
 /* Контейнер <div> - необходим для размещения выпадающего содержимого */
@@ -101,257 +161,294 @@ a:hover {
 
 /* Выпадающее содержимое (скрыто по умолчанию) */
 .dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #f1f1f1;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-  z-index: 1;
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
 }
 
 /* Ссылки внутри выпадающего списка */
 .dropdown-content a {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
 }
 
 /* Изменение цвета выпадающих ссылок при наведении курсора */
-.dropdown-content a:hover {background-color: #ddd;}
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
 
 /* Показать выпадающее меню при наведении курсора */
-.dropdown:hover .dropdown-content {display: block;}
+.dropdown:hover .dropdown-content {
+    display: block;
+}
 
 /* Изменение цвета фона кнопки раскрывающегося списка при отображении содержимого раскрывающегося списка */
-.dropdown:hover .dropbtn {background-color: #3e8e41;}
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
 
 
 /* Авторизация */
-#wrapper{
-	position: absolute;
-	width: 320px;
-	left: 50%;
-	margin-left: -160px;
-	top: 50%;
-	margin-top: -75px;
+#wrapper {
+    position: absolute;
+    width: 320px;
+    left: 50%;
+    margin-left: -160px;
+    top: 50%;
+    margin-top: -75px;
 }
 
 /* === Sign in Form === */
 #signin {
-	height: 90px;
-	width: 300px;
-	border-radius: 8px;
-	position: relative;
+    height: 90px;
+    width: 300px;
+    border-radius: 8px;
+    position: relative;
 }
+
 #signin::before {
-	display: block;
-	position: relative;
-	height: 2px;
-	background: rgb(52, 56, 61);
-	content: '';
-	top: 44px;
-	margin-left: 20px;
-	z-index: 1;
+    display: block;
+    position: relative;
+    height: 2px;
+    background: rgb(52, 56, 61);
+    content: '';
+    top: 44px;
+    margin-left: 20px;
+    z-index: 1;
 }
-#signin input:first-of-type{
-	border-top-right-radius: 8px;
-	border-top-left-radius: 8px;
+
+#signin input:first-of-type {
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
 }
-#signin input:last-of-type{
-	border-bottom-right-radius: 8px;
-	border-bottom-left-radius: 8px;
+
+#signin input:last-of-type {
+    border-bottom-right-radius: 8px;
+    border-bottom-left-radius: 8px;
 }
-#signin  input[type="text"], #signin  input[type="password"], #signin button[type="submit"]{
-	background: rgb(28, 30, 33);
-	box-shadow: inset -100px -100px 0 rgb(28, 30, 33); /*Prevent yellow autofill color*/
-	color: rgb(52, 56, 61);
+
+#signin input[type="text"], #signin input[type="password"], #signin button[type="submit"] {
+    background: rgb(28, 30, 33);
+    box-shadow: inset -100px -100px 0 rgb(28, 30, 33); /*Prevent yellow autofill color*/
+    color: rgb(52, 56, 61);
 }
-#signin  input[type="text"], #signin  input[type="password"]{
-	position: relative;
-	display: block;
-	width: 280px;
-	height: 45px;
-	border: 0;
-	outline: 0;
-	top: -2px;
-	padding: 0 0 0 20px;
-	font-weight: 700;
+
+#signin input[type="text"], #signin input[type="password"] {
+    position: relative;
+    display: block;
+    width: 280px;
+    height: 45px;
+    border: 0;
+    outline: 0;
+    top: -2px;
+    padding: 0 0 0 20px;
+    font-weight: 700;
 }
-#signin  input[type="text"]:focus, #signin  input[type="password"]:focus{
-	color: rgb(255, 255, 255);
+
+#signin input[type="text"]:focus, #signin input[type="password"]:focus {
+    color: rgb(255, 255, 255);
 }
-#signin button[type="submit"]{
-	display: block;
-	position: absolute;
-	width: 52px;
-	height: 52px;
-	color: rgb(52, 56, 61);
-	border-radius: 50px;
-	outline: 0;
-	z-index: 2;
-	top: 19px;
-	right: -24px;
-	border: 6px solid rgb(52, 56, 61);
-	font-size: 25px;
-	text-indent: 0px;
-	padding-left: 9px;
-	padding-bottom: 3px;
-	text-align: center;
+
+#signin button[type="submit"] {
+    display: block;
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    color: rgb(52, 56, 61);
+    border-radius: 50px;
+    outline: 0;
+    z-index: 2;
+    top: 19px;
+    right: -24px;
+    border: 6px solid rgb(52, 56, 61);
+    font-size: 25px;
+    text-indent: 0px;
+    padding-left: 9px;
+    padding-bottom: 3px;
+    text-align: center;
 }
-#signin button[type="submit"]:hover{
-	color: rgb(0, 126, 165);
-	text-shadow: 0 0 10px rgb(0, 126, 165);
-	cursor: pointer;
+
+#signin button[type="submit"]:hover {
+    color: rgb(0, 126, 165);
+    text-shadow: 0 0 10px rgb(0, 126, 165);
+    cursor: pointer;
 }
+
 #signin p {
-	color: rgb(79, 85, 97);
-	padding: 0 20px;
-	font-weight: 700;
-	font-size: 12px;
-	margin: 5px 0 0 0;
+    color: rgb(79, 85, 97);
+    padding: 0 20px;
+    font-weight: 700;
+    font-size: 12px;
+    margin: 5px 0 0 0;
 }
-#signin p > a{
-	color: rgb(111, 119, 135);
-	text-decoration: none;
+
+#signin p > a {
+    color: rgb(111, 119, 135);
+    text-decoration: none;
 }
-#signin p > a:hover{
-	border-bottom: 1px solid;
+
+#signin p > a:hover {
+    border-bottom: 1px solid;
 }
 
 .search-bar {
-	display: flex;
+    display: flex;
 }
 
 .search-bar input,
-.search-btn, 
-.search-btn:before, 
+.search-btn,
+.search-btn:before,
 .search-btn:after {
-	transition: all 0.25s ease-out;
+    transition: all 0.25s ease-out;
 }
+
 .search-bar input,
 .search-btn {
-	width: 3em;
-	height: 3em;
+    width: 3em;
+    height: 3em;
 }
+
 .search-bar input:invalid:not(:focus),
 .search-btn {
-	cursor: pointer;
+    cursor: pointer;
 }
+
 .search-bar,
 .search-bar input:focus,
-.search-bar input:valid  {
-	width: 100%;
+.search-bar input:valid {
+    width: 100%;
 }
+
 .search-bar input:focus,
 .search-bar input:not(:focus) + .search-btn:focus {
-	outline: transparent;
+    outline: transparent;
 }
+
 .search-bar {
-	padding: 1em;
-	justify-content: center;
-	max-width: 20em;
+    padding: 1em;
+    justify-content: center;
+    max-width: 20em;
 }
+
 .search-bar input {
-	background: transparent;
-	border-radius: 1.5em;
-	box-shadow: 0 0 0 0.4em #171717 inset;
-	padding: 0.75em;
-	transform: translate(0.5em,0.5em) scale(0.5);
-	transform-origin: 100% 0;
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	appearance: none;
+    background: transparent;
+    border-radius: 1.5em;
+    box-shadow: 0 0 0 0.4em #171717 inset;
+    padding: 0.75em;
+    transform: translate(0.5em, 0.5em) scale(0.5);
+    transform-origin: 100% 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 }
+
 .search-bar input::-webkit-search-decoration {
-	-webkit-appearance: none;
+    -webkit-appearance: none;
 }
+
 .search-bar input:focus,
 .search-bar input:valid {
-	background: #fff;
-	border-radius: 0.375em 0 0 0.375em;
-	box-shadow: 0 0 0 0.1em #d9d9d9 inset;
-	transform: scale(1);
+    background: #fff;
+    border-radius: 0.375em 0 0 0.375em;
+    box-shadow: 0 0 0 0.1em #d9d9d9 inset;
+    transform: scale(1);
 }
+
 .search-btn {
-	background: #171717;
-	border-radius: 0 0.75em 0.75em 0 / 0 1.5em 1.5em 0;
-	padding: 0.75em;
-	position: relative;
-	transform: translate(0.25em,0.25em) rotate(45deg) scale(0.25,0.125);
-	transform-origin: 0 50%;
+    background: #171717;
+    border-radius: 0 0.75em 0.75em 0 / 0 1.5em 1.5em 0;
+    padding: 0.75em;
+    position: relative;
+    transform: translate(0.25em, 0.25em) rotate(45deg) scale(0.25, 0.125);
+    transform-origin: 0 50%;
 }
-.search-btn:before, 
+
+.search-btn:before,
 .search-btn:after {
-	content: "";
-	display: block;
-	opacity: 0;
-	position: absolute;
+    content: "";
+    display: block;
+    opacity: 0;
+    position: absolute;
 }
+
 .search-btn:before {
-	border-radius: 50%;
-	box-shadow: 0 0 0 0.2em #f1f1f1 inset;
-	top: 0.75em;
-	left: 0.75em;
-	width: 1.2em;
-	height: 1.2em;
+    border-radius: 50%;
+    box-shadow: 0 0 0 0.2em #f1f1f1 inset;
+    top: 0.75em;
+    left: 0.75em;
+    width: 1.2em;
+    height: 1.2em;
 }
+
 .search-btn:after {
-	background: #f1f1f1;
-	border-radius: 0 0.25em 0.25em 0;
-	top: 51%;
-	left: 51%;
-	width: 0.75em;
-	height: 0.25em;
-	transform: translate(0.2em,0) rotate(45deg);
-	transform-origin: 0 50%;
+    background: #f1f1f1;
+    border-radius: 0 0.25em 0.25em 0;
+    top: 51%;
+    left: 51%;
+    width: 0.75em;
+    height: 0.25em;
+    transform: translate(0.2em, 0) rotate(45deg);
+    transform-origin: 0 50%;
 }
+
 .search-btn span {
-	display: inline-block;
-	overflow: hidden;
-	width: 1px;
-	height: 1px;
+    display: inline-block;
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
 }
 
 /* Active state */
 .search-bar input:focus + .search-btn,
 .search-bar input:valid + .search-btn {
-	background: #2762f3;
-	border-radius: 0 0.375em 0.375em 0;
-	transform: scale(1);
+    background: #2762f3;
+    border-radius: 0 0.375em 0.375em 0;
+    transform: scale(1);
 }
-.search-bar input:focus + .search-btn:before, 
+
+.search-bar input:focus + .search-btn:before,
 .search-bar input:focus + .search-btn:after,
-.search-bar input:valid + .search-btn:before, 
+.search-bar input:valid + .search-btn:before,
 .search-bar input:valid + .search-btn:after {
-	opacity: 1;
+    opacity: 1;
 }
+
 .search-bar input:focus + .search-btn:hover,
 .search-bar input:valid + .search-btn:hover,
 .search-bar input:valid:not(:focus) + .search-btn:focus {
-	background: #0c48db;
+    background: #0c48db;
 }
+
 .search-bar input:focus + .search-btn:active,
 .search-bar input:valid + .search-btn:active {
-	transform: translateY(1px);
+    transform: translateY(1px);
 }
 
 @media screen and (prefers-color-scheme: dark) {
-	body, input {
-		color: #f1f1f1;
-	}
-	body {
-		background: #171717;
-	}
-	.search-bar input {
-		box-shadow: 0 0 0 0.4em #f1f1f1 inset;
-	}
-	.search-bar input:focus,
-	.search-bar input:valid {
-		background: #3d3d3d;
-		box-shadow: 0 0 0 0.1em #3d3d3d inset;
-	}
-	.search-btn {
-		background: #f1f1f1;
-	}
+    body, input {
+        color: #f1f1f1;
+    }
+
+    body {
+        background: #171717;
+    }
+
+    .search-bar input {
+        box-shadow: 0 0 0 0.4em #f1f1f1 inset;
+    }
+
+    .search-bar input:focus,
+    .search-bar input:valid {
+        background: #3d3d3d;
+        box-shadow: 0 0 0 0.1em #3d3d3d inset;
+    }
+
+    .search-btn {
+        background: #f1f1f1;
+    }
 }

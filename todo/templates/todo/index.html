@@ -1,100 +1,114 @@
 {% extends 'todo/layout.html' %}
 {% include 'todo/menu.html' %}
-
 {% block content %}
-<script src="https://cdn.ckeditor.com/4.10.0/standard/ckeditor.js"></script>
-<script src="/static/openmodal.js"></script>
-{{ ckeditor.load() }}
-
-
-
-<div class='container' style="background-color: rgb(56, 55, 55);display: grid; grid-template-columns:10% 90%;">
-
-
-    <div class="workspaces"
-        style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% endif %}margin-right: 2%; grid-column-start: 1; ">
-        {% block workspaces %}
-        Рабочие области:<br>
-        {% for workspace in workspace_list %}
-        <a href="">{{workspace.title}}</a>
-        {% endfor %}<br>
-        <a href="/add_ws" style="margin-left: 35%; margin-right: 25%;">+</a>
-        {% endblock %}
-    </div>
-    <div class="tasks_area"
-        style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% endif %}grid-column-start: 2;">
-        {% block tasks %}
-        <div class="list"
-            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 260px));grid-auto-flow: column; overflow-x: scroll; overflow-y: scroll; height: 90vh;">
-            {% for tag, task in result.items() %}
-            <div class="task_head" style="padding-left: 10px;">
-                <p
-                    style="background-color: rgb(56, 55, 55); text-align: center; position:static; z-index: 1050; margin-bottom: 2.5%;">
-                    {{tag}}</p>
-                {% for todo in todo_list %}
-                {% for title in task %}
-                {% if todo.title == title %}
-                <div class="task_body"
-                    style="{% if todo.is_complete==True %}background-color:green;{%else%}background-color: blue;{%endif%} text-align: center;width: 250px; height: 60px; padding-bottom: 5%; padding-left: 2%; padding-right: 2%; border: solid; border-radius: 6px; border-width: thin; margin-bottom: 2.5%; -webkit-box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);-moz-box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2); align-items: center; justify-content: center; position: relative;">
-                    
-                        <button id="myBtn"
-                        style="border: none; background: none; cursor: pointer; color: white;">
-                        {{title|safe}}
-                    </button>
-                    <div id="myModal" class="modal">
-                        <div class="modal-content">
-                            <span class="close" id="close">&times;</span>
-                            {{todo.descr| safe}}
-                        </div>
-                    </div>
-
-                </div>
-
-                {% endif %}
-                {% endfor %}
-                {% endfor %}
-
-            </div>
-            {% endfor %}
-
+    <script src="https://cdn.ckeditor.com/4.10.0/standard/ckeditor.js"></script>
+    {{ ckeditor.load() }}
+    <div class='container' style="background-color: rgb(56, 55, 55);display: grid; grid-template-columns:10% 90%;">
+        <div class="workspaces"
+             style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% endif %}margin-right: 2%; grid-column-start: 1;">
+            {% block workspaces %}
+                Рабочие области:<br>
+                {% for workspace in workspace_list %}
+                    <a href="">{{ workspace.title }}</a>
+                {% endfor %}<br>
+                <a href="/add_ws" style="margin-left: 35%; margin-right: 25%;">+</a>
+            {% endblock %}
         </div>
 
+        <div class="tasks_area"
+             style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% endif %}grid-column-start: 2;">
+            {% block tasks %}
+                <div class="list"
+                     style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 260px));grid-auto-flow: column; overflow-x: scroll; overflow-y: scroll; height: 90vh;">
+                    {% for tag, task in result.items() %}
+                        <div class="task_head" style="padding-left: 10px;">
+                            <p style="background-color: rgb(56, 55, 55); text-align: center; position:static; margin-bottom: 2.5%;">
+                                {{ tag }}
+                            </p>
+                            {% for todo in todo_list %}
+                                {% for title in task %}
+                                    {% if todo.title == title %}
+                                        <div class="task_body"
+                                             style="{% if todo.is_complete==True %}background-color:green;{% else %}background-color: blue;{% endif %} margin-bottom: 10px; border-radius: 6px; padding: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                                            <button class="task-button" data-modal-id="modal-{{ todo.id }}">
+                                                {{ title|safe }}
+                                            </button>
 
-
-        {% endblock %}
+                                            <div id="modal-{{ todo.id }}" class="modal-overlay">
+                                                <div class="modal-container">
+                                                    <span class="modal-close">&times;</span>
+                                                    <div class="modal-body">
+                                                        {{ todo.descr|safe }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endblock %}
+        </div>
     </div>
-</div>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function initModals() {
+                // открытие
+                document.querySelectorAll('.task-button').forEach(button => {
+                    button.addEventListener('click', function () {
+                        const modalId = this.getAttribute('data-modal-id');
+                        const modal = document.getElementById(modalId);
+                        if (modal) {
+                            modal.style.display = 'block';
+                            document.body.style.overflow = 'hidden';
+                        }
+                    });
+                });
 
-{% endblock content %}
+                // крестик
+                document.querySelectorAll('.modal-close').forEach(closeBtn => {
+                    closeBtn.addEventListener('click', function () {
+                        const modal = this.closest('.modal-overlay');
+                        if (modal) {
+                            modal.style.display = 'none';
+                            document.body.style.overflow = '';
+                        }
+                    });
+                });
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var elem = document.querySelector('[href="#openModal"]');
-        var canLink = elem ? elem.href : "";
-        if (canLink !== "") {
-            document.querySelector('[href="#openModal"]').addEventListener('click', function () {
-                document.modal2.style.overflow = 'hidden';
-            });
-            document.querySelector('[href="#close"]').addEventListener('click', function () {
-                document.modal2.style.overflow = 'visible';
-            });
-        }
+                // оверлей
+                document.querySelectorAll('.modal-overlay').forEach(modal => {
+                    modal.addEventListener('click', function (event) {
+                        if (event.target === this) {
+                            this.style.display = 'none';
+                            document.body.style.overflow = '';
+                        }
+                    });
+                });
 
-    });
-</script>
+                // по Escape
+                document.addEventListener('keydown', function (event) {
+                    if (event.key === 'Escape') {
+                        document.querySelectorAll('.modal-overlay').forEach(modal => {
+                            modal.style.display = 'none';
+                            document.body.style.overflow = '';
+                        });
+                    }
+                });
+            }
 
-
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        if (typeof CKEDITOR !== 'undefined') {
-            // Find the instance of CKEditor and set the configuration
-            for (var instance in CKEDITOR.instances) {
-                if (CKEDITOR.instances.hasOwnProperty(instance)) {
-                    CKEDITOR.instances[instance].config.versionCheck = false;
+            if (typeof CKEDITOR !== 'undefined') {
+                for (var instance in CKEDITOR.instances) {
+                    if (CKEDITOR.instances.hasOwnProperty(instance)) {
+                        CKEDITOR.instances[instance].config.versionCheck = false;
+                    }
                 }
             }
-        }
-    });
-</script>
+
+            initModals();
+        });
+    </script>
+{% endblock content %}
