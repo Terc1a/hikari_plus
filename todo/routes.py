@@ -637,17 +637,45 @@ def get_detail(todo_id):
 @app.post('/search')
 @login_required
 def search():
-    get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
+    ws_ids = []
+    get_curr_ws = Workspace.query.filter_by(uid=current_user.id).all()
+    for ws in get_curr_ws:
+        ws_ids.append(ws.id)
+    get_curr_user_tags = Tag.query.filter(Tag.ws_id.in_((ws_ids))).all()
     tags_ids = []
+    tags_names = []
     for el in get_curr_user_tags:
         tags_ids.append(el.id)
+        tags_names.append(el.title)
     search_bar = request.form.get('search_bar')
     search = "%{}%".format(search_bar)
+    todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).all()
     one_todo = ToDo.query.filter(ToDo.title.like(search), ToDo.tag_id.in_((tags_ids))).all()
+    #Формируем список проектов и задач на отправку
+    result = {}
+    for tag in tags_ids:
+        for row in one_todo:
+            if tag == row.tag_id: 
+                tag_name = Tag.query.filter_by(id=row.tag_id).first()
+                if tag_name.title in result:
+                    result[f'{tag_name.title}'].append(row.title)
+                else:
+                    result[f'{tag_name.title}'] = [row.title]
     if not one_todo:
-            one_todo = ToDo.query.filter(ToDo.descr.like(search), ToDo.tag_id.in_((tags_ids))).all()
-
-    return render_template('todo/index.html', todo_list=one_todo)
+        one_todo = ToDo.query.filter(ToDo.descr.like(search), ToDo.tag_id.in_((tags_ids))).all()
+        result = {}
+        for tag in tags_ids:
+            for row in one_todo:
+                if tag == row.tag_id: 
+                    tag_name = Tag.query.filter_by(id=row.tag_id).first()
+                    if tag_name.title in result:
+                        value = [result.get(f'{tag_name.title}')]
+                        result[f'{tag_name.title}'].append(row.title)
+                    else:
+                        result[f'{tag_name.title}'] = [row.title]
+    if not search:
+        return redirect(url_for('/'))
+    return render_template('todo/index.html',todo_list=todo_list, result=result)
 
 
 #Открываем страницу настроек
