@@ -21,17 +21,21 @@ UPLOAD_FOLDER = '/path/to/the/uploads'
 # расширения файлов, которые разрешено загружать
 ALLOWED_EXTENSIONS = {'mp4'}
 
+
 class User(UserMixin):
     def __init__(self, user_id):
         self.id = user_id
 
+
 class timedt:
-    timed = datetime.now()        
+    timed = datetime.now()
     GMT = pytz.timezone("Etc/GMT")
     dt = GMT.localize(timed)
     dt = timed.astimezone(GMT)
+
     def time_checker(self):
         return self.timed, self.dt
+
 
 def create_app():
     app = Flask(__name__)
@@ -45,6 +49,7 @@ def create_app():
     login_manager.init_app(app)
     return app
 
+
 app = create_app()
 
 
@@ -53,19 +58,20 @@ def load_user(user_id):
     user = db.session.get(Users, int(user_id))
     return user
 
+
 @login_manager.unauthorized_handler
 def unauthorized():
     # do stuff
     return render_template('todo/login.html')
 
 
-#Главная страница
+# Главная страница
 @app.route('/', methods=['POST', 'GET'])
 @login_required
 def home():
     if request.method == 'GET':
         if current_user:
-            #Смотреть дату в timed_raw и в gmt-0, и если timed_raw < gmt && gmt >= 5AM, то is_complete=0 where is_cycle=checked
+            # Смотреть дату в timed_raw и в gmt-0, и если timed_raw < gmt && gmt >= 5AM, то is_complete=0 where is_cycle=checked
             timed_raw = timedt().timed
             dt_gmt = timedt().dt
             ws_ids = []
@@ -79,25 +85,26 @@ def home():
             for el in get_curr_user_tags:
                 tags_ids.append(el.id)
                 tags_names.append(el.title)
-            #Откат цикличных задач(в 00 GMT или же 03 MSC)
-            cycle = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_cycle='checked').order_by(ToDo.id.desc()).all()
+            # Откат цикличных задач(в 00 GMT или же 03 MSC)
+            cycle = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_cycle='checked').order_by(
+                ToDo.id.desc()).all()
             for task in cycle:
                 el = task.create_date
                 el2 = task.close_date
                 if el.month > dt_gmt.month and el.day > dt_gmt.day:
                     if el.day >= dt_gmt.day and dt_gmt.hour >= 0:
-                            print(task.title, '1')
-                            task.is_complete = not task.is_complete
-                            task.create_date = timed_raw
-                            task.close_date = datetime(9999, 12, 31, 00, 00, 00, 000000)
-                            db.session.commit()
+                        print(task.title, '1')
+                        task.is_complete = not task.is_complete
+                        task.create_date = timed_raw
+                        task.close_date = datetime(9999, 12, 31, 00, 00, 00, 000000)
+                        db.session.commit()
                 elif el.month == dt_gmt.month and el.day < dt_gmt.day and dt_gmt.hour >= 0:
                     for task in cycle:
                         print(task.title, '2')
                         task.is_complete = not task.is_complete
                         task.create_date = timed_raw
                         task.close_date = datetime(9999, 12, 31, 00, 00, 00, 000000)
-                        db.session.commit()            
+                        db.session.commit()
                 else:
                     if el.day < dt_gmt.day and dt_gmt.hour >= 0:
                         for task in cycle:
@@ -115,15 +122,16 @@ def home():
                     else:
                         task.cycle_series = 0
                         db.session.commit()
-            #Рендер списков задач  
-                        
-            todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+            # Рендер списков задач
+
+            todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(
+                ToDo.id.desc()).all()
             todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).all()
-            #Формируем список проектов и задач на отправку
+            # Формируем список проектов и задач на отправку
             result = {}
             for tag in tags_ids:
                 for row in todo_list1:
-                    if tag == row.tag_id: 
+                    if tag == row.tag_id:
                         tag_name = Tag.query.filter_by(id=row.tag_id).first()
                         if tag_name.title in result:
                             value = [result.get(f'{tag_name.title}')]
@@ -131,22 +139,28 @@ def home():
                         else:
                             result[f'{tag_name.title}'] = [row.title]
 
-            todoc_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
+            todoc_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(
+                ToDo.id.desc()).all()
             todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
-            todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
-            todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+            todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(
+                ToDo.id.desc()).all()
+            todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(
+                ToDo.id.desc()).all()
             completed = len(todo_completed)
             uncompleted = len(todo_uncompleted)
             all = len(todo_list1)
             todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
-            return render_template('todo/index.html', todo_list=todo_list1, todoc_list=todoc_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.', default_value=default_value, workspace_list = todo_workspaces, result=result)
+            return render_template('todo/index.html', todo_list=todo_list1, todoc_list=todoc_list, todo_tags=todo_tags,
+                                   todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,
+                                   title='CUBI Prot.', default_value=default_value, workspace_list=todo_workspaces,
+                                   result=result)
         else:
             return redirect(url_for('todo/login.html'))
     if request.method == 'POST':
         if current_user:
             check_flag = request.form.get('hider')
             if check_flag == '1':
-                return redirect(url_for('home'))    
+                return redirect(url_for('home'))
             else:
                 ws_ids = []
                 get_curr_ws = Workspace.query.filter_by(uid=current_user.id).all()
@@ -156,10 +170,13 @@ def home():
                 tags_ids = []
                 for el in get_curr_user_tags:
                     tags_ids.append(el.id)
-                todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+                todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(
+                    ToDo.id.desc()).all()
                 todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.id.desc()).all()
-                todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
-                todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+                todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(
+                    ToDo.id.desc()).all()
+                todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(
+                    ToDo.id.desc()).all()
                 completed = len(todo_completed)
                 uncompleted = len(todo_uncompleted)
                 default_value = 1
@@ -169,18 +186,20 @@ def home():
                 result = {}
                 for tag in tags_ids:
                     for row in todo_list:
-                        if tag == row.tag_id: 
+                        if tag == row.tag_id:
                             tag_name = Tag.query.filter_by(id=row.tag_id).first()
                             if tag_name.title in result:
                                 result[f'{tag_name.title}'].append(row.title)
                             else:
                                 result[f'{tag_name.title}'] = [row.title]
-                return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,  title='CUBI Prot.', default_value=default_value, result=result)
+                return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags,
+                                       todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,
+                                       title='CUBI Prot.', default_value=default_value, result=result)
         else:
             return redirect(url_for('todo/login.html'))
 
 
-#Создаем пост
+# Создаем пост
 @app.post('/add')
 @login_required
 def add():
@@ -189,20 +208,21 @@ def add():
     is_cycle = request.form.get('checker')
     get_tag = Tag.query.filter_by(title=request.form.get('tag'), uid=current_user.id).first()
     tag_id = get_tag.id
-    descr = request.form.get('ckeditor')
+    descr = request.form.get('task-description')
     if is_cycle == None:
-        new_todo = ToDo(title=title, descr=descr, tag_id=tag_id,create_date=timed_raw, is_complete=False)
+        new_todo = ToDo(title=title, descr=descr, tag_id=tag_id, create_date=timed_raw, is_complete=False)
         db.session.add(new_todo)
         db.session.commit()
     else:
         cycle_series = 0
-        new_todo = ToDo(title=title, descr=descr, tag_id=tag_id,create_date=timed_raw, is_complete=False, is_cycle=is_cycle, cycle_series=cycle_series)
+        new_todo = ToDo(title=title, descr=descr, tag_id=tag_id, create_date=timed_raw, is_complete=False,
+                        is_cycle=is_cycle, cycle_series=cycle_series)
         db.session.add(new_todo)
         db.session.commit()
     return redirect(url_for('home'))
 
 
-#Сортируем по проектам
+# Сортируем по проектам
 @app.route('/sort/<string:todo_tag>', methods=['POST', 'GET'])
 @login_required
 def sort(todo_tag):
@@ -213,43 +233,57 @@ def sort(todo_tag):
         tags_ids = []
         for el in get_curr_user_tags:
             tags_ids.append(el.id)
-        todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
-        todoc_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
+        todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(
+            ToDo.id.desc()).all()
+        todoc_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(
+            ToDo.id.desc()).all()
         todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
         todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).all()
-        todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+        todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(
+            ToDo.id.desc()).all()
         todo_list_all = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).all()
         completed = len(todo_completed)
         uncompleted = len(todo_uncompleted)
         all = len(todo_list_all)
         todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
-        return render_template('todo/index.html', todo_list=todo_list, todoc_list=todoc_list, todo_workspaces=todo_workspaces, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.', default_value=default_value)
+        return render_template('todo/index.html', todo_list=todo_list, todoc_list=todoc_list,
+                               todo_workspaces=todo_workspaces, todo_tags=todo_tags, todo_completed=completed,
+                               todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.',
+                               default_value=default_value)
     if request.method == 'POST':
         if current_user:
             check_flag = request.form.get('hider')
             if check_flag == '1':
-                return redirect(url_for('home'))    
+                return redirect(url_for('home'))
             else:
                 get_curr_user_tags = Tag.query.filter_by(uid=current_user.id, title=todo_tag).all()
                 tags_ids = []
                 for el in get_curr_user_tags:
                     tags_ids.append(el.id)
-                todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+                todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(
+                    ToDo.id.desc()).all()
                 todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.id.desc()).all()
-                todoc_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
+                todoc_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(
+                    ToDo.id.desc()).all()
                 todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
-                todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(ToDo.id.desc()).all()
-                todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+                todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(
+                    ToDo.id.desc()).all()
+                todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(
+                    ToDo.id.desc()).all()
                 completed = len(todo_completed)
                 uncompleted = len(todo_uncompleted)
                 default_value = 1
                 all = len(todo_list1)
                 todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
-                return render_template('todo/index.html', todo_list=todo_list, todoc_list=todoc_list, todo_workspaces=todo_workspaces, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,  title='CUBI Prot.', default_value=default_value)
-        else:        
+                return render_template('todo/index.html', todo_list=todo_list, todoc_list=todoc_list,
+                                       todo_workspaces=todo_workspaces, todo_tags=todo_tags, todo_completed=completed,
+                                       todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.',
+                                       default_value=default_value)
+        else:
             return redirect(url_for('todo/login.html'))
 
-#Изменяем статус задачи
+
+# Изменяем статус задачи
 @app.get('/update/<int:todo_id>')
 @login_required
 def update(todo_id):
@@ -260,23 +294,25 @@ def update(todo_id):
     db.session.commit()
     return redirect(url_for('home'))
 
+
 @app.get('/finish/<int:todo_id>')
 @login_required
 def finish(todo_id):
-    #Считать сколько времени ушло на задачу через close_date - create_date
+    # Считать сколько времени ушло на задачу через close_date - create_date
     timed_raw = timedt().timed
     todo = ToDo.query.filter_by(id=todo_id).first()
     delta = (timed_raw - todo.create_date)
-    if todo.is_cycle=='checked':
-        todo.cycle_series +=1
-        
+    if todo.is_cycle == 'checked':
+        todo.cycle_series += 1
+
     todo.is_complete = 1
     todo.close_date = timed_raw
     todo.time_to_complete = f'{delta}'
     db.session.commit()
-    return redirect(url_for('home'))    
+    return redirect(url_for('home'))
 
-#Получаем задачу
+
+# Получаем задачу
 @app.get('/get_task/<int:todo_id>')
 @login_required
 def get_task(todo_id):
@@ -286,21 +322,21 @@ def get_task(todo_id):
     return render_template('todo/modal.html', todo_list=one_todo, todo_tags=todo_tags)
 
 
-#Изменяем задачу
+# Изменяем задачу
 @app.post('/change_content/<int:todo_id>')
 @login_required
 def update_task(todo_id):
     timed_raw = timedt().timed
     todo = ToDo.query.filter_by(id=todo_id).first()
     todo.title = request.form.get('title')
-    #todo.tag = request.form.get('tags-list')
-    todo.descr = request.form.get('ckeditor')
+    # todo.tag = request.form.get('tags-list')
+    todo.descr = request.form.get('task-description')
     todo.create_date = timed_raw
     db.session.commit()
     return redirect(url_for('home'))
 
 
-#Удаляем задачу
+# Удаляем задачу
 @app.get('/delete/<int:todo_id>')
 @login_required
 def delete(todo_id):
@@ -310,12 +346,11 @@ def delete(todo_id):
     return redirect(url_for('home'))
 
 
-
-#Cтатистика
+# Cтатистика
 @app.get('/task_stats')
 @login_required
 def stats():
-    #Сбор данных по выполненным задачам
+    # Сбор данных по выполненным задачам
     get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
     tags_ids = []
     tags_ids = []
@@ -323,8 +358,9 @@ def stats():
         tags_ids.append(el.id)
     todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
     todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).all()
-    todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
-    #Cбор данных по тегам
+    todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(
+        ToDo.id.desc()).all()
+    # Cбор данных по тегам
     tag = []
     tag_counter = {}
     elem_count = {}
@@ -345,19 +381,19 @@ def stats():
     for date in data3:
         if date not in uniq_date:
             uniq_date.append(date)
-    #todo_tags = ToDo.query.distinct(ToDo.tag).group_by(ToDo.tag)
+    # todo_tags = ToDo.query.distinct(ToDo.tag).group_by(ToDo.tag)
     todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
     for el in todo_tags:
         todo = ToDo.query.filter_by(tag_id=el.id).order_by(ToDo.is_complete).all()
         if todo:
             tag.append(el.id)
-       
+
         else:
             pass
     for i in tag:
         todo = ToDo.query.filter_by(tag_id=i).order_by(ToDo.is_complete).all()
         if todo:
-            tag_counter.update({f'{i}':todo})
+            tag_counter.update({f'{i}': todo})
         else:
             pass
     for i in tag:
@@ -365,25 +401,25 @@ def stats():
         data2.append(go.Bar(x=[len(todo_list)], y=[elem_count.get(f'{i}')], name=f'{i}'))
     fig = go.Figure(data=[
         go.Bar(x=[len(todo_list)], y=[len(todo_list)], name='Все'),
-        go.Bar( x=[len(todo_list)], y=[len(todo_completed)], name='Выполненные'),
-        go.Bar( x=[len(todo_list)], y=[len(todo_uncompleted)], name='В работе'),     
+        go.Bar(x=[len(todo_list)], y=[len(todo_completed)], name='Выполненные'),
+        go.Bar(x=[len(todo_list)], y=[len(todo_uncompleted)], name='В работе'),
     ])
-    
+
     fig.update_layout(legend_orientation="h",
-                  legend=dict(x=.5, xanchor="center"),
-                  title="Статистика по задачам",
-                  xaxis_title="Задачи по статусам",
-                  yaxis_title="Всего задач",
-                  margin=dict(l=0, r=0, t=50, b=0), template='plotly_dark')
+                      legend=dict(x=.5, xanchor="center"),
+                      title="Статистика по задачам",
+                      xaxis_title="Задачи по статусам",
+                      yaxis_title="Всего задач",
+                      margin=dict(l=0, r=0, t=50, b=0), template='plotly_dark')
     fig2 = go.Figure(data2)
     fig2.update_layout(legend_orientation="h",
-                legend=dict(x=.5, xanchor="center"),
-                title="Количество задач по тегам",
-                xaxis_title="Задачи по тегам",
-                yaxis_title="Задач с тегами",
-                margin=dict(l=0, r=0, t=50, b=0), template='plotly_dark')
-    
-    #Добавить 3 график, совмещающий в себе 2 других
+                       legend=dict(x=.5, xanchor="center"),
+                       title="Количество задач по тегам",
+                       xaxis_title="Задачи по тегам",
+                       yaxis_title="Задач с тегами",
+                       margin=dict(l=0, r=0, t=50, b=0), template='plotly_dark')
+
+    # Добавить 3 график, совмещающий в себе 2 других
     fig3 = go.Figure()
     for i in tag:
         data4.append(go.Bar(x=[len(todo_list)], y=[elem_count.get(i)], name=f'{i}'))
@@ -392,23 +428,22 @@ def stats():
     for i in elem_count:
         some_date.append(elem_count.get(i))
     fig3.add_trace(go.Scatter(
-    #количество задач по тегам разделено по дням
-    x= [len(todo_list)],#задач по тегам было создано
-    y= some_date,#задач по тегам было сделано
+        # количество задач по тегам разделено по дням
+        x=[len(todo_list)],  # задач по тегам было создано
+        y=some_date,  # задач по тегам было сделано
     ))
     for el in elem_count:
         counter.append(go.Scatter(x=[len(todo_list)], y=[elem_count.get(el)], name=f'{el}'))
-    #fig3.add_trace(counter)
-
+    # fig3.add_trace(counter)
 
     fig3.update_layout(legend_orientation="h",
-                legend=dict(x=.5, xanchor="center"),
-                title="Количество задач по тегам",
-                xaxis_title="Теги",
-                yaxis_title="Задач с тегами",
-                margin=dict(l=0, r=0, t=50, b=0), 
-                template='plotly_dark',
-                )
+                       legend=dict(x=.5, xanchor="center"),
+                       title="Количество задач по тегам",
+                       xaxis_title="Теги",
+                       yaxis_title="Задач с тегами",
+                       margin=dict(l=0, r=0, t=50, b=0),
+                       template='plotly_dark',
+                       )
 
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     graphJSON2 = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
@@ -417,7 +452,7 @@ def stats():
     return render_template('todo/stats.html', graphJSON=graphJSON, graphJSON2=graphJSON2)
 
 
-#Статистика по проектам
+# Статистика по проектам
 @app.route('/project_stats', methods=['POST', 'GET'])
 @login_required
 def project_stats():
@@ -441,32 +476,32 @@ def project_stats():
         dates_created = []
         dates_completed = []
         counter = []
-        #Для созданных задач
+        # Для созданных задач
         for task in tasks_all:
             date = str(task.create_date).split(" ")[0]
-            data_list_created.append({task.id:date})
+            data_list_created.append({task.id: date})
         for el in data_list_created:
             for date in el.values():
                 if type(date) == list:
                     dates_created += date
                 else:
                     dates_created.append(date)
-    #получаю уникальные значения дат и количество задач по ним
+        # получаю уникальные значения дат и количество задач по ним
         dates_unique = set(dates_created)
-        matches = [{a:dates_created.count(a)} for a in sorted(dates_unique)]
+        matches = [{a: dates_created.count(a)} for a in sorted(dates_unique)]
         fig3 = go.Figure()
         keys = []
         values = []
         for i in matches:
-            key,value = list(i.items())[0]
+            key, value = list(i.items())[0]
             keys.append(key)
             values.append(value)
         counter.append(go.Scatter(x=keys, y=values, name=f'Создано'))
 
-        #Для завершенных задач
+        # Для завершенных задач
         for task in tasks_completed:
             date = str(task.close_date).split(" ")[0]
-            data_list_completed.append({task.id:date})
+            data_list_completed.append({task.id: date})
         for el in data_list_completed:
             for date in el.values():
                 if type(date) == list:
@@ -474,68 +509,67 @@ def project_stats():
                 else:
                     dates_completed.append(date)
         dates_unique2 = set(dates_completed)
-        matches2 = [{a:dates_completed.count(a)} for a in sorted(dates_completed)]
+        matches2 = [{a: dates_completed.count(a)} for a in sorted(dates_completed)]
         keys2 = []
         values2 = []
         for i in matches2:
-            key,value = list(i.items())[0]
+            key, value = list(i.items())[0]
             keys2.append(key)
             values2.append(value)
         counter.append(go.Scatter(x=keys2, y=values2, name=f'Завершено'))
-            #Отрисовка графов    
+        # Отрисовка графов
         fig3.update_layout(legend_orientation="h",
-            legend=dict(x=.5, xanchor="center"),
-            title=f"Задачи по всем проектам",
-            xaxis_title="Даты",
-            yaxis_title="Количество задач в день",
-            margin=dict(l=0, r=0, t=50, b=0), 
-            template='plotly_dark',
-            )
+                           legend=dict(x=.5, xanchor="center"),
+                           title=f"Задачи по всем проектам",
+                           xaxis_title="Даты",
+                           yaxis_title="Количество задач в день",
+                           margin=dict(l=0, r=0, t=50, b=0),
+                           template='plotly_dark',
+                           )
 
         for el in counter:
-
             fig3.add_trace(el)
         graphJSON = json.dumps(fig3, cls=plotly.utils.PlotlyJSONEncoder)
         return render_template('todo/project_stats.html', todo_tags=todo_tags, graphJSON=graphJSON)
-    
-    #по дефолту выводить график для самого первого проекта из запроса, по нажатию кнопки выводить график по выбранному
+
+    # по дефолту выводить график для самого первого проекта из запроса, по нажатию кнопки выводить график по выбранному
     if request.method == 'POST':
         tagss = request.form.get('tags-list')
         print(tagss)
-        #Где-то между 500 и 510 строкой проблема. Я получаю имя тега, но почему-то не фильтрую по нему
+        # Где-то между 500 и 510 строкой проблема. Я получаю имя тега, но почему-то не фильтрую по нему
         todo_tags = Tag.query.filter_by(uid=current_user.id).all()
         get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
         tags_ids = []
         for el in todo_tags:
             tags_ids.append(el.id)
-        #tasks_all = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+        # tasks_all = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
         tasks_on_tag = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).all()
-        #Для графа с созданными задачами
+        # Для графа с созданными задачами
         for task in tasks_on_tag:
             date = str(task.create_date).split(" ")[0]
-            list_sorted.append({task.id:date})
+            list_sorted.append({task.id: date})
         for el in list_sorted:
             for date in el.values():
                 if type(date) == list:
                     dates += date
                 else:
                     dates.append(date)
-    #получаю уникальные значения дат и количество задач по ним
+        # получаю уникальные значения дат и количество задач по ним
         dates_unique = set(dates)
-        matches = [{a:dates.count(a)} for a in sorted(dates_unique)]
+        matches = [{a: dates.count(a)} for a in sorted(dates_unique)]
         fig3 = go.Figure()
         keys = []
         values = []
         for i in matches:
-            key,value = list(i.items())[0]
+            key, value = list(i.items())[0]
             keys.append(key)
             values.append(value)
         counter.append(go.Scatter(x=keys, y=values, name=f'Создано'))
-        #Для графа с завершенными задачами
+        # Для графа с завершенными задачами
         tasks_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).all()
         for task in tasks_completed:
             date = str(task.close_date).split(" ")[0]
-            list_sorted2.append({task.id:date})
+            list_sorted2.append({task.id: date})
         for el in list_sorted2:
             for date in el.values():
                 if type(date) == list:
@@ -543,35 +577,33 @@ def project_stats():
                 else:
                     dates2.append(date)
         dates_unique2 = set(dates2)
-        matches2 = [{a:dates2.count(a)} for a in sorted(dates_unique2)]
+        matches2 = [{a: dates2.count(a)} for a in sorted(dates_unique2)]
         keys2 = []
         values2 = []
         for i in matches2:
-            key,value = list(i.items())[0]
+            key, value = list(i.items())[0]
             keys2.append(key)
             values2.append(value)
         counter.append(go.Scatter(x=keys2, y=values2, name=f'Завершено'))
     fig3.update_layout(legend_orientation="h",
-        legend=dict(x=.5, xanchor="center"),
-        title=f"Задачи по проекту {tagss}",
-        xaxis_title="Даты",
-        yaxis_title="Количество задач в день",
-        margin=dict(l=0, r=0, t=50, b=0), 
-        template='plotly_dark',
-        )
+                       legend=dict(x=.5, xanchor="center"),
+                       title=f"Задачи по проекту {tagss}",
+                       xaxis_title="Даты",
+                       yaxis_title="Количество задач в день",
+                       margin=dict(l=0, r=0, t=50, b=0),
+                       template='plotly_dark',
+                       )
     for el in counter:
-
         fig3.add_trace(el)
     graphJSON = json.dumps(fig3, cls=plotly.utils.PlotlyJSONEncoder)
     return render_template('todo/project_stats.html', todo_tags=todo_tags, graphJSON=graphJSON)
 
 
-
-#Админка
+# Админка
 @app.get('/admin')
 @login_required
 def admin():
-    if current_user.id !=1:
+    if current_user.id != 1:
         todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
         return render_template('todo/admin.html', tag_list=todo_tags)
     else:
@@ -580,8 +612,7 @@ def admin():
         return render_template('todo/admin.html', tag_list=todo_tags, news_list=news_list)
 
 
-
-#Добавляем проект
+# Добавляем проект
 @app.post('/add_tag')
 @login_required
 def add_tag():
@@ -600,7 +631,7 @@ def add_tag():
         return redirect('http://192.168.0.17:5555/admin#openModal')
 
 
-#Получаем проект
+# Получаем проект
 @app.get('/get_tag/<int:tag_id>')
 @login_required
 def get_tag(tag_id):
@@ -608,7 +639,7 @@ def get_tag(tag_id):
     return render_template('todo/tag_modal.html', tag_list=one_tag)
 
 
-#Изменяем проект
+# Изменяем проект
 @app.post('/change_tag/<int:tag_id>')
 @login_required
 def change_tag(tag_id):
@@ -619,7 +650,7 @@ def change_tag(tag_id):
     return redirect(url_for('admin'))
 
 
-#Удаляем проект
+# Удаляем проект
 @app.get('/delete_tag/<int:tag_id>')
 @login_required
 def delete_tag(tag_id):
@@ -629,7 +660,7 @@ def delete_tag(tag_id):
     return redirect(url_for('admin'))
 
 
-#Получаем полное описание задачи
+# Получаем полное описание задачи
 @app.get('/get_detail/<int:todo_id>')
 @login_required
 def get_detail(todo_id):
@@ -639,7 +670,7 @@ def get_detail(todo_id):
     return render_template('todo/modal2.html', todo_list=one_todo, todo_tags=todo_tags)
 
 
-#поиск заметки по названию
+# поиск заметки по названию
 @app.post('/search')
 @login_required
 def search():
@@ -659,11 +690,11 @@ def search():
     one_todo = ToDo.query.filter(ToDo.title.like(search), ToDo.tag_id.in_((tags_ids))).all()
     todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
 
-    #Формируем список проектов и задач на отправку
+    # Формируем список проектов и задач на отправку
     result = {}
     for tag in tags_ids:
         for row in one_todo:
-            if tag == row.tag_id: 
+            if tag == row.tag_id:
                 tag_name = Tag.query.filter_by(id=row.tag_id).first()
                 if tag_name.title in result:
                     result[f'{tag_name.title}'].append(row.title)
@@ -674,7 +705,7 @@ def search():
         result = {}
         for tag in tags_ids:
             for row in one_todo:
-                if tag == row.tag_id: 
+                if tag == row.tag_id:
                     tag_name = Tag.query.filter_by(id=row.tag_id).first()
                     if tag_name.title in result:
                         result[f'{tag_name.title}'].append(row.title)
@@ -682,43 +713,44 @@ def search():
                         result[f'{tag_name.title}'] = [row.title]
     if not search:
         return redirect(url_for('/'))
-    return render_template('todo/index.html',todo_list=todo_list, result=result, workspace_list=todo_workspaces)
+    return render_template('todo/index.html', todo_list=todo_list,
+                           result=result, workspace_list=todo_workspaces)
 
 
-#Открываем страницу настроек
+# Открываем страницу настроек
 @app.route('/settings')
 @login_required
 def settings():
     return render_template('todo/settings.html')
 
 
-#Изменяем тему приложения
-@app.route('/change_theme', methods=['POST',  'GET'])
+# Изменяем тему приложения
+@app.route('/change_theme', methods=['POST', 'GET'])
 @login_required
 def article():
     if request.method == 'POST':
         res = make_response("")
-        res.set_cookie("font", request.form.get('font'), 60*60*24*15)
+        res.set_cookie("font", request.form.get('font'), 60 * 60 * 24 * 15)
         res.headers['location'] = url_for('settings')
         return res, 302
 
     return render_template('todo/settings.html')
 
 
-#Изменяем эффекты на заднем фоне
-@app.route('/change_snow_state', methods=['POST',  'GET'])
+# Изменяем эффекты на заднем фоне
+@app.route('/change_snow_state', methods=['POST', 'GET'])
 @login_required
 def snow():
     if request.method == 'POST':
         res = make_response("")
-        res.set_cookie("snow_state", request.form.get('snow_state'), 60*60*24*15)
+        res.set_cookie("snow_state", request.form.get('snow_state'), 60 * 60 * 24 * 15)
         res.headers['location'] = url_for('settings')
         return res, 302
 
     return render_template('todo/settings.html')
 
 
-#Переходим на страницу новостей
+# Переходим на страницу новостей
 @app.route('/release')
 def release():
     news_list = News.query.all()
@@ -726,7 +758,7 @@ def release():
     return render_template('todo/about.html', news_list=news_list)
 
 
-#Cоздаем новость
+# Cоздаем новость
 @app.post('/create_news')
 @login_required
 def create_news():
@@ -735,13 +767,13 @@ def create_news():
     version = request.form.get('version')
     descr = request.form.get('ckeditor')
     to_send = False
-    new_post = News(title=title, descr=descr, version=version,create_date=timed_raw, to_send=to_send)
+    new_post = News(title=title, descr=descr, version=version, create_date=timed_raw, to_send=to_send)
     db.session.add(new_post)
     db.session.commit()
     return redirect(url_for('admin'))
 
 
-#Авторизуемся
+# Авторизуемся
 @app.route("/login", methods=["POST", "GET"])
 def login():
     if request.method == "GET":
@@ -749,22 +781,22 @@ def login():
     if request.method == "POST":
         user = Users.query.filter_by(username=request.form['name']).first()
         if user and check_password_hash(user.password, request.form['psw']):
-            session['username'] = request.form['name'] 
-            user = User(user.id) 
+            session['username'] = request.form['name']
+            user = User(user.id)
             login_user(user)
             return redirect(url_for('home'))
 
         flash("Неверная пара логин/пароль", "error")
- 
 
-#Регистрируемся
+
+# Регистрируемся
 @app.route("/register", methods=["POST", "GET"])
 def register():
     if request.method == 'POST':
         timed_raw = timedt().timed
 
         if len(request.form.get('name')) > 4 and len(request.form.get('email')) > 4 \
-        and len(request.form.get('psw')) >4 and request.form.get('psw') == request.form.get('psw2'):
+                and len(request.form.get('psw')) > 4 and request.form.get('psw') == request.form.get('psw2'):
             hash = generate_password_hash(request.form['psw'])
             check_usermail_exist = Users.query.filter_by(email=request.form.get('email')).all()
             check_username_exist = Users.query.filter_by(username=request.form.get('name')).all()
@@ -773,7 +805,8 @@ def register():
             elif check_username_exist:
                 flash('Пользователь с данным логином уже существует')
             else:
-                add_user = Users(username=request.form.get('name'), email=request.form.get('email'), password=hash, register_date=timed_raw)
+                add_user = Users(username=request.form.get('name'), email=request.form.get('email'), password=hash,
+                                 register_date=timed_raw)
                 tag_title = 'CUBI'
                 tag_descr = 'Ознакомительный проект, который поможет освоиться в системе'
                 task_title = 'Ознакомиться с системой'
@@ -787,24 +820,23 @@ def register():
                 db.session.add(add_ws)
                 db.session.commit()
                 get_ws = Workspace.query.filter_by(username=request.form.get('name')).first()
-                add_tag = Tag(uid=get_uid.id,ws_id=get_ws.id,title=tag_title, descr=tag_descr)
+                add_tag = Tag(uid=get_uid.id, ws_id=get_ws.id, title=tag_title, descr=tag_descr)
                 db.session.add(add_tag)
                 db.session.commit()
                 get_tag = Tag.query.filter_by(uid=get_uid.id).filter_by(title=tag_title).first()
-                add_task = ToDo(title=task_title, descr=task_descr, tag_id=get_tag.id,create_date=timed_raw, is_complete=False)
+                add_task = ToDo(title=task_title, descr=task_descr, tag_id=get_tag.id, create_date=timed_raw,
+                                is_complete=False)
                 db.session.add(add_task)
                 db.session.commit()
 
-
-                
                 return redirect(url_for('home'))
         else:
             flash('Длина каждого поля не может быть меньше 4 символов')
-            
+
     return render_template("todo/register.html", title="Регистрация")
 
 
-#Выходим из системы
+# Выходим из системы
 @app.route("/logout")
 @login_required
 def logout():
@@ -813,19 +845,19 @@ def logout():
     return redirect(url_for('login'))
 
 
-#Рендерим страницу с гайдами
+# Рендерим страницу с гайдами
 @app.route('/guides')
 def guides():
     return render_template('todo/guides.html', title='Гайды')
 
 
-#Загрузка файлов - пока неактуально
-#Проверяем, что файл имеет подходящее расширение
+# Загрузка файлов - пока неактуально
+# Проверяем, что файл имеет подходящее расширение
 def allowed_ext(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-#Загружаем файл на сервер
+# Загружаем файл на сервер
 @app.post('/upload_video')
 @login_required
 def upload(filename):
@@ -852,16 +884,18 @@ def upload(filename):
     </html>
     '''
 
+
 @app.route('/uploads/<name>')
 def download_file(name):
     return send_from_directory(app.config["UPLOAD_FOLDER"], name)
+
 
 @app.post('/add_ws')
 @login_required
 def add_ws():
     title = request.form.get('title')
-    descr = request.form.get('ckeditor')
-    new_ws = Workspace(uid=current_user.id,title=title, descr=descr)
+    descr = request.form.get('task-description')
+    new_ws = Workspace(uid=current_user.id, title=title, descr=descr)
     db.session.add(new_ws)
     db.session.commit()
-    return redirect(url_for('home'))    
+    return redirect(url_for('home'))
