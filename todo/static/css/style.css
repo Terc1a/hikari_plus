@@ -46,7 +46,6 @@ a:hover {
 }
 
 .modal-container {
-    background: rgb(56, 56, 56);
     width: 80%;
     max-width: 700px;
     margin: 50px auto;
@@ -111,7 +110,6 @@ a:hover {
 
 /* Содержимое модального окна */
 .modal-content {
-    background-color: rgb(56, 56, 56);
     margin: 15% auto; /* отступ сверху и центрирование по горизонтали */
     padding: 20px;
     border: 1px solid #888;
@@ -451,4 +449,24 @@ a:hover {
     .search-btn {
         background: #f1f1f1;
     }
+}
+
+.search_button {
+    border: none;
+    background: none;
+    color: white;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.hider {
+    border: none;
+    background: none;
+    color: white;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.search_button:hover {
+    opacity: 0.8;
 }

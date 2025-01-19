@@ -14,17 +14,7 @@
         </li>
     </div>
 </div>
-<style>
-    :root {     --responsive-font-size-primary: min(1em, max(0.5em, 5vmin)); }
-</style>
-<form action="/search" method="post" style="display: inline-block;">
-    <input type="text" name="search_bar" placeholder="Поиск"
-        style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black;background-color: rgb(209,205,194);{% endif %} width: 60%; ">
-    <button class="search_button" type="submit" style="anchor-name: search_bar;">🔍</button>
-</form>
-<form method="post" >
-    <button type="submit" id="hider" class="hider" name="hider" value={{default_value}} style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black;{% endif %} border: solid; border-radius: 6px; min-width: 1vw;max-width: 10vw; text-align: center; display: block; font-size: var(--responsive-font-size-primary);">Скрыть готовые</button>
-</form>
+
 {% if request.cookies.get('font')=='black' %}
 
 <img src="static/todo_log_noback.png" style="margin-left: 10%;margin-right: 25%; width: 25vw;">

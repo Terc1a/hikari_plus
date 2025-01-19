@@ -106,12 +106,15 @@ def home():
                             task.create_date = timed_raw
                             task.close_date = datetime(9999, 12, 31, 00, 00, 00, 000000)
                             db.session.commit()
-                delta = (timed_raw - task.close_date).days
-                if delta == 0:
+                if task.close_date is None:
                     pass
                 else:
-                    task.cycle_series = 0
-                    db.session.commit()
+                    delta = (timed_raw - task.close_date).days
+                    if delta == 0:
+                        pass
+                    else:
+                        task.cycle_series = 0
+                        db.session.commit()
             #Рендер списков задач  
                         
             todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
@@ -162,7 +165,17 @@ def home():
                 default_value = 1
                 all = len(todo_list1)
                 todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
-                return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,  title='CUBI Prot.', default_value=default_value)
+
+                result = {}
+                for tag in tags_ids:
+                    for row in todo_list:
+                        if tag == row.tag_id: 
+                            tag_name = Tag.query.filter_by(id=row.tag_id).first()
+                            if tag_name.title in result:
+                                result[f'{tag_name.title}'].append(row.title)
+                            else:
+                                result[f'{tag_name.title}'] = [row.title]
+                return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,  title='CUBI Prot.', default_value=default_value, result=result)
         else:
             return redirect(url_for('todo/login.html'))
 
@@ -174,7 +187,7 @@ def add():
     timed_raw = timedt().timed
     title = request.form.get('title')
     is_cycle = request.form.get('checker')
-    get_tag = Tag.query.filter_by(title=request.form.get('tags-list'), uid=current_user.id).first()
+    get_tag = Tag.query.filter_by(title=request.form.get('tag'), uid=current_user.id).first()
     tag_id = get_tag.id
     descr = request.form.get('ckeditor')
     if is_cycle == None:
@@ -242,8 +255,6 @@ def sort(todo_tag):
 def update(todo_id):
     timed_raw = timedt().timed
     todo = ToDo.query.filter_by(id=todo_id).first()
-    title_change = todo.title
-    todo.title = title_change[3:-4]
     todo.is_complete = not todo.is_complete
     todo.close_date = timed_raw
     db.session.commit()
@@ -255,13 +266,7 @@ def finish(todo_id):
     #Считать сколько времени ушло на задачу через close_date - create_date
     timed_raw = timedt().timed
     todo = ToDo.query.filter_by(id=todo_id).first()
-    some = todo.title
     delta = (timed_raw - todo.create_date)
-    if "</" in some:
-        pass
-    else:
-        todo.title = f'<s>{some}</s>'
-    test = todo.is_cycle
     if todo.is_cycle=='checked':
         todo.cycle_series +=1
         
@@ -652,6 +657,8 @@ def search():
     search = "%{}%".format(search_bar)
     todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).all()
     one_todo = ToDo.query.filter(ToDo.title.like(search), ToDo.tag_id.in_((tags_ids))).all()
+    todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
+
     #Формируем список проектов и задач на отправку
     result = {}
     for tag in tags_ids:
@@ -675,7 +682,7 @@ def search():
                         result[f'{tag_name.title}'] = [row.title]
     if not search:
         return redirect(url_for('/'))
-    return render_template('todo/index.html',todo_list=todo_list, result=result)
+    return render_template('todo/index.html',todo_list=todo_list, result=result, workspace_list=todo_workspaces)
 
 
 #Открываем страницу настроек
@@ -849,3 +856,12 @@ def upload(filename):
 def download_file(name):
     return send_from_directory(app.config["UPLOAD_FOLDER"], name)
 
+@app.post('/add_ws')
+@login_required
+def add_ws():
+    title = request.form.get('title')
+    descr = request.form.get('ckeditor')
+    new_ws = Workspace(uid=current_user.id,title=title, descr=descr)
+    db.session.add(new_ws)
+    db.session.commit()
+    return redirect(url_for('home'))    
