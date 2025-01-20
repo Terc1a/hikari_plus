@@ -19,7 +19,7 @@
                     +
                 </button>
 
-                
+                <!--Создание новой области-->
                 <div id="modal-create-id" class="modal-overlay">
                     <div class="modal-container"
                          style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
@@ -49,19 +49,21 @@
              style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white; border:solid white;{% else %} background-color: rgb(209,205,194); border:solid black;{% endif %}grid-column-start: 2;">
             {% block tasks %}
                 <div class="list"
-                     style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); grid-gap: 15px; overflow-y: auto; height: 90vh;">
+                     style="display: grid; grid-template-columns: repeat(auto-fit, 1fr); grid-auto-flow: column; overflow-x: scroll; overflow-y: scroll; height: 90vh; grid-gap: 15px;">
                     {% for tag, task in result.items() %}
-                        <div class="task_head" style="padding: 10px;">
+                        <div class="task_head" style="width: 30vh;">
                             <p style="{% if request.cookies.get('font')=='black' %}background-color:rgb(56,56,56);color:white;{% else %} background-color: rgb(209,205,194); color: black{% endif %}; text-align: center; margin-bottom: 2.5%;">
                                 {{ tag }}
+                                
                             </p>
+                            
                             {% for todo in todo_list %}
                                 {% for title in task %}
                                     {% if todo.title == title %}
                                         <div class="task_body"
-                                             style="{% if todo.is_complete==True %}background-color:rgb(1,110,78);text-decoration: line-through;{% else %}background-color: rgb(133,156,182);{% endif %} padding: 10px; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); margin-bottom: 10px;">
+                                             style="{% if todo.is_complete==True %}background-color:rgb(1,110,78);text-decoration: line-through;{% else %}background-color: rgb(133,156,182);{% endif %} padding: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); margin-bottom: 10px;">
                                             <button class="modal-trigger" data-modal-id="modal-{{ todo.id }}"
-                                                    style="background: none; border: none; color: inherit; cursor: pointer; text-align: left; width: 100%;">
+                                            style="{% if todo.is_complete==True %};text-decoration: line-through;{% endif %} border:none; transition: opacity 0.3s; background: none; cursor: pointer;">
                                                 {{ title|safe }}
                                             </button>
 
@@ -155,9 +157,13 @@
                                 </div>
                             </div>
                         </div>
+                        
                     {% endfor %}
+                    <button class="modal-trigger" data-modal-id="modal-create-{{ tag }}"
+                    style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black;{% endif %} border: solid; border-radius: 6px; text-align: center; background: none; cursor: pointer; width: 30vh; height: 2.5vh; margin-top:2%">+</button>
                 </div>
             {% endblock %}
+
         </div>
     </div>
 
