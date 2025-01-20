@@ -159,8 +159,34 @@
                         </div>
                         
                     {% endfor %}
-                    <button class="modal-trigger" data-modal-id="modal-create-{{ tag }}"
+                    <button class="modal-trigger" data-modal-id="modal-create-new-{{ result }}"
                     style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black;{% endif %} border: solid; border-radius: 6px; text-align: center; background: none; cursor: pointer; width: 30vh; height: 2.5vh; margin-top:2%">+</button>
+                    <div id="modal-create-new-{{ result }}" class="modal-overlay">
+                        <div class="modal-container"
+                             style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
+                            <h3 class="modal-title">Новый проект</h3>
+                            <span class="modal-close">&times;</span>
+                            <div class="modal-body">
+                                
+                                <form class="ui form" action="/add_tag" method="post"
+                                      style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
+                                      name="creator">
+                                    <div class="field">
+                                        {% for tag, task in result.items() %}
+                                        {{tag}}
+                                        {% endfor %}
+                                        <input type="text" name="title" placeholder="Введите название проекта"
+                                               style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"><br>
+                                        <textarea name="task-description" class="ckeditor"
+                                                  style="visibility: hidden; display: none;">Введите описание проекта</textarea>
+                                    </div>
+                                    <button class="ui teal basic button" type="submit"
+                                            style="margin-bottom: 10px; margin-left: 2.5%;">Добавить
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             {% endblock %}
 

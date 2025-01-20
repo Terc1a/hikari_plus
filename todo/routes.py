@@ -75,9 +75,9 @@ def home():
             timed_raw = timedt().timed
             dt_gmt = timedt().dt
             ws_ids = []
-            get_curr_ws = Workspace.query.filter_by(uid=current_user.id).all()
-            for ws in get_curr_ws:
-                ws_ids.append(ws.id)
+            get_curr_ws = Workspace.query.filter_by(uid=current_user.id).order_by(Workspace.id).first()
+            ws_ids.append(get_curr_ws.id)
+            print(ws_ids)
             get_curr_user_tags = Tag.query.filter(Tag.ws_id.in_((ws_ids))).all()
             tags_ids = []
             tags_names = []
@@ -670,7 +670,7 @@ def get_detail(todo_id):
     return render_template('todo/modal2.html', todo_list=one_todo, todo_tags=todo_tags)
 
 
-# поиск заметки по названию
+#поиск заметки по названию
 @app.post('/search')
 @login_required
 def search():
@@ -690,11 +690,11 @@ def search():
     one_todo = ToDo.query.filter(ToDo.title.like(search), ToDo.tag_id.in_((tags_ids))).all()
     todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
 
-    # Формируем список проектов и задач на отправку
+    #Формируем список проектов и задач на отправку
     result = {}
     for tag in tags_ids:
         for row in one_todo:
-            if tag == row.tag_id:
+            if tag == row.tag_id: 
                 tag_name = Tag.query.filter_by(id=row.tag_id).first()
                 if tag_name.title in result:
                     result[f'{tag_name.title}'].append(row.title)
@@ -705,7 +705,7 @@ def search():
         result = {}
         for tag in tags_ids:
             for row in one_todo:
-                if tag == row.tag_id:
+                if tag == row.tag_id: 
                     tag_name = Tag.query.filter_by(id=row.tag_id).first()
                     if tag_name.title in result:
                         result[f'{tag_name.title}'].append(row.title)
@@ -713,8 +713,7 @@ def search():
                         result[f'{tag_name.title}'] = [row.title]
     if not search:
         return redirect(url_for('/'))
-    return render_template('todo/index.html', todo_list=todo_list,
-                           result=result, workspace_list=todo_workspaces)
+    return render_template('todo/index.html',todo_list=todo_list, result=result, workspace_list=todo_workspaces)
 
 
 # Открываем страницу настроек
