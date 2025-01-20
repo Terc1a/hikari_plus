@@ -190,6 +190,14 @@ a:hover {
     background-color: #3e8e41;
 }
 
+.dropdown {
+    transition: 0.5s;
+}
+
+.dropdown:hover {
+    transform: scale(1.1); /* Увеличиваем масштаб */
+}
+
 
 /* Авторизация */
 #wrapper {
@@ -456,7 +464,7 @@ a:hover {
     background: none;
     color: white;
     cursor: pointer;
-    transition: opacity 0.3s;
+    transition: 0.5s;
 }
 
 .hider {
@@ -464,9 +472,35 @@ a:hover {
     background: none;
     color: white;
     cursor: pointer;
-    transition: opacity 0.3s;
+    transition: 0.5s;
+}
+
+.hider:hover {
+    transform: scale(1.1); /* Увеличиваем масштаб */
+
 }
 
 .search_button:hover {
     opacity: 0.8;
 }
+
+.modal-trigger {
+    transition: 0.5s ;
+    border:none; 
+    background: none; 
+    cursor: pointer;
+}
+
+.modal-trigger:hover {
+    transform: scale(1.1); /* Увеличиваем масштаб */
+}
+
+.task_body {
+    padding: 10px; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
+    margin-bottom: 10px;
+    transition: 0.5s ;
+}
+
+
+

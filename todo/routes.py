@@ -241,33 +241,46 @@ def add():
 
 
 # Сортируем по проектам
-@app.route('/sort/<string:todo_tag>', methods=['POST', 'GET'])
+@app.route('/sort/<string:workspace>', methods=['POST', 'GET'])
 @login_required
-def sort(todo_tag):
+def sort(workspace):
     if request.method == 'GET':
         default_value = 0
-        get_curr_user_tags = Tag.query.filter_by(uid=current_user.id, title=todo_tag).all()
+        get_curr_user_ws = Workspace.query.filter_by(uid=current_user.id, title=workspace).first()
+        ws_ids = []
         tags_ids = []
-        tags_ids = []
-        for el in get_curr_user_tags:
+        ws_ids.append(get_curr_user_ws.id)
+        tag_list = Tag.query.filter(Tag.ws_id.in_((ws_ids))).all()
+        for el in tag_list:
             tags_ids.append(el.id)
-        todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(
-            ToDo.id.desc()).all()
-        todoc_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(
-            ToDo.id.desc()).all()
+        todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+        todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).all()
+        todo_tags = Tag.query.filter(Tag.ws_id.in_((ws_ids))).distinct(Tag.title).all()
         todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
-        todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).all()
-        todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(
-            ToDo.id.desc()).all()
-        todo_list_all = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).all()
-        completed = len(todo_completed)
-        uncompleted = len(todo_uncompleted)
-        all = len(todo_list_all)
-        todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
-        return render_template('todo/index.html', todo_list=todo_list, todoc_list=todoc_list,
-                               todo_workspaces=todo_workspaces, todo_tags=todo_tags, todo_completed=completed,
-                               todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.',
-                               default_value=default_value)
+        current_workspace = Workspace.query.filter_by(title=workspace, uid=current_user.id).all()
+        result = {}
+        for tag in tags_ids:
+            if not todo_list1:
+                tag_name = Tag.query.filter_by(id=tag).first()
+                result[f'{tag_name.title}'] = ['empty']
+            for row in todo_list1:
+                if tag != row.tag_id:
+                    tag_name = Tag.query.filter_by(id=tag).first()
+                    if tag_name.title in result:
+                        pass
+                    else:
+                        result[f'{tag_name.title}'] = ['empty']
+
+                else:
+                    tag_name = Tag.query.filter_by(id=row.tag_id).first()
+                    if tag_name.title in result:
+                        result[f'{tag_name.title}'].append(row.title)
+                    else:
+                        result[f'{tag_name.title}'] = [row.title]
+        return render_template('todo/index.html', todo_list=todo_list1,todo_tags=todo_tags,
+                        title='CUBI Prot.', default_value=default_value, workspace_list=todo_workspaces,
+                        result=result, current_workspace=current_workspace)
+
     if request.method == 'POST':
         if current_user:
             check_flag = request.form.get('hider')
@@ -288,6 +301,7 @@ def sort(todo_tag):
                     ToDo.id.desc()).all()
                 todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(
                     ToDo.id.desc()).all()
+                current_workspace = Workspace.query.filter_by(title=workspace, uid=current_user.id).first()
                 completed = len(todo_completed)
                 uncompleted = len(todo_uncompleted)
                 default_value = 1
@@ -296,7 +310,7 @@ def sort(todo_tag):
                 return render_template('todo/index.html', todo_list=todo_list, todoc_list=todoc_list,
                                        todo_workspaces=todo_workspaces, todo_tags=todo_tags, todo_completed=completed,
                                        todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.',
-                                       default_value=default_value)
+                                       default_value=default_value, current_workspace=current_workspace)
         else:
             return redirect(url_for('todo/login.html'))
 
@@ -482,7 +496,7 @@ def project_stats():
     tags_ids = []
     for el in get_curr_user_tags:
         tags_ids.append(el.id)
-    tasks_all = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).all()
+    tasks_all = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).all()
     tasks_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).all()
 
     list_sorted = []
@@ -490,6 +504,7 @@ def project_stats():
     dates = []
     dates2 = []
     counter = []
+    # по дефолту выводить график для самого первого проекта из запроса, по нажатию кнопки выводить график по выбранному
 
     if request.method == 'GET':
         data_list_created = []
@@ -553,16 +568,13 @@ def project_stats():
         graphJSON = json.dumps(fig3, cls=plotly.utils.PlotlyJSONEncoder)
         return render_template('todo/project_stats.html', todo_tags=todo_tags, graphJSON=graphJSON)
 
-    # по дефолту выводить график для самого первого проекта из запроса, по нажатию кнопки выводить график по выбранному
     if request.method == 'POST':
         tagss = request.form.get('tags-list')
         print(tagss)
-        # Где-то между 500 и 510 строкой проблема. Я получаю имя тега, но почему-то не фильтрую по нему
         todo_tags = Tag.query.filter_by(uid=current_user.id).all()
-        get_curr_user_tags = Tag.query.filter_by(uid=current_user.id).all()
+        get_curr_user_tags = Tag.query.filter_by(uid=current_user.id, title=tagss).first()
         tags_ids = []
-        for el in todo_tags:
-            tags_ids.append(el.id)
+        tags_ids.append(get_curr_user_tags.id)
         # tasks_all = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
         tasks_on_tag = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).all()
         # Для графа с созданными задачами
@@ -647,7 +659,7 @@ def add_tag(workspace_id):
         db.session.add(new_tag)
         db.session.commit()
         db.session.close()
-        return redirect(url_for('home'))
+        return redirect(url_for('sort'))
     else:
         print('True')
         flash_msg = 'Проект с таким названием уже существует, выберите другое название'
@@ -671,7 +683,7 @@ def change_tag(tag_id):
     tag.descr = request.form.get('descr')
     db.session.commit()
     db.session.close()
-    return redirect(url_for('admin'))
+    return redirect(url_for('home'))
 
 
 # Удаляем проект
@@ -679,10 +691,14 @@ def change_tag(tag_id):
 @login_required
 def delete_tag(tag_id):
     tag = Tag.query.filter_by(id=tag_id).first()
+    tasks_on_tag = ToDo.query.filter_by(tag_id=tag.id).all()
+    for task in tasks_on_tag:
+        db.session.delete(task)
+        db.session.commit()
     db.session.delete(tag)
     db.session.commit()
     db.session.close()
-    return redirect(url_for('admin'))
+    return redirect(url_for('home'))
 
 
 # Получаем полное описание задачи
