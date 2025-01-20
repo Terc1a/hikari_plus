@@ -1,5 +1,8 @@
-from flask import Flask, request, render_template, url_for, redirect, make_response, flash, session, send_from_directory
-from sqlalchemy import select
+from flask import Flask, request, render_template, url_for, redirect, session, make_response, flash, send_from_directory
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import select, create_engine
+from sqlalchemy.orm import scoped_session, Session
+from sqlalchemy.orm import sessionmaker
 from todo.models import ToDo, db, Tag, News, Users, Workspace
 from datetime import datetime
 from time import gmtime, strftime
@@ -45,17 +48,17 @@ def create_app():
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     app.secret_key = 'a1dcbe59291f58c089qwer4feaf8ee8e2f44f05cdd4465e0d9c726938b2eeaab'
     db.init_app(app)
+
     ckeditor.init_app(app)
     login_manager.init_app(app)
     return app
-
 
 app = create_app()
 
 
 @login_manager.user_loader
 def load_user(user_id):
-    user = db.session.get(Users, int(user_id))
+    user = Users.query.filter_by(id=user_id).first()
     return user
 
 
@@ -77,7 +80,7 @@ def home():
             ws_ids = []
             get_curr_ws = Workspace.query.filter_by(uid=current_user.id).order_by(Workspace.id).first()
             ws_ids.append(get_curr_ws.id)
-            print(ws_ids)
+            print(ws_ids, 'ws ids for home def')
             get_curr_user_tags = Tag.query.filter(Tag.ws_id.in_((ws_ids))).all()
             tags_ids = []
             tags_names = []
@@ -85,6 +88,8 @@ def home():
             for el in get_curr_user_tags:
                 tags_ids.append(el.id)
                 tags_names.append(el.title)
+            print(tags_ids, 'tags ids for home def')
+            print(tags_names, 'tags names for home def')
             # Откат цикличных задач(в 00 GMT или же 03 MSC)
             cycle = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_cycle='checked').order_by(
                 ToDo.id.desc()).all()
@@ -98,6 +103,7 @@ def home():
                         task.create_date = timed_raw
                         task.close_date = datetime(9999, 12, 31, 00, 00, 00, 000000)
                         db.session.commit()
+                        db.session.close()
                 elif el.month == dt_gmt.month and el.day < dt_gmt.day and dt_gmt.hour >= 0:
                     for task in cycle:
                         print(task.title, '2')
@@ -105,6 +111,7 @@ def home():
                         task.create_date = timed_raw
                         task.close_date = datetime(9999, 12, 31, 00, 00, 00, 000000)
                         db.session.commit()
+                        db.session.close()
                 else:
                     if el.day < dt_gmt.day and dt_gmt.hour >= 0:
                         for task in cycle:
@@ -113,6 +120,7 @@ def home():
                             task.create_date = timed_raw
                             task.close_date = datetime(9999, 12, 31, 00, 00, 00, 000000)
                             db.session.commit()
+                            db.session.close()
                 if task.close_date is None:
                     pass
                 else:
@@ -122,23 +130,29 @@ def home():
                     else:
                         task.cycle_series = 0
                         db.session.commit()
+                        db.session.close()
             # Рендер списков задач
 
-            todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(
-                ToDo.id.desc()).all()
+            todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
             todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).all()
             # Формируем список проектов и задач на отправку
             result = {}
             for tag in tags_ids:
                 for row in todo_list1:
-                    if tag == row.tag_id:
+                    if tag != row.tag_id:
+                        tag_name = Tag.query.filter_by(id=tag).first()
+                        if tag_name.title in result:
+                            pass
+                        else:
+                            result[f'{tag_name.title}'] = ['empty']
+
+                    else:
                         tag_name = Tag.query.filter_by(id=row.tag_id).first()
                         if tag_name.title in result:
-                            value = [result.get(f'{tag_name.title}')]
                             result[f'{tag_name.title}'].append(row.title)
                         else:
                             result[f'{tag_name.title}'] = [row.title]
-
+            #print(result) #{'CUBI': ['Ознакомиться с системой', '<s>Test2</s>']}  а должно быть {'CUBI': ['Ознакомиться с системой', '<s>Test2</s>'], 'Тег 2'}
             todoc_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(
                 ToDo.id.desc()).all()
             todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
@@ -210,15 +224,19 @@ def add():
     tag_id = get_tag.id
     descr = request.form.get('task-description')
     if is_cycle == None:
+        
         new_todo = ToDo(title=title, descr=descr, tag_id=tag_id, create_date=timed_raw, is_complete=False)
         db.session.add(new_todo)
         db.session.commit()
+        db.session.close()
     else:
         cycle_series = 0
         new_todo = ToDo(title=title, descr=descr, tag_id=tag_id, create_date=timed_raw, is_complete=False,
                         is_cycle=is_cycle, cycle_series=cycle_series)
         db.session.add(new_todo)
         db.session.commit()
+        db.session.close()
+
     return redirect(url_for('home'))
 
 
@@ -309,6 +327,7 @@ def finish(todo_id):
     todo.close_date = timed_raw
     todo.time_to_complete = f'{delta}'
     db.session.commit()
+    db.session.close()
     return redirect(url_for('home'))
 
 
@@ -333,6 +352,7 @@ def update_task(todo_id):
     todo.descr = request.form.get('task-description')
     todo.create_date = timed_raw
     db.session.commit()
+    db.session.close()
     return redirect(url_for('home'))
 
 
@@ -343,6 +363,7 @@ def delete(todo_id):
     todo = ToDo.query.filter_by(id=todo_id).first()
     db.session.delete(todo)
     db.session.commit()
+    db.session.close()
     return redirect(url_for('home'))
 
 
@@ -613,22 +634,24 @@ def admin():
 
 
 # Добавляем проект
-@app.post('/add_tag')
+@app.post('/add_tag/<int:workspace_id>')
 @login_required
-def add_tag():
+def add_tag(workspace_id):
     title = request.form.get('title')
-    descr = request.form.get('descr')
+    descr = request.form.get('task-description')
     uid = current_user.id
-    check_tag_exist = Tag.query.filter_by(uid=uid).filter_by(title=title).all()
+    check_tag_exist = Tag.query.filter_by(ws_id=workspace_id).filter_by(title=title).all()
     if not check_tag_exist:
-        new_tag = Tag(title=title, descr=descr, uid=uid)
+        print('False')
+        new_tag = Tag(uid=uid,title=title, descr=descr, ws_id=workspace_id)
         db.session.add(new_tag)
         db.session.commit()
-        return redirect(url_for('admin'))
+        db.session.close()
+        return redirect(url_for('home'))
     else:
+        print('True')
         flash_msg = 'Проект с таким названием уже существует, выберите другое название'
         flash(flash_msg)
-        return redirect('http://192.168.0.17:5555/admin#openModal')
 
 
 # Получаем проект
@@ -647,6 +670,7 @@ def change_tag(tag_id):
     tag.title = request.form.get('title')
     tag.descr = request.form.get('descr')
     db.session.commit()
+    db.session.close()
     return redirect(url_for('admin'))
 
 
@@ -657,6 +681,7 @@ def delete_tag(tag_id):
     tag = Tag.query.filter_by(id=tag_id).first()
     db.session.delete(tag)
     db.session.commit()
+    db.session.close()
     return redirect(url_for('admin'))
 
 
@@ -769,6 +794,7 @@ def create_news():
     new_post = News(title=title, descr=descr, version=version, create_date=timed_raw, to_send=to_send)
     db.session.add(new_post)
     db.session.commit()
+    db.session.close()
     return redirect(url_for('admin'))
 
 
@@ -814,19 +840,23 @@ def register():
                 ws_descr = 'Проекты, связанные с CUBI'
                 db.session.add(add_user)
                 db.session.commit()
+                db.session.close()
                 get_uid = Users.query.filter_by(username=request.form.get('name')).first()
                 add_ws = Workspace(uid=get_uid.id, title=ws_title, descr=ws_descr)
                 db.session.add(add_ws)
                 db.session.commit()
+                db.session.close()
                 get_ws = Workspace.query.filter_by(username=request.form.get('name')).first()
                 add_tag = Tag(uid=get_uid.id, ws_id=get_ws.id, title=tag_title, descr=tag_descr)
                 db.session.add(add_tag)
                 db.session.commit()
+                db.session.close()
                 get_tag = Tag.query.filter_by(uid=get_uid.id).filter_by(title=tag_title).first()
                 add_task = ToDo(title=task_title, descr=task_descr, tag_id=get_tag.id, create_date=timed_raw,
                                 is_complete=False)
                 db.session.add(add_task)
                 db.session.commit()
+                db.session.close()
 
                 return redirect(url_for('home'))
         else:
@@ -897,4 +927,5 @@ def add_ws():
     new_ws = Workspace(uid=current_user.id, title=title, descr=descr)
     db.session.add(new_ws)
     db.session.commit()
+    db.session.close()
     return redirect(url_for('home'))
