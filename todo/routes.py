@@ -391,7 +391,7 @@ def stats():
     tags_ids = []
     for el in get_curr_user_tags:
         tags_ids.append(el.id)
-    todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
+    todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.id.desc()).all()
     todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).all()
     todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(
         ToDo.id.desc()).all()

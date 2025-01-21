@@ -205,14 +205,13 @@
                             <div class="field">
                                 {% endfor %}
                                 <input type="text" name="title" placeholder="Введите название проекта"
-                                    style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"><br>
+                                    style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %} width: 100%;"><br>
                                 <textarea name="task-description" class="ckeditor"
                                     style="visibility: hidden; display: none;">Введите описание проекта</textarea>
+                                    <button class="ui teal basic button" type="submit"
+                                    style="margin-bottom: 10px;">Добавить
+                                </button>
                             </div>
-                            <button class="ui teal basic button" type="submit"
-                                style="margin-bottom: 10px; margin-left: 2.5%;">Добавить
-                            </button>
-                            
                             {% endfor %}
 
                         </form>
