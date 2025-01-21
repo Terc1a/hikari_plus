@@ -152,7 +152,7 @@ def home():
             return render_template('todo/index.html', todo_list=todo_list1, todoc_list=todoc_list, todo_tags=todo_tags,
                                    todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,
                                    title='CUBI Prot.', default_value=default_value, workspace_list=todo_workspaces,
-                                   result=result)
+                                   result=result, current_workspace=get_curr_ws)
         else:
             return redirect(url_for('todo/login.html'))
     if request.method == 'POST':
@@ -241,7 +241,7 @@ def sort(workspace):
         todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).all()
         todo_tags = Tag.query.filter(Tag.ws_id.in_((ws_ids))).distinct(Tag.title).all()
         todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
-        current_workspace = Workspace.query.filter_by(title=workspace, uid=current_user.id).all()
+        current_workspace = Workspace.query.filter_by(title=workspace, uid=current_user.id).first()
         result = {}
         for tag in tags_ids:
             if not todo_list1:
