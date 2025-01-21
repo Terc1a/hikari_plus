@@ -1,19 +1,14 @@
-from flask import Flask, request, render_template, url_for, redirect, session, make_response, flash, send_from_directory
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import select, create_engine
-from sqlalchemy.orm import scoped_session, Session
-from sqlalchemy.orm import sessionmaker
+from flask import Flask, request, render_template, url_for, redirect, session,\
+make_response, flash, send_from_directory
 from todo.models import ToDo, db, Tag, News, Users, Workspace
 from datetime import datetime
-from time import gmtime, strftime
 import plotly.graph_objs as go
-import plotly.io as pio
 import plotly.utils
 import json
 import pytz
 from flask_ckeditor import CKEditor
 import flask_login
-from flask_login import current_user, login_user, login_required, UserMixin, logout_user
+from flask_login import current_user, login_user, login_required, UserMixin ,logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import os
@@ -80,7 +75,6 @@ def home():
             ws_ids = []
             get_curr_ws = Workspace.query.filter_by(uid=current_user.id).order_by(Workspace.id).first()
             ws_ids.append(get_curr_ws.id)
-            print(ws_ids, 'ws ids for home def')
             get_curr_user_tags = Tag.query.filter(Tag.ws_id.in_((ws_ids))).all()
             tags_ids = []
             tags_names = []
@@ -88,30 +82,23 @@ def home():
             for el in get_curr_user_tags:
                 tags_ids.append(el.id)
                 tags_names.append(el.title)
-            print(tags_ids, 'tags ids for home def')
-            print(tags_names, 'tags names for home def')
             # Откат цикличных задач(в 00 GMT или же 03 MSC)
-            cycle = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_cycle='checked').order_by(
-                ToDo.id.desc()).all()
+            cycle = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_cycle='checked').order_by(ToDo.id.desc()).all()
             for task in cycle:
                 el = task.create_date
                 el2 = task.close_date
                 if el.month > dt_gmt.month and el.day > dt_gmt.day:
                     if el.day >= dt_gmt.day and dt_gmt.hour >= 0:
-                        print(task.title, '1')
                         task.is_complete = not task.is_complete
                         task.create_date = timed_raw
                         task.close_date = datetime(9999, 12, 31, 00, 00, 00, 000000)
                         db.session.commit()
-                        db.session.close()
                 elif el.month == dt_gmt.month and el.day < dt_gmt.day and dt_gmt.hour >= 0:
                     for task in cycle:
-                        print(task.title, '2')
                         task.is_complete = not task.is_complete
                         task.create_date = timed_raw
                         task.close_date = datetime(9999, 12, 31, 00, 00, 00, 000000)
                         db.session.commit()
-                        db.session.close()
                 else:
                     if el.day < dt_gmt.day and dt_gmt.hour >= 0:
                         for task in cycle:
@@ -120,7 +107,7 @@ def home():
                             task.create_date = timed_raw
                             task.close_date = datetime(9999, 12, 31, 00, 00, 00, 000000)
                             db.session.commit()
-                            db.session.close()
+                db.session.close()
                 if task.close_date is None:
                     pass
                 else:
@@ -132,7 +119,6 @@ def home():
                         db.session.commit()
                         db.session.close()
             # Рендер списков задач
-
             todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
             todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).all()
             # Формируем список проектов и задач на отправку
@@ -196,6 +182,7 @@ def home():
                 default_value = 1
                 all = len(todo_list1)
                 todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
+                todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
 
                 result = {}
                 for tag in tags_ids:
@@ -208,7 +195,7 @@ def home():
                                 result[f'{tag_name.title}'] = [row.title]
                 return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags,
                                        todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,
-                                       title='CUBI Prot.', default_value=default_value, result=result)
+                                       title='CUBI Prot.', default_value=default_value, result=result, workspace_list=todo_workspaces)
         else:
             return redirect(url_for('todo/login.html'))
 
@@ -224,18 +211,16 @@ def add():
     tag_id = get_tag.id
     descr = request.form.get('task-description')
     if is_cycle == None:
-        
         new_todo = ToDo(title=title, descr=descr, tag_id=tag_id, create_date=timed_raw, is_complete=False)
         db.session.add(new_todo)
         db.session.commit()
-        db.session.close()
     else:
         cycle_series = 0
         new_todo = ToDo(title=title, descr=descr, tag_id=tag_id, create_date=timed_raw, is_complete=False,
                         is_cycle=is_cycle, cycle_series=cycle_series)
         db.session.add(new_todo)
         db.session.commit()
-        db.session.close()
+    db.session.close()
 
     return redirect(url_for('home'))
 
@@ -324,6 +309,7 @@ def update(todo_id):
     todo.is_complete = not todo.is_complete
     todo.close_date = timed_raw
     db.session.commit()
+    db.session.close()
     return redirect(url_for('home'))
 
 
@@ -362,7 +348,6 @@ def update_task(todo_id):
     timed_raw = timedt().timed
     todo = ToDo.query.filter_by(id=todo_id).first()
     todo.title = request.form.get('title')
-    # todo.tag = request.form.get('tags-list')
     todo.descr = request.form.get('task-description')
     todo.create_date = timed_raw
     db.session.commit()
@@ -482,7 +467,6 @@ def stats():
 
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     graphJSON2 = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
-    graphJSON3 = json.dumps(fig3, cls=plotly.utils.PlotlyJSONEncoder)
 
     return render_template('todo/stats.html', graphJSON=graphJSON, graphJSON2=graphJSON2)
 
@@ -570,7 +554,6 @@ def project_stats():
 
     if request.method == 'POST':
         tagss = request.form.get('tags-list')
-        print(tagss)
         todo_tags = Tag.query.filter_by(uid=current_user.id).all()
         get_curr_user_tags = Tag.query.filter_by(uid=current_user.id, title=tagss).first()
         tags_ids = []
@@ -637,8 +620,7 @@ def project_stats():
 @login_required
 def admin():
     if current_user.id != 1:
-        todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
-        return render_template('todo/admin.html', tag_list=todo_tags)
+        return redirect(url_for('home'))
     else:
         news_list = News.query.all()
         todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
