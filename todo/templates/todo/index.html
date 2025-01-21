@@ -96,9 +96,9 @@
                 {% for title in task %}
                 {% if todo.title == title %}
                 <div class="task_body"
-                    style="{% if todo.is_complete==True %}background-color:rgb(1,110,78);text-decoration: line-through;{% else %}background-color: rgb(133,156,182);{% endif %}">
+                    style="{% if todo.is_complete==True %}background-color:rgb(1,110,78);text-decoration: line-through;{% else %}background-color: rgb(133,156,182);{% endif %} align-items: center; justify-content: center; display: flex;">
                     <button class="modal-trigger" data-modal-id="modal-{{ todo.id }}"
-                        style="{% if todo.is_complete==True %};text-decoration: line-through;{% endif %}">
+                        style="{% if todo.is_complete==True %};text-decoration: line-through;{% endif %} ">
                         {{ title|safe }}
                     </button>
 

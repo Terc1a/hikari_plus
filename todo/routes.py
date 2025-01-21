@@ -1,5 +1,4 @@
-from flask import Flask, request, render_template, url_for, redirect, session,\
-make_response, flash, send_from_directory
+from flask import Flask, request, render_template, url_for, redirect, session, make_response, flash, send_from_directory
 from todo.models import ToDo, db, Tag, News, Users, Workspace
 from datetime import datetime
 import plotly.graph_objs as go
@@ -272,30 +271,40 @@ def sort(workspace):
             if check_flag == '1':
                 return redirect(url_for('home'))
             else:
-                get_curr_user_tags = Tag.query.filter_by(uid=current_user.id, title=todo_tag).all()
+                ws_ids = []
+                get_curr_ws = Workspace.query.filter_by(uid=current_user.id).all()
+                for ws in get_curr_ws:
+                    ws_ids.append(ws.id)
+                get_curr_user_tags = Tag.query.filter(Tag.ws_id.in_((ws_ids))).all()
                 tags_ids = []
                 for el in get_curr_user_tags:
                     tags_ids.append(el.id)
                 todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(
                     ToDo.id.desc()).all()
                 todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.id.desc()).all()
-                todoc_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(
-                    ToDo.id.desc()).all()
-                todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
                 todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(
                     ToDo.id.desc()).all()
                 todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(
                     ToDo.id.desc()).all()
-                current_workspace = Workspace.query.filter_by(title=workspace, uid=current_user.id).first()
                 completed = len(todo_completed)
                 uncompleted = len(todo_uncompleted)
                 default_value = 1
                 all = len(todo_list1)
                 todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
-                return render_template('todo/index.html', todo_list=todo_list, todoc_list=todoc_list,
-                                       todo_workspaces=todo_workspaces, todo_tags=todo_tags, todo_completed=completed,
-                                       todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.',
-                                       default_value=default_value, current_workspace=current_workspace)
+                todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
+
+                result = {}
+                for tag in tags_ids:
+                    for row in todo_list:
+                        if tag == row.tag_id:
+                            tag_name = Tag.query.filter_by(id=row.tag_id).first()
+                            if tag_name.title in result:
+                                result[f'{tag_name.title}'].append(row.title)
+                            else:
+                                result[f'{tag_name.title}'] = [row.title]
+                return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, 
+                                todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.', 
+                                default_value=default_value, result=result, workspace_list=todo_workspaces)
         else:
             return redirect(url_for('todo/login.html'))
 
