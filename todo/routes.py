@@ -643,6 +643,7 @@ def add_tag(workspace_id):
     title = request.form.get('title')
     descr = request.form.get('task-description')
     uid = current_user.id
+    print(workspace_id)
     check_tag_exist = Tag.query.filter_by(ws_id=workspace_id).filter_by(title=title).all()
     if not check_tag_exist:
         print('False')
@@ -650,7 +651,7 @@ def add_tag(workspace_id):
         db.session.add(new_tag)
         db.session.commit()
         db.session.close()
-        return redirect(url_for('sort'))
+        return redirect(url_for('home'))
     else:
         print('True')
         flash_msg = 'Проект с таким названием уже существует, выберите другое название'

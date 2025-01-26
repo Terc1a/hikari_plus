@@ -6,7 +6,7 @@
     {{ ckeditor.load() }}
     <div class='container' style="display: grid; grid-template-columns:15% 85%; ">
         <div class="workspaces"
-             style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white; border:solid white;{% else %} background-color: rgb(209,205,194); border:solid black;{% endif %}margin-right: 2%; grid-column-start: 1; ">
+             style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white; {% else %} background-color: #FAFAFA; {% endif %}margin-right: 2%; grid-column-start: 1; ">
             {% block workspaces %}
             {% endblock %}
             Рабочие области:<br>
@@ -46,7 +46,7 @@
         </div>
 
         <div class="tasks_area"
-             style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white; border:solid white;{% else %} background-color: rgb(209,205,194); border:solid black;{% endif %}grid-column-start: 2;">
+             style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white; {% else %} background-color: #FAFAFA;{% endif %}grid-column-start: 2;">
             {% block tasks %}
                 <div class="list"
                      style="display: grid; grid-template-columns: repeat(auto-fit, minmax(30vh, 1fr));
@@ -54,8 +54,7 @@
             scrollbar-width: thin; touch-action: pan-x;">
                     {% for tag, task in result.items() %}
                         <div class="task_head" style="width: 30vh;">
-                            <p
-                                    style="{% if request.cookies.get('font')=='black' %}background-color:rgb(56,56,56);color:white;{% else %} background-color: rgb(209,205,194); color: black{% endif %}; text-align: center; margin-bottom: 2.5%; ">
+                            <p style="{% if request.cookies.get('font')=='black' %}background-color:rgb(56,56,56);color:white;{% else %} background-color:rgb(171,246,0); color: black{% endif %}; text-align: center; margin-bottom: 2.5%; ">
                                 <button class="modal-trigger" data-modal-id="modal-open-{{ tag }}" style="">
                                     {{ tag }}
                                 </button>
@@ -88,9 +87,9 @@
                                 {% for title in task %}
                                     {% if todo.title == title %}
                                         <div class="task_body"
-                                             style="{% if todo.is_complete==True %}background-color:rgb(1,110,78);text-decoration: line-through;{% else %}background-color: rgb(133,156,182);{% endif %} align-items: center; justify-content: center; display: flex;">
+                                             style="{% if todo.is_complete==True %}background-color:rgb(171,246,0);text-decoration: line-through;{% else %}background-color: rgb(233,233,233);{% endif %} align-items: center; justify-content: center; display: flex;">
                                             <button class="modal-trigger" data-modal-id="modal-{{ todo.id }}"
-                                                    style="{% if todo.is_complete==True %};text-decoration: line-through;{% endif %} ">
+                                                    style="{% if todo.is_complete==True %};text-decoration: line-through;{% endif %}">
                                                 {{ title|safe }}
                                             </button>
 
@@ -151,7 +150,7 @@
                                 {% endfor %}
                             {% endfor %}
 
-                            <button class="modal-trigger" data-modal-id="modal-create-{{ tag }}"
+                            <button class="modal-trigger2" data-modal-id="modal-create-{{ tag }}"
                                     style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black;{% endif %} margin-top: 5%; border: solid; border-radius: 6px; width: 100%; text-align: center; display: block; background: none; cursor: pointer;">
                                 +
                             </button>

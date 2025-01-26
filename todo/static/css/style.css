@@ -484,6 +484,14 @@ a:hover {
     opacity: 0.8;
 }
 
+p{
+    transition: 0.5s;
+}
+
+p:hover{
+    box-shadow: 4px 4px 2px 1px rgba(0, 0, 0);
+}
+
 .modal-trigger {
     transition: 0.5s ;
     border:none; 
@@ -491,8 +499,21 @@ a:hover {
     cursor: pointer;
 }
 
-.modal-trigger:hover {
-    transform: scale(1.1); /* Увеличиваем масштаб */
+.task_body:hover {
+
+    box-shadow: 4px 4px 2px 5px rgba(0, 0, 0);
+}
+
+.modal-trigger2 {
+    transition: 0.5s ;
+    border:none; 
+    background: none; 
+    cursor: pointer;
+}
+
+.modal-trigger2:hover {
+    transform: scale(1.1);
+    box-shadow: 4px 4px 2px 1px rgba(0, 0, 0);
 }
 
 .task_body {
