@@ -194,7 +194,7 @@ def home():
                                 result[f'{tag_name.title}'] = [row.title]
                 return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags,
                                        todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,
-                                       title='CUBI Prot.', default_value=default_value, result=result, workspace_list=todo_workspaces)
+                                       title='CUBI Prot.', default_value=default_value, result=result, workspace_list=todo_workspaces, current_workspace=get_curr_ws)
         else:
             return redirect(url_for('todo/login.html'))
 
@@ -292,6 +292,7 @@ def sort(workspace):
                 all = len(todo_list1)
                 todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
                 todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
+                current_workspace = Workspace.query.filter_by(title=workspace, uid=current_user.id).first()
 
                 result = {}
                 for tag in tags_ids:
@@ -304,7 +305,7 @@ def sort(workspace):
                                 result[f'{tag_name.title}'] = [row.title]
                 return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, 
                                 todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.', 
-                                default_value=default_value, result=result, workspace_list=todo_workspaces)
+                                default_value=default_value, result=result, workspace_list=todo_workspaces, current_workspace=current_workspace)
         else:
             return redirect(url_for('todo/login.html'))
 

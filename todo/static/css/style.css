@@ -499,10 +499,7 @@ p:hover{
     cursor: pointer;
 }
 
-.task_body:hover {
 
-    box-shadow: 4px 4px 2px 5px rgba(0, 0, 0);
-}
 
 .modal-trigger2 {
     transition: 0.5s ;
@@ -512,16 +509,18 @@ p:hover{
 }
 
 .modal-trigger2:hover {
-    transform: scale(1.1);
     box-shadow: 4px 4px 2px 1px rgba(0, 0, 0);
 }
 
 .task_body {
     padding: 10px; 
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2); 
+    box-shadow: 0px 8px 8px -3px rgba(0, 0, 0, 0.2);
     margin-bottom: 10px;
     transition: 0.5s ;
 }
 
+.task_body:hover {
 
+    
+}
 
