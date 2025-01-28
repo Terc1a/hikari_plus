@@ -764,10 +764,10 @@ def article():
     if request.method == 'POST':
         res = make_response("")
         res.set_cookie("font", request.form.get('font'), 60 * 60 * 24 * 15)
-        res.headers['location'] = url_for('settings')
+        res.headers['location'] = url_for('home')
         return res, 302
 
-    return render_template('todo/settings.html')
+    return redirect(url_for('home'))
 
 
 # Изменяем эффекты на заднем фоне
@@ -777,10 +777,10 @@ def snow():
     if request.method == 'POST':
         res = make_response("")
         res.set_cookie("snow_state", request.form.get('snow_state'), 60 * 60 * 24 * 15)
-        res.headers['location'] = url_for('settings')
+        res.headers['location'] = url_for('home')
         return res, 302
 
-    return render_template('todo/settings.html')
+    return  redirect(url_for('home'))
 
 
 # Переходим на страницу новостей

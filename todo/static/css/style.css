@@ -554,15 +554,14 @@ p:hover{
 
 
 .modal-trigger2 {
+    font-family: Roboto;
+    font-weight: 400;
     transition: 0.5s ;
     border:none; 
     background: none; 
     cursor: pointer;
 }
 
-.modal-trigger2:hover {
-    box-shadow: 4px 4px 2px 1px rgba(0, 0, 0);
-}
 
 .task_body {
     padding: 10px; 
