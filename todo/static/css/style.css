@@ -4,13 +4,65 @@
 
 @font-face {
     font-family: Roboto-Regular;
-    src: url('/fonts/Roboto-Regular.ttf') format("truetype");
+    font-weight: 300;
+    src: url('../../fonts/Roboto-Regular.ttf') format("truetype");
+}
+
+
+.open-sans-300 {
+  font-family: "Open Sans", serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  font-variation-settings:
+    "wdth" 100;
 }
 
 body {
-    font-family: Roboto-Regular;
     transition: background-color 0.3s ease;
     margin: 0;
+}
+
+.workspaces {
+    font-family: Roboto;
+    font-weight: 400;
+}
+
+.modal-trigger {
+    font-family: Roboto;
+    font-weight: 400;
+}
+
+.task_body {
+    font-family: Roboto;
+    font-weight: 400;
+    width: 95%; 
+    margin-left: 2.25%;
+    margin-right:2.25%;  
+    background-color: white;
+    align-items: center; 
+    justify-content: center; 
+    display: flex;   
+
+}
+
+.task_head {
+    width: 30vh;
+}
+
+.task-list {
+    background-color: #e9ecef;  
+    box-shadow: 0px 8px 8px 5px rgba(0, 0, 0, 0.2); 
+    border: solid #F1F2F4; 
+    border-radius: 15px; 
+    border-width: 2px; 
+    margin-top: 2%; 
+    margin-left: 2%;
+}
+
+.tities_list {
+    max-height: 75vh; 
+    overflow-y: auto;
 }
 
 body.light {
@@ -519,8 +571,56 @@ p:hover{
     transition: 0.5s ;
 }
 
-.task_body:hover {
-
-    
+.dropbtn2 {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
 }
+
+/* Контейнер <div> - необходим для размещения выпадающего содержимого */
+
+
+/* Выпадающее содержимое (скрыто по умолчанию) */
+.dropdown-content2 {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+/* Ссылки внутри выпадающего списка */
+.dropdown-content2 a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Изменение цвета выпадающих ссылок при наведении курсора */
+.dropdown-content2 a:hover {
+    background-color: #ddd;
+}
+
+/* Показать выпадающее меню при наведении курсора */
+.dropdown2:hover .dropdown-content2 {
+    display: block;
+}
+
+/* Изменение цвета фона кнопки раскрывающегося списка при отображении содержимого раскрывающегося списка */
+.dropdown2:hover .dropbtn2 {
+    background-color: #3e8e41;
+}
+
+.dropdown2 {
+    transition: 0.5s;
+}
+
+.dropdown2:hover {
+    transform: scale(1.1); /* Увеличиваем масштаб */
+}
+
 

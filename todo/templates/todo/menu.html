@@ -1,13 +1,12 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 {% block content %}
-<div class="header" style="display: grid; grid-template-columns: 5%  10% 10% 70%; width: 100vw;">
+<div class="header" style="display: grid; grid-template-columns: 5%  10% 10% 60% 10%; width: 100vw;">
     <div class="dropdown" style="width: 3vh; ">
     <button class="dropbtn" style="background-color:rgb(1,110,78)">≡</button>
     <div class="dropdown-content" style="background-color: rgb(133,156,182);">
         <li style="  list-style-type: none;margin: 0;padding: 0;">
             <a href="/">Главная</a>
             <a href="/task_stats">Статистика</a>
-            <a href="/settings">Настройки</a>
             <a href="/release">Что нового</a>
             <a href="/logout">Выйти</a>
         </li>
@@ -30,5 +29,29 @@
 {% else %}
 <img src="/static/todo_logo_noback_light.png" style="margin-left: 10%;margin-right: 25%; width: 25vw;">
 {% endif %}
+<div class="dropdown2" style="width: 3vh; margin-left: 75%;">
+    <button class="dropbtn2" style="background-color:rgb(1,110,78)">⚙</button>
+    <div class="dropdown-content2" style="background-color: rgb(133,156,182);">
+        Тема: <br>
+        <form action="/change_theme" method="post">
+            <select name="font" onchange="submit()">
+                <option value="">---</option>
+        
+            <option value="black" {% if request.cookies.get('font') == 'black' %}selected{% endif %}>dark</option>
+            <option value="white" {% if request.cookies.get('font') == 'white' %}selected{% endif %}>light</option>
+            </select>    
+            </form>
+            Анимации: <br>
+<form action="/change_snow_state" method="post">
+    <select name="snow_state" onchange="submit()">
+        <option value="">---</option>
+        <option value="on" {% if request.cookies.get('snow_state') == 'on' %}selected{% endif %}>on</option>
+        <option value="off" {% if request.cookies.get('snow_state') == 'off' %}selected{% endif %}>off</option>
+        </select>  
+</form>
+            </div>
+            
+    </div>
 </div>
+
 {% endblock content %}

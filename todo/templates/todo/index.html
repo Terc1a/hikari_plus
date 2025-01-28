@@ -6,7 +6,7 @@
     {{ ckeditor.load() }}
     <div class='container' style="display: grid; grid-template-columns:15% 85%; ">
         <div class="workspaces"
-             style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white; {% else %} background-color: #FBC1AA; {% endif %}margin-right: 2%; grid-column-start: 1; ">
+             style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white; {% else %} background-color: #FCD1A8; {% endif %}margin-right: 2%; grid-column-start: 1; ">
             {% block workspaces %}
             {% endblock %}
             Рабочие области:<br>
@@ -50,10 +50,10 @@
             {% block tasks %}
                 <div class="list"
                      style="display: grid; grid-template-columns: repeat(auto-fit, minmax(30vh, 1fr));
-            grid-auto-flow: column; overflow-x: auto; height: 90vh; grid-gap: 15px;">
+            grid-auto-flow: column; overflow-x: auto; height: 93vh; grid-gap: 15px;">
                     {% for tag, task in result.items() %}
-                        <div class="task_head" style="width: 30vh;">
-                            <div class="task-list" style="background-color: #e9ecef;  box-shadow: 0px 8px 8px 5px rgba(0, 0, 0, 0.2); border: solid #F1F2F4; border-radius: 15px; border-width: 2px; margin-top: 2%; margin-left: 2%;">
+                        <div class="task_head">
+                            <div class="task-list">
                             <p style="{% if request.cookies.get('font')=='black' %}background-color:rgb(56,56,56);color:white;{% else %} color: black{% endif %}; text-align: left; margin-bottom: 2.5%; ">
                                 <button class="modal-trigger" data-modal-id="modal-open-{{ tag }}" style="font-weight: bold; padding-left: 2%; padding-top: 4%; padding-bottom: 2%;">
                                     {{ tag }}
@@ -82,14 +82,13 @@
                                     </button>
                                 </div>
                             </div>
-<div class="some_shit" style=" max-height: 78vh; overflow-y: auto;">
+<div class="tities_list">
                             {% for todo in todo_list %}
                                 {% for title in task %}
                                     {% if todo.title == title %}
                                         <div class="task_body"
-                                             style="{% if todo.is_complete==True %}border: solid rgb(171,246,0);   border-radius: 15px; border-width: 2px;text-decoration: line-through;{% else %}border:solid #85B8FF; border-width: 2px; align-items: center; justify-content: center; display: flex;   border-radius: 15px;{% endif %}   width: 95%; margin-left: 2.25%;margin-right:2.25%;  background-color: white; ">
-                                            <button class="modal-trigger" data-modal-id="modal-{{ todo.id }}"
-                                                    style="{% if todo.is_complete==True %};text-decoration: line-through;{% endif %}  ">
+                                             style="{% if todo.is_complete==True %}border: solid rgb(171,246,0);   border-radius: 15px; border-width: 2px;text-decoration: line-through;{% else %}border:solid #85B8FF; border-width: 2px; border-radius: 15px;{% endif %}">
+                                            <button class="modal-trigger" data-modal-id="modal-{{ todo.id }}">
                                                 {{ title|safe }}
                                             </button>
 
@@ -186,8 +185,8 @@
                         </div>
                     {% endfor %}
                     <button class="modal-trigger" data-modal-id="modal-create-new-{{ result }}"
-                            style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black;{% endif %} border: solid; border-radius: 6px; text-align: center; background: none; cursor: pointer; width: 30vh; height: 2.5vh; margin-top:2%">
-                        +
+                            style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black; background-color: #E9ECEF;{% endif %} border: solid #E9ECEF; box-shadow: 0px 8px 8px -3px rgba(0, 0, 0, 0.2);  border-radius: 6px; text-align: center; cursor: pointer; width: 30vh; height: 2.5vh; margin-top:2%">
+                        + Добавить проект
                     </button>
                     {% for workspace in workspace_list %}
                         <div id="modal-create-new-{{ result }}" class="modal-overlay">
