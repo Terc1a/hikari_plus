@@ -59,7 +59,7 @@ def load_user(user_id):
 @login_manager.unauthorized_handler
 def unauthorized():
     # do stuff
-    return render_template('todo/login.html')
+    return render_template('todo/auth/login.html')
 
 
 # Главная страница
@@ -149,12 +149,12 @@ def home():
             uncompleted = len(todo_uncompleted)
             all = len(todo_list1)
             todo_tags = Tag.query.filter_by(uid=current_user.id, ws_id=get_curr_ws.id).distinct(Tag.title)
-            return render_template('todo/index.html', todo_list=todo_list1, todoc_list=todoc_list, todo_tags=todo_tags,
+            return render_template('todo/main/index.html', todo_list=todo_list1, todoc_list=todoc_list, todo_tags=todo_tags,
                                    todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,
                                    title='CUBI Prot.', default_value=default_value, workspace_list=todo_workspaces,
                                    result=result, current_workspace=get_curr_ws)
         else:
-            return redirect(url_for('todo/login.html'))
+            return redirect(url_for('todo/auth/login.html'))
     if request.method == 'POST':
         if current_user:
             check_flag = request.form.get('hider')
@@ -196,7 +196,7 @@ def home():
                                        todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,
                                        title='CUBI Prot.', default_value=default_value, result=result, workspace_list=todo_workspaces, current_workspace=get_curr_ws)
         else:
-            return redirect(url_for('todo/login.html'))
+            return redirect(url_for('todo/auth/login.html'))
 
 
 # Создаем пост
@@ -261,7 +261,7 @@ def sort(workspace):
                         result[f'{tag_name.title}'].append(row.title)
                     else:
                         result[f'{tag_name.title}'] = [row.title]
-        return render_template('todo/index.html', todo_list=todo_list1,todo_tags=todo_tags,
+        return render_template('todo/main/index.html', todo_list=todo_list1,todo_tags=todo_tags,
                         title='CUBI Prot.', default_value=default_value, workspace_list=todo_workspaces,
                         result=result, current_workspace=current_workspace)
 
@@ -303,11 +303,11 @@ def sort(workspace):
                                 result[f'{tag_name.title}'].append(row.title)
                             else:
                                 result[f'{tag_name.title}'] = [row.title]
-                return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags, 
+                return render_template('todo/main/index.html', todo_list=todo_list, todo_tags=todo_tags, 
                                 todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.', 
                                 default_value=default_value, result=result, workspace_list=todo_workspaces, current_workspace=current_workspace)
         else:
-            return redirect(url_for('todo/login.html'))
+            return redirect(url_for('todo/auth/login.html'))
 
 
 # Изменяем статус задачи
@@ -342,13 +342,13 @@ def finish(todo_id):
 
 
 # Получаем задачу
-@app.get('/get_task/<int:todo_id>')
-@login_required
-def get_task(todo_id):
-    one_todo = ToDo.query.filter_by(id=todo_id).all()
-    todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
+# @app.get('/get_task/<int:todo_id>')
+# @login_required
+# def get_task(todo_id):
+#     one_todo = ToDo.query.filter_by(id=todo_id).all()
+#     todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
 
-    return render_template('todo/modal.html', todo_list=one_todo, todo_tags=todo_tags)
+#     return render_template('todo/modal.html', todo_list=one_todo, todo_tags=todo_tags)
 
 
 # Изменяем задачу
@@ -478,7 +478,7 @@ def stats():
     graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     graphJSON2 = json.dumps(fig2, cls=plotly.utils.PlotlyJSONEncoder)
 
-    return render_template('todo/stats.html', graphJSON=graphJSON, graphJSON2=graphJSON2)
+    return render_template('todo/stats/stats.html', graphJSON=graphJSON, graphJSON2=graphJSON2)
 
 
 # Статистика по проектам
@@ -560,7 +560,7 @@ def project_stats():
         for el in counter:
             fig3.add_trace(el)
         graphJSON = json.dumps(fig3, cls=plotly.utils.PlotlyJSONEncoder)
-        return render_template('todo/project_stats.html', todo_tags=todo_tags, graphJSON=graphJSON)
+        return render_template('todo/stats/project_stats.html', todo_tags=todo_tags, graphJSON=graphJSON)
 
     if request.method == 'POST':
         tagss = request.form.get('tags-list')
@@ -622,7 +622,7 @@ def project_stats():
     for el in counter:
         fig3.add_trace(el)
     graphJSON = json.dumps(fig3, cls=plotly.utils.PlotlyJSONEncoder)
-    return render_template('todo/project_stats.html', todo_tags=todo_tags, graphJSON=graphJSON)
+    return render_template('todo/stats/project_stats.html', todo_tags=todo_tags, graphJSON=graphJSON)
 
 
 # Админка
@@ -634,7 +634,7 @@ def admin():
     else:
         news_list = News.query.all()
         todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
-        return render_template('todo/admin.html', tag_list=todo_tags, news_list=news_list)
+        return render_template('todo/main/admin.html', tag_list=todo_tags, news_list=news_list)
 
 
 # Добавляем проект
@@ -660,11 +660,11 @@ def add_tag(workspace_id):
 
 
 # Получаем проект
-@app.get('/get_tag/<int:tag_id>')
-@login_required
-def get_tag(tag_id):
-    one_tag = Tag.query.filter_by(id=tag_id).all()
-    return render_template('todo/tag_modal.html', tag_list=one_tag)
+# @app.get('/get_tag/<int:tag_id>')
+# @login_required
+# def get_tag(tag_id):
+#     one_tag = Tag.query.filter_by(id=tag_id).all()
+#     return render_template('todo/tag_modal.html', tag_list=one_tag)
 
 
 # Изменяем проект
@@ -673,6 +673,7 @@ def get_tag(tag_id):
 def change_tag(tag_id):
     tag = Tag.query.filter_by(id=tag_id).first()
     tag.title = request.form.get('title')
+    tag.descr = request.form.get('task-description')
     db.session.commit()
     db.session.close()
     return redirect(url_for('home'))
@@ -682,7 +683,9 @@ def change_tag(tag_id):
 @app.get('/delete_tag/<int:tag_id>')
 @login_required
 def delete_tag(tag_id):
+    print(tag_id)
     tag = Tag.query.filter_by(id=tag_id).first()
+    print(tag.title)
     tasks_on_tag = ToDo.query.filter_by(tag_id=tag.id).all()
     for task in tasks_on_tag:
         db.session.delete(task)
@@ -694,13 +697,13 @@ def delete_tag(tag_id):
 
 
 # Получаем полное описание задачи
-@app.get('/get_detail/<int:todo_id>')
-@login_required
-def get_detail(todo_id):
-    one_todo = ToDo.query.filter_by(id=todo_id).all()
-    todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
+# @app.get('/get_detail/<int:todo_id>')
+# @login_required
+# def get_detail(todo_id):
+#     one_todo = ToDo.query.filter_by(id=todo_id).all()
+#     todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
 
-    return render_template('todo/modal2.html', todo_list=one_todo, todo_tags=todo_tags)
+#     return render_template('todo/modal2.html', todo_list=one_todo, todo_tags=todo_tags)
 
 
 #поиск заметки по названию
@@ -746,14 +749,14 @@ def search():
                         result[f'{tag_name.title}'] = [row.title]
     if not search:
         return redirect(url_for('/'))
-    return render_template('todo/index.html',todo_list=todo_list, result=result, workspace_list=todo_workspaces)
+    return render_template('todo/main/index.html',todo_list=todo_list, result=result, workspace_list=todo_workspaces)
 
 
 # Открываем страницу настроек
-@app.route('/settings')
-@login_required
-def settings():
-    return render_template('todo/settings.html')
+# @app.route('/settings')
+# @login_required
+# def settings():
+#     return render_template('todo/settings.html')
 
 
 # Изменяем тему приложения
@@ -787,7 +790,7 @@ def snow():
 def release():
     news_list = News.query.all()
 
-    return render_template('todo/about.html', news_list=news_list)
+    return render_template('todo/content/about.html', news_list=news_list)
 
 
 # Cоздаем новость
@@ -810,7 +813,7 @@ def create_news():
 @app.route("/login", methods=["POST", "GET"])
 def login():
     if request.method == "GET":
-        return render_template('todo/login.html')
+        return render_template('todo/auth/login.html')
     if request.method == "POST":
         user = Users.query.filter_by(username=request.form['name']).first()
         if user and check_password_hash(user.password, request.form['psw']):
@@ -870,7 +873,7 @@ def register():
         else:
             flash('Длина каждого поля не может быть меньше 4 символов')
 
-    return render_template("todo/register.html", title="Регистрация")
+    return render_template("todo/auth/register.html", title="Регистрация")
 
 
 # Выходим из системы
@@ -885,7 +888,7 @@ def logout():
 # Рендерим страницу с гайдами
 @app.route('/guides')
 def guides():
-    return render_template('todo/guides.html', title='Гайды')
+    return render_template('todo/content/guides.html', title='Гайды')
 
 
 # Загрузка файлов - пока неактуально
