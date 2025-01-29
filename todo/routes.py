@@ -148,7 +148,7 @@ def home():
             completed = len(todo_completed)
             uncompleted = len(todo_uncompleted)
             all = len(todo_list1)
-            todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
+            todo_tags = Tag.query.filter_by(uid=current_user.id, ws_id=get_curr_ws.id).distinct(Tag.title)
             return render_template('todo/index.html', todo_list=todo_list1, todoc_list=todoc_list, todo_tags=todo_tags,
                                    todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,
                                    title='CUBI Prot.', default_value=default_value, workspace_list=todo_workspaces,

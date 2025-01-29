@@ -51,6 +51,7 @@
         <div class="list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(30vh, 1fr));
             grid-auto-flow: column; overflow-x: auto; height: 93vh; grid-gap: 15px;">
             {% for tag, task in result.items() %}
+            
             <div class="task_head">
                 <div class="task-list">
                     <p
@@ -60,29 +61,43 @@
                             {{ tag }}
                         </button>
                     </p>
+                    {% for tagg in todo_tags %}
                     <div id="modal-open-{{ tag }}" class="modal-overlay">
                         <div class="modal-container"
                             style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
                             <h3 class="modal-title">{{ tag }}</h3>
-
-                            {% for tagg in todo_tags %}
-                            {% if tag == tagg.title %}
                             <span class="modal-close">&times;</span>
-                            <div class="modal-body">
-                                {{ tagg.descr|safe }}<br>
-                                <button class="modal-trigger ui yellow basic button"
-                                    data-modal-id="modal-change-tag-{{ tagg.id }}">
-                                    Изменить
-                                </button>
-                                <a class="ui negative basic button" href="/delete_tag/{{ tagg.id }}">Удалить</a>
-                            </div>
-                            {% endif %}
-                            {% endfor %}
+                            
+                            <button class="modal-trigger ui yellow basic button"
+                            data-modal-id="modal-change-tag-{{ tag }}">
+                            Изменить
+                        </button>
+                        <a class="ui negative basic button" href="/delete_tag/{{ tag.id }}">Удалить</a>
                             <button class="ui teal basic button" type="submit"
                                 style="margin: 10px; margin-left: 2.5%;">Сохранить
                             </button>
                         </div>
                     </div>
+                    {% endfor %}
+                    {% for tagg in todo_tags %}
+                    <div id="modal-change-tag-{{ tag }}" class="modal-overlay">      
+                        <div class="modal-container"
+                            style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
+                            <h3 class="modal-title">{{ tag }}</h3>
+                            <span class="modal-close">&times;</span>  
+                            <form class="modal-body" action="/change_tag/{{ tagg.id }}" method="post">
+                                <input type="text" name="title" placeholder="Введите название проекта"
+                                    style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
+                                    value="{{ tagg.title }}"><br>
+                                <button class="ui teal basic button" type="submit"
+                                    style="margin: 10px; margin-left: 2.5%;">Сохранить
+                                </button>
+                            </form> 
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    
                     <div class="tities_list">
                         {% for todo in todo_list %}
                         {% for title in task %}
@@ -145,6 +160,7 @@
                         {% endif %}
                         {% endfor %}
                         {% endfor %}
+                        
                     </div>
                     <button class="modal-trigger" data-modal-id="modal-create-{{ tag }}"
                         style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %} background-color: #F1F2F4; color: black;{% endif %} margin-top: 5%; width: 100%; text-align: center; display: block; background: none; cursor: pointer; padding-bottom: 5%;">
@@ -179,10 +195,12 @@
                 </div>
             </div>
             {% endfor %}
+            
             <button class="modal-trigger" data-modal-id="modal-create-new-{{ result }}"
                 style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black; background-color: #E9ECEF;{% endif %} border: solid #E9ECEF; box-shadow: 0px 8px 8px -3px rgba(0, 0, 0, 0.2);  border-radius: 6px; text-align: center; cursor: pointer; width: 30vh; height: 2.5vh; margin-top:2%">
                 + Добавить проект
             </button>
+
             {% for workspace in workspace_list %}
             <div id="modal-create-new-{{ result }}" class="modal-overlay">
                 <div class="modal-container"
