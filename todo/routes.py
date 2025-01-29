@@ -673,7 +673,6 @@ def get_tag(tag_id):
 def change_tag(tag_id):
     tag = Tag.query.filter_by(id=tag_id).first()
     tag.title = request.form.get('title')
-    tag.descr = request.form.get('descr')
     db.session.commit()
     db.session.close()
     return redirect(url_for('home'))
