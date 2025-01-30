@@ -44,3 +44,4 @@ class Users(db.Model, UserMixin):
     email = db.Column(db.String(100))
     password = db.Column(db.String(100))
     register_date = db.Column(db.String(100))
+    avatar = db.Column(db.LargeBinary)

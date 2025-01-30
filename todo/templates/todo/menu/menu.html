@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 {% block content %}
-<div class="header" style="display: grid; grid-template-columns: 5%  10% 10% 60% 10%; width: 100vw;">
+<div class="header" style="display: grid; grid-template-columns: 5%  10% 10% 60% 5% 5%; width: 100vw;">
     <div class="dropdown" style="width: 3vh; ">
     <button class="dropbtn" style="background-color:rgb(1,110,78)">≡</button>
     <div class="dropdown-content" style="background-color: rgb(133,156,182);">
@@ -8,6 +8,7 @@
             <a href="/">Главная</a>
             <a href="/task_stats">Статистика</a>
             <a href="/release">Что нового</a>
+            <a href="/profile">Профиль</a>       
             <a href="/logout">Выйти</a>
         </li>
     </div>
@@ -29,7 +30,7 @@
 {% else %}
 <img src="/static/todo_logo_noback_light.png" style="margin-left: 10%;margin-right: 25%; width: 25vw;">
 {% endif %}
-<div class="dropdown2" style="width: 3vh; margin-left: 75%;">
+<div class="dropdown2" style="width: 3vh;">
     <button class="dropbtn2" style="background-color:rgb(1,110,78)">⚙</button>
     <div class="dropdown-content2" style="background-color: rgb(133,156,182);">
         Тема: <br>
@@ -51,6 +52,9 @@
 </form>
             </div>
             
+    </div>
+    <div class="avatar">
+       <a href="/profile"><img src="{{ url_for('userava') }}" style="width: 5vw; height: 5wh; border: solid white; border-radius: 60px; display: inline; margin-left: 22.5%;"></a>
     </div>
 </div>
 

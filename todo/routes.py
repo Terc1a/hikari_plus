@@ -900,7 +900,7 @@ def allowed_ext(filename):
 # Загружаем файл на сервер
 @app.post('/upload_video')
 @login_required
-def upload(filename):
+def upload_video(filename):
     if request.method == 'POST':
         if 'file' not in request.files:
             flash('Файл не может быть загружен')
@@ -940,3 +940,50 @@ def add_ws():
     db.session.commit()
     db.session.close()
     return redirect(url_for('home'))
+
+
+@app.route('/profile')
+@login_required
+def profile():
+    get_user = Users.query.filter_by(id=current_user.id).first()
+    if request.method == 'GET':
+        return render_template('todo/main/profile.html', title='Профиль', user_info = get_user)
+
+@app.route('/userava')
+@login_required
+def userava():
+    img = Users.query.filter_by(id=current_user.id).first()
+    if not img:
+        return ""
+ 
+    h = make_response(img.avatar)
+    h.headers['Content-Type'] = 'image/png'
+    return h
+
+
+@app.route('/upload', methods=["POST", "GET"])
+@login_required
+def upload():
+    if request.method == 'POST':
+        
+        file = request.files['file']
+        print(file)
+        ext = file.filename.rsplit('.', 1)[1]
+        if ext == "png" or ext == "PNG" or ext == 'jpg' or ext=='JPG' or ext=='jpeg' or ext=='JPEG':
+            try:
+                user = Users.query.filter_by(id=current_user.id).first()
+                user.avatar = file.read()
+                db.session.commit()
+                db.session.close()
+                if not file:
+                    flash("Ошибка обновления аватара", "error")
+                    return redirect(url_for('profile'))
+                flash("Аватар обновлен", "success")
+            except FileNotFoundError as e:
+                flash("Ошибка чтения файла", "error")
+            else:
+                flash("Ошибка обновления аватара", "error")
+        else:
+            flash('Неверный формат файла')
+ 
+    return redirect(url_for('profile'))
