@@ -101,7 +101,6 @@ def home():
                 else:
                     if el.day < dt_gmt.day and dt_gmt.hour >= 0:
                         for task in cycle:
-                            print(task.title, '3')
                             task.is_complete = not task.is_complete
                             task.create_date = timed_raw
                             task.close_date = datetime(9999, 12, 31, 00, 00, 00, 000000)
@@ -149,10 +148,26 @@ def home():
             uncompleted = len(todo_uncompleted)
             all = len(todo_list1)
             todo_tags = Tag.query.filter_by(uid=current_user.id, ws_id=get_curr_ws.id).distinct(Tag.title)
+            user_ids = []
+            tag_ids = []
+            todo_responsible = ToDo.query.filter_by(responsible=current_user.id).all()
+            for el in todo_responsible:
+                if el.tag_id in tag_ids:
+                    pass
+                else:
+                    tag_ids.append(el.tag_id)
+            tags_resp = Tag.query.filter(Tag.id.in_((tag_ids))).all()
+            for el in tags_resp:
+                if el.uid in user_ids:
+                    pass
+                else:
+                    user_ids.append(el.uid)
+            get_avatars = Users.query.filter(Users.id.in_((user_ids))).all()
+
             return render_template('todo/main/index.html', todo_list=todo_list1, todoc_list=todoc_list, todo_tags=todo_tags,
                                    todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,
                                    title='CUBI Prot.', default_value=default_value, workspace_list=todo_workspaces,
-                                   result=result, current_workspace=get_curr_ws)
+                                   result=result, current_workspace=get_curr_ws, todo_responsible=todo_responsible, avatars = get_avatars)
         else:
             return redirect(url_for('todo/auth/login.html'))
     if request.method == 'POST':
@@ -192,9 +207,11 @@ def home():
                                 result[f'{tag_name.title}'].append(row.title)
                             else:
                                 result[f'{tag_name.title}'] = [row.title]
+                todo_responsible = ToDo.query.filter_by(responsible=current_user.id).all()
+
                 return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags,
                                        todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,
-                                       title='CUBI Prot.', default_value=default_value, result=result, workspace_list=todo_workspaces, current_workspace=get_curr_ws)
+                                       title='CUBI Prot.', default_value=default_value, result=result, workspace_list=todo_workspaces, current_workspace=get_curr_ws, todo_responsible=todo_responsible)
         else:
             return redirect(url_for('todo/auth/login.html'))
 
@@ -359,6 +376,9 @@ def update_task(todo_id):
     todo = ToDo.query.filter_by(id=todo_id).first()
     todo.title = request.form.get('title')
     todo.descr = request.form.get('task-description')
+    responsible = request.form.get('responsible')
+    get_uid = Users.query.filter_by(username=responsible).first()
+    todo.responsible = get_uid.id
     todo.create_date = timed_raw
     db.session.commit()
     db.session.close()
@@ -644,17 +664,14 @@ def add_tag(workspace_id):
     title = request.form.get('title')
     descr = request.form.get('task-description')
     uid = current_user.id
-    print(workspace_id)
     check_tag_exist = Tag.query.filter_by(ws_id=workspace_id).filter_by(title=title).all()
     if not check_tag_exist:
-        print('False')
         new_tag = Tag(uid=uid,title=title, descr=descr, ws_id=workspace_id)
         db.session.add(new_tag)
         db.session.commit()
         db.session.close()
         return redirect(url_for('home'))
     else:
-        print('True')
         flash_msg = 'Проект с таким названием уже существует, выберите другое название'
         flash(flash_msg)
 
@@ -685,7 +702,6 @@ def change_tag(tag_id):
 def delete_tag(tag_id):
     print(tag_id)
     tag = Tag.query.filter_by(id=tag_id).first()
-    print(tag.title)
     tasks_on_tag = ToDo.query.filter_by(tag_id=tag.id).all()
     for task in tasks_on_tag:
         db.session.delete(task)
@@ -851,17 +867,14 @@ def register():
                 ws_descr = 'Проекты, связанные с CUBI'
                 db.session.add(add_user)
                 db.session.commit()
-                db.session.close()
                 get_uid = Users.query.filter_by(username=request.form.get('name')).first()
                 add_ws = Workspace(uid=get_uid.id, title=ws_title, descr=ws_descr)
                 db.session.add(add_ws)
                 db.session.commit()
-                db.session.close()
-                get_ws = Workspace.query.filter_by(username=request.form.get('name')).first()
+                get_ws = Workspace.query.filter_by(uid=get_uid.id).first()
                 add_tag = Tag(uid=get_uid.id, ws_id=get_ws.id, title=tag_title, descr=tag_descr)
                 db.session.add(add_tag)
                 db.session.commit()
-                db.session.close()
                 get_tag = Tag.query.filter_by(uid=get_uid.id).filter_by(title=tag_title).first()
                 add_task = ToDo(title=task_title, descr=task_descr, tag_id=get_tag.id, create_date=timed_raw,
                                 is_complete=False)
@@ -961,13 +974,24 @@ def userava():
     return h
 
 
+@app.route('/getavatar/<int:uid>')
+@login_required
+def get_avatar(uid):
+    print(uid)
+    img = Users.query.filter_by(id=uid).first()
+    if not img:
+        return ""
+ 
+    h = make_response(img.avatar)
+    h.headers['Content-Type'] = 'image/png'
+    return h
+
 @app.route('/upload', methods=["POST", "GET"])
 @login_required
 def upload():
     if request.method == 'POST':
         
         file = request.files['file']
-        print(file)
         ext = file.filename.rsplit('.', 1)[1]
         if ext == "png" or ext == "PNG" or ext == 'jpg' or ext=='JPG' or ext=='jpeg' or ext=='JPEG':
             try:

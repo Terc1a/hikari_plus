@@ -622,4 +622,19 @@ p:hover{
     transform: scale(1.1); /* Увеличиваем масштаб */
 }
 
+.resp_head {
+    background-color: #e9ecef;  
+    box-shadow: 0px 8px 8px 5px rgba(0, 0, 0, 0.2); 
+    border: solid #F1F2F4; 
+    border-radius: 15px; 
+    border-width: 2px; 
+    margin-top: 2%; 
+    margin-left: 2%;
+    width: 30vh;
+    max-height: 75vh; 
 
+}
+
+.resp_list {
+    overflow-y: auto;
+}
