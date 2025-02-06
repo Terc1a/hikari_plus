@@ -1,16 +1,20 @@
+import json
+import logging
+import os
+import pytz
+import flask_login
+import plotly.graph_objs as go
+import plotly.utils
 from flask import Flask, request, render_template, url_for, redirect, session, make_response, flash, send_from_directory
 from todo.models import ToDo, db, Tag, News, Users, Workspace
 from datetime import datetime
-import plotly.graph_objs as go
-import plotly.utils
-import json
-import pytz
 from flask_ckeditor import CKEditor
-import flask_login
 from flask_login import current_user, login_user, login_required, UserMixin ,logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-import os
+
+logfile = '/home/tercia/Documents/todo/backend.log'
+logging.basicConfig(format=u'%(levelname)-8s [%(asctime)s] %(message)s', level='INFO', filename=logfile)
 
 ckeditor = CKEditor()
 login_manager = flask_login.LoginManager()
@@ -148,26 +152,35 @@ def home():
             uncompleted = len(todo_uncompleted)
             all = len(todo_list1)
             todo_tags = Tag.query.filter_by(uid=current_user.id, ws_id=get_curr_ws.id).distinct(Tag.title)
+
+            # Надо сформировать словарь вроде ['uid': ['Todo']] где uid - айди владельца таски, а Todo сама таска(id, title, descr etc)
             user_ids = []
             tag_ids = []
+            result2 = {}
+            #Готовим переменные
             todo_responsible = ToDo.query.filter_by(responsible=current_user.id).all()
-            for el in todo_responsible:
-                if el.tag_id in tag_ids:
+            #Формируем массив -- вот это надо переписать
+            for el_todo in todo_responsible:
+                if el_todo.tag_id in tag_ids:
                     pass
                 else:
-                    tag_ids.append(el.tag_id)
-            tags_resp = Tag.query.filter(Tag.id.in_((tag_ids))).all()
-            for el in tags_resp:
-                if el.uid in user_ids:
-                    pass
-                else:
-                    user_ids.append(el.uid)
-            get_avatars = Users.query.filter(Users.id.in_((user_ids))).all()
+                    tag_ids.append(el_todo.tag_id) #Получаем список айди проектов из назначенных задач    
+
+                tags_resp = Tag.query.filter(Tag.id.in_((tag_ids))).all() #Получаем список проектов по их айди
+                for el_tag in tags_resp:
+                    if el_tag.uid in user_ids:
+                        pass
+                    else:
+                        user_ids.append(el_tag.uid) #Получаем список юзеров, которые создали эти проекты
+                        result2[f'{el_tag.uid}'] = [f'{el_todo.id}', f'{el_todo.title}',f'{el_todo.descr}', f'{el_todo.is_cycle}'] #Формируем массив
+                logging.info(f'{result2}, res2')
+                print(tag_ids)
+
 
             return render_template('todo/main/index.html', todo_list=todo_list1, todoc_list=todoc_list, todo_tags=todo_tags,
                                    todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,
                                    title='CUBI Prot.', default_value=default_value, workspace_list=todo_workspaces,
-                                   result=result, current_workspace=get_curr_ws, todo_responsible=todo_responsible, avatars = get_avatars)
+                                   result=result, current_workspace=get_curr_ws, todo_responsible=todo_responsible)
         else:
             return redirect(url_for('todo/auth/login.html'))
     if request.method == 'POST':
@@ -1009,5 +1022,9 @@ def upload():
                 flash("Ошибка обновления аватара", "error")
         else:
             flash('Неверный формат файла')
- 
     return redirect(url_for('profile'))
+
+
+@app.get('/test_menu')
+def test_menu():
+    return render_template('todo/main/test_menu.html')

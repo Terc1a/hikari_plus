@@ -1,52 +1,115 @@
 {% extends 'todo/main/layout.html' %}
 <script src="https://cdn.ckeditor.com/4.10.0/standard/ckeditor.js"></script>
-
-{% include 'todo/menu/menu.html' %}
 {% block content %}
 {{ ckeditor.load() }}
-<div class='container' style="display: grid; grid-template-columns:15% 85%; ">
-    <div class="workspaces"
-        style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white; {% else %} background-color: #FCD1A8; {% endif %}margin-right: 2%; grid-column-start: 1; ">
-        {% block workspaces %}
-        {% endblock %}
-        Рабочие области:<br>
-        {% for workspace in workspace_list %}
-        <a href="/sort/{{ workspace.title }}"
-            style="text-decoration: none; color: inherit; transition: opacity 0.3s;">{{ workspace.title }}</a>
-        <br>
-        {% endfor %}
-        <button class="modal-trigger" data-modal-id="modal-create-id"
-            style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black;{% endif %} margin-top: 5%; border: solid; border-radius: 6px; width: 100%; text-align: center; display: block; background: none; cursor: pointer;">
-            +
-        </button>
+<div class='container' style="display: grid; grid-template-rows:10% 90%; width: 100vw; ">
+    <div class="header"
+        style="display: grid; grid-template-columns: 10% 15% 65% 5% 3%; width: 100vw; background-color: rgb(0,0,0, 0.44);">
+        <div class="dron" style="width: 8vw; margin-top: 3%;  ">
+            <input type="checkbox" id="nav-toggle" hidden>
+            <nav class="nav" style="background: black; ">
 
-        <!--Создание новой области-->
-        <div id="modal-create-id" class="modal-overlay">
-            <div class="modal-container"
-                style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
-                <h3 class="modal-title">Новая рабочая область</h3>
-                <span class="modal-close">&times;</span>
-                <div class="modal-body">
-                    <form class="ui form" action="/add_ws" method="post"
-                        style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
-                        name="creator">
-                        <div class="field">
-                            <input type="text" name="title" placeholder="Введите название области"
-                                style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"><br>
-                            <textarea name="workspace-description" class="ckeditor"
-                                style="visibility: hidden; display: none;">Введите описание области</textarea>
-                        </div>
-                        <button class="ui teal basic button" type="submit"
-                            style="margin-bottom: 10px; margin-left: 2.5%;">Добавить
-                        </button>
-                    </form>
+                <label for="nav-toggle" class="nav-toggle" onclick
+                    style="background-image: url('static/Logo.png'); background-color: rgb(0,0,0, 0.00); background-size: cover; width: 14vh; height: 2vh; margin-left: 10%;"></label>
+                <ul>
+                    <li><a href="/">Главная</a>
+                    <li><a href="/task_stats">Статистика</a>
+                    <li><a href="/release">Что нового</a>
+                    <li><a href="/profile">Профиль</a>
+                    <li><a href="/logout">Выйти</a>
+                </ul>
+            </nav>
+        </div>
+        <style>
+            :root {
+                --responsive-font-size-primary: min(1em, max(0.5em, 5vmin));
+            }
+        </style>
+        <form action="/search" class="search_bar" method="post"
+            style="margin-top: 1em; margin-left: 5%; width: 15vw; border: solid white; border-radius: 1.5vh; height: 3vh; ">
+            <button class="search_button" type="submit" style="anchor-name: search_bar;">🔍</button>
+            <input type="text" name="search_bar" placeholder="Найти задачу"
+                style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black;background-color: rgb(209,205,194);{% endif %} width: 60%; background: none; overflow: hidden;">
+
+        </form>
+        <!--<form method="post" >
+        <button type="submit" id="hider" class="hider" name="hider" value={{default_value}} style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black;{% endif %} border: solid; border-radius: 6px; min-width: 1vw;max-width: 10vw; text-align: center; display: block; font-size: var(--responsive-font-size-primary);">Скрыть готовые</button>
+    </form>-->
+        <div class="workspaces" style="color: white;margin-right: 2%;  margin-top: 0.5em">
+            {% block workspaces %}
+            {% endblock %}
+            <div class="head" style="margin-left: 30%; margin-right: 40%; font-size: 24px;">
+                <select id="fruits" onchange="onSelectChange(event)" style="outline: none;">
+                    <option value=''>Workspace</option>
+                    {% for workspace in workspace_list %}
+                    <option value='{{workspace.title}}'>{{workspace.title}}</option>
+                    {% endfor %}
+                </select>
+                <button class="modal-trigger" data-modal-id="modal-create-id"
+                    style="font-size: 24px; color: white; text-align: center; background: none; cursor: pointer;">
+                    +
+                </button>
+            </div>
+            <!--Создание новой области-->
+            <div id="modal-create-id" class="modal-overlay">
+                <div class="modal-container"
+                    style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
+                    <h3 class="modal-title">Новая рабочая область</h3>
+                    <span class="modal-close">&times;</span>
+                    <div class="modal-body">
+                        <form class="ui form" action="/add_ws" method="post"
+                            style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
+                            name="creator">
+                            <div class="field">
+                                <input type="text" name="title" placeholder="Введите название области"
+                                    style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"><br>
+                                <textarea name="workspace-description" class="ckeditor"
+                                    style="visibility: hidden; display: none;">Введите описание области</textarea>
+                            </div>
+                            <button class="ui teal basic button" type="submit"
+                                style="margin-bottom: 10px; margin-left: 2.5%;">Добавить
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
+        <div class="dropdown2">
+            <button class="dropbtn2" style="font-size: 3vw;">⚙</button>
+            <div class="dropdown-content2" style="background-color: rgb(133,156,182);">
+                Тема: <br>
+                <form action="/change_theme" method="post">
+                    <select name="font" onchange="submit()">
+                        <option value="">---</option>
+
+                        <option value="black" {% if request.cookies.get('font')=='black' %}selected{% endif %}>dark
+                        </option>
+                        <option value="white" {% if request.cookies.get('font')=='white' %}selected{% endif %}>light
+                        </option>
+                    </select>
+                </form>
+                Анимации: <br>
+                <form action="/change_snow_state" method="post">
+                    <select name="snow_state" onchange="submit()">
+                        <option value="">---</option>
+                        <option value="on" {% if request.cookies.get('snow_state')=='on' %}selected{% endif %}>on
+                        </option>
+                        <option value="off" {% if request.cookies.get('snow_state')=='off' %}selected{% endif %}>off
+                        </option>
+                    </select>
+                </form>
+            </div>
+
+        </div>
+        <div class="avatar" style="float: right;">
+            <a href="/profile"><img src="{{ url_for('userava') }}"
+                    style="width: 3vw; height: 3wh; border: solid white; border-radius: 50%; margin-left: 12.5%; margin-top: 10%"></a>
+        </div>
     </div>
 
-    <div class="tasks_area"
-        style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white; {% else %} background-color: #F279A6;{% endif %}grid-column-start: 2; ">
+
+
+    <div class="tasks_area" style="">
         {% block tasks %}
         <div class="list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(30vh, 1fr));
             grid-auto-flow: column; overflow-x: auto; height: 93vh; grid-gap: 15px;">
@@ -112,7 +175,7 @@
                             <button class="modal-trigger" data-modal-id="modal-{{ todo.id }}">
                                 {{ title|safe }}
                             </button>
-
+                            <img src="{{ url_for('userava') }}" style="width: 1.5vw; height: 1.5vw; border: solid white; border-radius: 50%; margin-top: 20%; margin-left: auto;">
                             <div id="modal-{{ todo.id }}" class="modal-overlay">
                                 <div class="modal-container"
                                     style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
@@ -155,9 +218,8 @@
                                             value="{{ todo.title }}"><br>
                                         <textarea name="task-description"
                                             class="ckeditor">{{ todo.descr|safe }}</textarea>
-                                            <input type="text" name="responsible" placeholder="Добавить ответственного"
-                                            style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
-                                            >
+                                        <input type="text" name="responsible" placeholder="Добавить ответственного"
+                                            style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
                                         <button class="ui teal basic button" type="submit"
                                             style="margin: 10px; margin-left: 2.5%;">Сохранить
                                         </button>
@@ -194,6 +256,9 @@
                                             value="{{ tag }}"><br>
                                         <label><input name="checker" type="checkbox" value="checked">Цикличная</label>
                                     </div>
+                                    <div class="checklist">
+
+                                    </div>
                                     <button class="ui teal basic button" type="submit"
                                         style="margin-bottom: 10px; margin-left: 2.5%;">Добавить
                                     </button>
@@ -205,24 +270,22 @@
             </div>
 
             {% endfor %}
-            
+
             {% if todo_responsible %}
             <div class="resp_head">
                 <p>
-                <button class="modal-trigger" data-modal-id="modal-open-{{ tag }}"
-                style="font-weight: bold; padding-left: 2%; padding-top: 4%; padding-bottom: 2%;">
-                Назначенные
-            </button>
+                    <button class="modal-trigger" data-modal-id="modal-open-{{ tag }}"
+                        style="font-weight: bold; padding-left: 2%; padding-top: 4%; padding-bottom: 2%;">
+                        Назначенные
+                    </button>
                 </p>
                 <div class="resp_list">
                     {% for todo in todo_responsible %}
-                    {% for user in avatars %}
                     <div class="task_body"
                         style="{% if todo.is_complete==True %}border: solid rgb(171,246,0);   border-radius: 15px; border-width: 2px;text-decoration: line-through;{% else %}border:solid #85B8FF; border-width: 2px; border-radius: 15px;{% endif %}">
                         <button class="modal-trigger" data-modal-id="modal-{{ todo.id }}">
                             {{ todo.title|safe }}
                         </button>
-                        <img src="/getavatar/{{ user.id }}" style="width: 10vw; height: 10wh; border: solid white; border-radius: 60px; display: inline; margin-left: 22.5%;">
                         <div id="modal-{{ todo.id }}" class="modal-overlay">
                             <div class="modal-container"
                                 style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
@@ -270,7 +333,6 @@
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
                     {% endfor %}
                 </div>
             </div>
@@ -439,5 +501,17 @@
 
         scrollContainer.style.cursor = "grab";
     });
+</script>
+
+<script>
+    function onSelectChange(event) {
+        const selectedValue = event.target.value;
+        if (selectedValue == '')
+            pass;
+
+        else
+            document.location.href = `http://192.168.0.17:5555/sort/${selectedValue}`;
+        // 'selectedValue' теперь доступно для дальнейшего использования
+    }
 </script>
 {% endblock %}
