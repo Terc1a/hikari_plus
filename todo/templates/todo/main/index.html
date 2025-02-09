@@ -4,7 +4,7 @@
 {{ ckeditor.load() }}
 <div class='container' style="display: grid; grid-template-rows:10% 90%; width: 100vw; ">
     <div class="header"
-        style="display: grid; grid-template-columns: 10% 15% 65% 5% 3%; width: 100vw; background-color: rgb(0,0,0, 0.44);">
+        style="display: grid; grid-template-columns: 10% 15% 70% 5%; width: 100vw; background-color: rgb(0,0,0, 0.44);">
         <div class="dron" style="width: 8vw; margin-top: 3%;  ">
             <input type="checkbox" id="nav-toggle" hidden>
             <nav class="nav" style="background: black; ">
@@ -16,6 +16,7 @@
                     <li><a href="/task_stats">Статистика</a>
                     <li><a href="/release">Что нового</a>
                     <li><a href="/profile">Профиль</a>
+                    <li><a href="/settings">Настройки</a></li>
                     <li><a href="/logout">Выйти</a>
                 </ul>
             </nav>
@@ -74,36 +75,10 @@
                 </div>
             </div>
         </div>
-        <div class="dropdown2">
-            <button class="dropbtn2" style="font-size: 3vw;">⚙</button>
-            <div class="dropdown-content2" style="background-color: rgb(133,156,182);">
-                Тема: <br>
-                <form action="/change_theme" method="post">
-                    <select name="font" onchange="submit()">
-                        <option value="">---</option>
 
-                        <option value="black" {% if request.cookies.get('font')=='black' %}selected{% endif %}>dark
-                        </option>
-                        <option value="white" {% if request.cookies.get('font')=='white' %}selected{% endif %}>light
-                        </option>
-                    </select>
-                </form>
-                Анимации: <br>
-                <form action="/change_snow_state" method="post">
-                    <select name="snow_state" onchange="submit()">
-                        <option value="">---</option>
-                        <option value="on" {% if request.cookies.get('snow_state')=='on' %}selected{% endif %}>on
-                        </option>
-                        <option value="off" {% if request.cookies.get('snow_state')=='off' %}selected{% endif %}>off
-                        </option>
-                    </select>
-                </form>
-            </div>
-
-        </div>
         <div class="avatar" style="float: right;">
             <a href="/profile"><img src="{{ url_for('userava') }}"
-                    style="width: 3vw; height: 3wh; border: solid white; border-radius: 50%; margin-left: 12.5%; margin-top: 10%"></a>
+                    style="width: 3vw; height: 3wh; border: solid white; border-radius: 50%; margin-left: 20.5%; margin-top: 10%"></a>
         </div>
     </div>
 
@@ -114,7 +89,6 @@
         <div class="list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(30vh, 1fr));
             grid-auto-flow: column; overflow-x: auto; height: 93vh; grid-gap: 15px;">
             {% for tag, task in result.items() %}
-
             <div class="task_head">
                 <div class="task-list">
                     <p
@@ -175,7 +149,8 @@
                             <button class="modal-trigger" data-modal-id="modal-{{ todo.id }}">
                                 {{ title|safe }}
                             </button>
-                            <img src="{{ url_for('userava') }}" style="width: 1.5vw; height: 1.5vw; border: solid white; border-radius: 50%; margin-top: 20%; margin-left: auto;">
+                            <img src="{{ url_for('userava') }}"
+                                style="width: 1.5vw; height: 1.5vw; border: solid white; border-radius: 50%; margin-top: 20%; margin-left: auto;">
                             <div id="modal-{{ todo.id }}" class="modal-overlay">
                                 <div class="modal-container"
                                     style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
@@ -183,24 +158,23 @@
                                     <span class="modal-close">&times;</span>
                                     <div class="modal-body">
                                         {{ todo.descr|safe }}
-                                            {% if todo.is_complete == False %}
-                                            <span class="ui gray label">В работе</span>
-                                            <button class="modal-trigger ui yellow basic button"
-                                                data-modal-id="modal-change-{{ todo.id }}">
-                                                Изменить
-                                            </button>
-                                            <a class="ui primary basic button"
-                                                href="/update/{{ todo.id }}">Завершить</a>
-                                            {% else %}
-                                            <span class="ui green label">Завершено</span>
-                                            <a class="ui blue basic button" href="/update/{{ todo.id }}">Возобновить</a>
-                                            {% endif %}
-                                            <a class="ui negative basic button" href="/delete/{{ todo.id }}">Удалить</a>
-                                            {% if todo.is_cycle == 'checked' %}
-                                            <p>Цикличная: Да</p>
-                                            {% else %}
-                                            <p>Цикличная: Нет</p>
-                                            {% endif %}
+                                        {% if todo.is_complete == False %}
+                                        <span class="ui gray label">В работе</span>
+                                        <button class="modal-trigger ui yellow basic button"
+                                            data-modal-id="modal-change-{{ todo.id }}">
+                                            Изменить
+                                        </button>
+                                        <a class="ui primary basic button" href="/update/{{ todo.id }}">Завершить</a>
+                                        {% else %}
+                                        <span class="ui green label">Завершено</span>
+                                        <a class="ui blue basic button" href="/update/{{ todo.id }}">Возобновить</a>
+                                        {% endif %}
+                                        <a class="ui negative basic button" href="/delete/{{ todo.id }}">Удалить</a>
+                                        {% if todo.is_cycle == 'checked' %}
+                                        <p>Цикличная: Да</p>
+                                        {% else %}
+                                        <p>Цикличная: Нет</p>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
@@ -252,12 +226,13 @@
                                         <input type="text" name="tag" placeholder={{ tag }}
                                             style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %}background-color:rgb(56,56,56);color:white;{% endif %}"
                                             value="{{ tag }}"><br>
-                                            <div class="container_check">
-                                                <label class="add_button" onclick="CheckClicked()">Добавить чек-лист</label>
-                                              </div>
+                                        <div class="container_check">
+                                            <label class="add_button" onclick="CheckClicked()">Добавить чек-лист</label>
+                                        </div>
 
 
-                                        <label><input name="checker" type="checkbox" value="checked">Цикличная</label><br>
+                                        <label><input name="checker" type="checkbox"
+                                                value="checked">Цикличная</label><br>
                                     </div>
 
                                     <button class="ui teal basic button" type="submit"
@@ -270,9 +245,7 @@
                     </div>
                 </div>
             </div>
-
             {% endfor %}
-
             {% if todo_responsible %}
             <div class="resp_head">
                 <p>
@@ -302,7 +275,7 @@
                                             data-modal-id="modal-change-{{ todo.id }}">
                                             Изменить
                                         </button>
-                                        
+
                                         <a class="ui primary basic button" href="/update/{{ todo.id }}">Завершить</a>
                                         {% else %}
                                         <span class="ui green label">Завершено</span>
@@ -340,8 +313,9 @@
                 </div>
             </div>
             {% endif %}
+
             <button class="modal-trigger" data-modal-id="modal-create-new-{{ result }}"
-                style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black; background-color: #E9ECEF;{% endif %} border: solid #E9ECEF; box-shadow: 0px 8px 8px -3px rgba(0, 0, 0, 0.2);  border-radius: 6px; text-align: center; cursor: pointer; width: 30vh; height: 2.5vh; margin-top:2%">
+                style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black; background-color: #E9ECEF;{% endif %} border: solid #E9ECEF; box-shadow: 0px 8px 8px -3px rgba(0, 0, 0, 0.2);  border-radius: 6px; text-align: center; cursor: pointer; width: 30vh; height: 2.5vh; margin-top:2%; margin-right: 50%;">
                 + Добавить проект
             </button>
 

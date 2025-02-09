@@ -567,7 +567,7 @@ def project_stats():
             data_list_completed.append({task.id: date})
         for el in data_list_completed:
             for date in el.values():
-                if type(date) == list:
+                if type(date) == list:  # noqa: E721
                     dates_completed += date
                 else:
                     dates_completed.append(date)
@@ -782,10 +782,10 @@ def search():
 
 
 # Открываем страницу настроек
-# @app.route('/settings')
-# @login_required
-# def settings():
-#     return render_template('todo/settings.html')
+@app.route('/settings')
+@login_required
+def settings():
+    return render_template('todo/main/settings.html')
 
 
 # Изменяем тему приложения
