@@ -1,556 +1,547 @@
 {% extends 'todo/main/layout.html' %}
 <script src="https://cdn.ckeditor.com/4.10.0/standard/ckeditor.js"></script>
 {% block content %}
-    {{ ckeditor.load() }}
-    <div class='container' style="display: grid; grid-template-rows:10% 90%; width: 100vw; ">
-        <div class="header"
-             style="display: grid; grid-template-columns: 10% 15% 70% 5%; width: 100vw; background-color: rgb(0,0,0, 0.44);">
-            <div class="dron" style="width: 8vw; margin-top: 3%;  ">
-                <input type="checkbox" id="nav-toggle" hidden>
-                <nav class="nav" style="background: black; ">
+{{ ckeditor.load() }}
+<div class='container' style="display: grid; grid-template-rows:10% 90%; width: 100vw; ">
+    <div class="header"
+        style="display: grid; grid-template-columns: 10% 15% 70% 5%; width: 100vw; height: 4em; background-color: rgb(0,0,0, 0.44);">
+        <div class="dron" style="width: 8vw; margin-top: 3%;  ">
+            <input type="checkbox" id="nav-toggle" hidden>
+            <nav class="nav" style="background: black; ">
 
-                    <label for="nav-toggle" class="nav-toggle" onclick
-                           style="background-image: url('static/Logo.png'); background-color: rgb(0,0,0, 0.00); background-size: cover; width: 14vh; height: 2vh; margin-left: 10%;"></label>
-                    <ul>
-                        <li><a href="/">Главная</a>
-                        <li><a href="/task_stats">Статистика</a>
-                        <li><a href="/release">Что нового</a>
-                        <li><a href="/profile">Профиль</a>
-                        <li><a href="/settings">Настройки</a></li>
-                        <li><a href="/logout">Выйти</a>
-                    </ul>
-                </nav>
-            </div>
-            <style>
-                :root {
-                    --responsive-font-size-primary: min(1em, max(0.5em, 5vmin));
-                }
-            </style>
-            <form action="/search" class="search_bar" method="post"
-                  style="margin-top: 1em; margin-left: 5%; width: 15vw; border: solid white; border-radius: 1.5vh; height: 3vh; ">
-                <button class="search_button" type="submit" style="anchor-name: search_bar;">🔍</button>
-                <input type="text" name="search_bar" placeholder="Найти задачу"
-                       style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black;background-color: rgb(209,205,194);{% endif %} width: 60%; background: none; overflow: hidden;">
+                <label for="nav-toggle" class="nav-toggle" onclick
+                    style="background-image: url('static/Logo.png'); background-color: rgb(0,0,0, 0.00); background-size: cover; width: 14vh; height: 2vh; margin-left: 10%;"></label>
+                <ul>
+                    <li><a href="/">Главная</a>
+                    <li><a href="/task_stats">Статистика</a>
+                    <li><a href="/release">Что нового</a>
+                    <li><a href="/profile">Профиль</a>
+                    <li><a href="/settings">Настройки</a></li>
+                    <li><a href="/logout">Выйти</a>
+                </ul>
+            </nav>
+        </div>
+        <style>
+            :root {
+                --responsive-font-size-primary: min(1em, max(0.5em, 5vmin));
+            }
+        </style>
+        <form action="/search" class="search_bar" method="post"
+            style="margin-top: 1em; margin-left: 5%; width: 15vw; border: solid white; border-radius: 1.5vh; height: 3vh; ">
+            <button class="search_button" type="submit" style="anchor-name: search_bar;">🔍</button>
+            <input type="text" name="search_bar" placeholder="Найти задачу"
+                style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black;background-color: rgb(209,205,194);{% endif %} width: 60%; background: none; overflow: hidden;">
 
-            </form>
-            <!--<form method="post" >
+        </form>
+        <!--<form method="post" >
         <button type="submit" id="hider" class="hider" name="hider" value={{default_value}} style="
                     {% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }}
                         ;color:white;{% else %}color: black;{% endif %} border: solid; border-radius: 6px; min-width: 1vw;max-width: 10vw; text-align: center; display: block; font-size: var(--responsive-font-size-primary);">Скрыть готовые</button>
     </form>-->
-            <div class="workspaces" style="color: white;margin-right: 2%;  margin-top: 0.5em">
-                {% block workspaces %}
-                {% endblock %}
-                <div class="head" style="margin-left: 30%; margin-right: 40%; font-size: 24px;">
-                    <select id="fruits" onchange="onSelectChange(event)" style="outline: none;">
-                        <option value=''>Workspace</option>
-                        {% for workspace in workspace_list %}
-                            <option value='{{ workspace.title }}'>{{ workspace.title }}</option>
-                        {% endfor %}
-                    </select>
-                    <button class="modal-trigger" data-modal-id="modal-create-id"
-                            style="font-size: 24px; color: white; text-align: center; background: none; cursor: pointer;">
-                        +
-                    </button>
+        <div class="workspaces" style="color: white;margin-right: 2%;  margin-top: 0.5em">
+            {% block workspaces %}
+            {% endblock %}
+            <div class="head" style="margin-left: 30%; margin-right: 40%; font-size: 24px;">
+                <select id="fruits" onchange="onSelectChange(event)" style="outline: none;">
+                    <option value=''>Workspace</option>
+                    {% for workspace in workspace_list %}
+                    <option value='{{ workspace.title }}'>{{ workspace.title }}</option>
+                    {% endfor %}
+                </select>
+                <button class="modal-trigger" data-modal-id="modal-create-id"
+                    style="font-size: 24px; color: white; text-align: center; background: none; cursor: pointer;">
+                    +
+                </button>
+            </div>
+            <!--Создание новой области-->
+            <div id="modal-create-id" class="modal-overlay">
+                <div class="modal-container"
+                    style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
+                    <h3 class="modal-title">Новая рабочая область</h3>
+                    <span class="modal-close">&times;</span>
+                    <div class="modal-body">
+                        <form class="ui form" action="/add_ws" method="post"
+                            style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
+                            name="creator">
+                            <div class="field">
+                                <input type="text" name="title" placeholder="Введите название области"
+                                    style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"><br>
+                                <textarea name="workspace-description" class="ckeditor"
+                                    style="visibility: hidden; display: none;">Введите описание области</textarea>
+                            </div>
+                            <button class="ui teal basic button" type="submit"
+                                style="margin-bottom: 10px; margin-left: 2.5%;">Добавить
+                            </button>
+                        </form>
+                    </div>
                 </div>
-                <!--Создание новой области-->
-                <div id="modal-create-id" class="modal-overlay">
-                    <div class="modal-container"
-                         style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
-                        <h3 class="modal-title">Новая рабочая область</h3>
-                        <span class="modal-close">&times;</span>
-                        <div class="modal-body">
-                            <form class="ui form" action="/add_ws" method="post"
-                                  style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
-                                  name="creator">
-                                <div class="field">
-                                    <input type="text" name="title" placeholder="Введите название области"
-                                           style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"><br>
-                                    <textarea name="workspace-description" class="ckeditor"
-                                              style="visibility: hidden; display: none;">Введите описание области</textarea>
-                                </div>
+            </div>
+        </div>
+
+        <div class="avatar" style="float: right; padding: 5%;">
+            <a href="/profile"><img src="{{ url_for('userava') }}"
+                    style="width: 3vw; height: 3wh; border: solid white; border-radius: 50%; margin-left: 20.5%; "></a>
+        </div>
+    </div>
+
+
+    <div class="tasks_area" style="">
+        {% block tasks %}
+        <div class="list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(30vh, 1fr));
+            grid-auto-flow: column; overflow-x: auto; height: auto; grid-gap: 15px;">
+            {% for tag, task in result.items() %}
+            <div class="task_head">
+                <div class="task-list">
+                    <p
+                        style="{% if request.cookies.get('font')=='black' %}background-color:rgb(56,56,56);color:white;{% else %} color: black{% endif %}; text-align: left; margin-bottom: 2.5%; ">
+                        <button class="modal-trigger" data-modal-id="modal-open-{{ tag }}"
+                            style="font-weight: bold; padding-left: 2%; padding-top: 4%; padding-bottom: 2%;">
+                            {{ tag }}
+                        </button>
+                    </p>
+                    {% for tagg in todo_tags %}
+                    {% if tag==tagg.title %}
+                    <div id="modal-open-{{ tag }}" class="modal-overlay">
+                        <div class="modal-container"
+                            style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
+                            <h3 class="modal-title">{{ tag }}</h3>
+                            <span class="modal-close">&times;</span>
+                            {{ tagg.descr|safe }}
+                            <button class="modal-trigger ui yellow basic button"
+                                data-modal-id="modal-change-tag-{{ tag }}">
+                                Изменить
+                            </button>
+                            <a class="ui negative basic button" href="/delete_tag/{{ tagg.id }}">Удалить</a>
+                            <button class="ui teal basic button" type="submit"
+                                style="margin: 10px; margin-left: 2.5%;">Сохранить
+                            </button>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                    {% for tagg in todo_tags %}
+                    {% if tag==tagg.title %}
+                    <div id="modal-change-tag-{{ tag }}" class="modal-overlay">
+                        <div class="modal-container"
+                            style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
+                            <h3 class="modal-title">{{ tag }}</h3>
+                            <span class="modal-close">&times;</span>
+                            <form class="modal-body" action="/change_tag/{{ tagg.id }}" method="post">
+                                <input type="text" name="title" placeholder="Введите название проекта"
+                                    style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
+                                    value="{{ tagg.title }}"><br>
+                                <textarea name="task-description" class="ckeditor">{{ tagg.descr|safe }}</textarea>
                                 <button class="ui teal basic button" type="submit"
-                                        style="margin-bottom: 10px; margin-left: 2.5%;">Добавить
+                                    style="margin: 10px; margin-left: 2.5%;">Сохранить
                                 </button>
                             </form>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="avatar" style="float: right;">
-                <a href="/profile"><img src="{{ url_for('userava') }}"
-                                        style="width: 3vw; height: 3wh; border: solid white; border-radius: 50%; margin-left: 20.5%; margin-top: 10%"></a>
-            </div>
-        </div>
-
-
-        <div class="tasks_area" style="">
-            {% block tasks %}
-                <div class="list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(30vh, 1fr));
-            grid-auto-flow: column; overflow-x: auto; height: 93vh; grid-gap: 15px;">
-                    {% for tag, task in result.items() %}
-                        <div class="task_head">
-                            <div class="task-list">
-                                <p
-                                        style="{% if request.cookies.get('font')=='black' %}background-color:rgb(56,56,56);color:white;{% else %} color: black{% endif %}; text-align: left; margin-bottom: 2.5%; ">
-                                    <button class="modal-trigger" data-modal-id="modal-open-{{ tag }}"
-                                            style="font-weight: bold; padding-left: 2%; padding-top: 4%; padding-bottom: 2%;">
-                                        {{ tag }}
-                                    </button>
-                                </p>
-                                {% for tagg in todo_tags %}
-                                    {% if tag==tagg.title %}
-                                        <div id="modal-open-{{ tag }}" class="modal-overlay">
-                                            <div class="modal-container"
-                                                 style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
-                                                <h3 class="modal-title">{{ tag }}</h3>
-                                                <span class="modal-close">&times;</span>
-                                                {{ tagg.descr|safe }}
-                                                <button class="modal-trigger ui yellow basic button"
-                                                        data-modal-id="modal-change-tag-{{ tag }}">
-                                                    Изменить
-                                                </button>
-                                                <a class="ui negative basic button" href="/delete_tag/{{ tagg.id }}">Удалить</a>
-                                                <button class="ui teal basic button" type="submit"
-                                                        style="margin: 10px; margin-left: 2.5%;">Сохранить
-                                                </button>
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                {% endfor %}
-                                {% for tagg in todo_tags %}
-                                    {% if tag==tagg.title %}
-                                        <div id="modal-change-tag-{{ tag }}" class="modal-overlay">
-                                            <div class="modal-container"
-                                                 style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
-                                                <h3 class="modal-title">{{ tag }}</h3>
-                                                <span class="modal-close">&times;</span>
-                                                <form class="modal-body" action="/change_tag/{{ tagg.id }}"
-                                                      method="post">
-                                                    <input type="text" name="title"
-                                                           placeholder="Введите название проекта"
-                                                           style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
-                                                           value="{{ tagg.title }}"><br>
-                                                    <textarea name="task-description"
-                                                              class="ckeditor">{{ tagg.descr|safe }}</textarea>
-                                                    <button class="ui teal basic button" type="submit"
-                                                            style="margin: 10px; margin-left: 2.5%;">Сохранить
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                {% endfor %}
-
-
-                                <div class="tities_list">
-                                    {% for todo in todo_list %}
-                                        {% for title in task %}
-                                            {% if todo.title == title %}
-                                                <div class="task_body"
-                                                     style="{% if todo.is_complete==True %}border: solid rgb(171,246,0);   border-radius: 15px; border-width: 2px;text-decoration: line-through;{% else %}border:solid #85B8FF; border-width: 2px; border-radius: 15px;{% endif %}">
-                                                    <button class="modal-trigger" data-modal-id="modal-{{ todo.id }}">
-                                                        {{ title|safe }}
-                                                    </button>
-                                                    <img src="{{ url_for('userava') }}"
-                                                         style="width: 1.5vw; height: 1.5vw; border: solid white; border-radius: 50%; margin-top: 20%; margin-left: auto;">
-                                                    <div id="modal-{{ todo.id }}" class="modal-overlay">
-                                                        <div class="modal-container"
-                                                             style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
-                                                            {{ todo.title }}
-                                                            <span class="modal-close">&times;</span>
-                                                            <div class="modal-body">
-                                                                {{ todo.descr|safe }}
-                                                                {% if todo.is_complete == False %}
-                                                                    <span class="ui gray label">В работе</span>
-                                                                    <button class="modal-trigger ui yellow basic button"
-                                                                            data-modal-id="modal-change-{{ todo.id }}">
-                                                                        Изменить
-                                                                    </button>
-                                                                    <a class="ui primary basic button"
-                                                                       href="/update/{{ todo.id }}">Завершить</a>
-                                                                {% else %}
-                                                                    <span class="ui green label">Завершено</span>
-                                                                    <a class="ui blue basic button"
-                                                                       href="/update/{{ todo.id }}">Возобновить</a>
-                                                                {% endif %}
-                                                                <a class="ui negative basic button"
-                                                                   href="/delete/{{ todo.id }}">Удалить</a>
-                                                                {% if todo.is_cycle == 'checked' %}
-                                                                    <p>Цикличная: Да</p>
-                                                                {% else %}
-                                                                    <p>Цикличная: Нет</p>
-                                                                {% endif %}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div id="modal-change-{{ todo.id }}" class="modal-overlay">
-                                                        <div class="modal-container"
-                                                             style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
-                                                            {{ todo.title }}
-                                                            <span class="modal-close">&times;</span>
-                                                            <form class="modal-body"
-                                                                  action="/change_content/{{ todo.id }}" method="post">
-                                                                <input type="text" name="title"
-                                                                       placeholder="Введите название задачи"
-                                                                       style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
-                                                                       value="{{ todo.title }}"><br>
-                                                                <textarea name="task-description"
-                                                                          class="ckeditor">{{ todo.descr|safe }}</textarea>
-                                                                <input type="text" name="responsible"
-                                                                       placeholder="Добавить ответственного"
-                                                                       style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
-                                                                <button class="ui teal basic button" type="submit"
-                                                                        style="margin: 10px; margin-left: 2.5%;">
-                                                                    Сохранить
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% endfor %}
-
-                                </div>
-                                <button class="modal-trigger" data-modal-id="modal-create-{{ tag }}"
-                                        style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %} background-color: #F1F2F4; color: black;{% endif %} margin-top: 5%; width: 100%; text-align: center; display: block; background: none; cursor: pointer; padding-bottom: 5%;">
-                                    + Добавить задачу
-                                </button>
-
-                                <div id="modal-create-{{ tag }}" class="modal-overlay">
-                                    <div class="modal-container"
-                                         style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
-                                        <h3 class="modal-title">Новая задача</h3>
-                                        <span class="modal-close">&times;</span>
-                                        <div class="modal-body">
-                                            <form class="ui form" action="/add" method="post"
-                                                  style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
-                                                  name="creator">
-                                                <div class="field">
-                                                    <input type="text" name="title"
-                                                           placeholder="Введите название задачи"
-                                                           style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"><br>
-                                                    <textarea name="task-description" class="ckeditor"
-                                                              style="visibility: hidden; display: none;">Введите описание задачи</textarea>
-                                                    <input type="text" name="tag" placeholder={{ tag }}
-                                                            style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %}background-color:rgb(56,56,56);color:white;{% endif %}"
-                                                           value="{{ tag }}"><br>
-                                                    <div class="container_check">
-                                                        <label class="add_button" onclick="CheckClicked(this)">Добавить
-                                                            чек-лист</label>
-
-                                                    </div>
-
-
-                                                    <label><input name="checker" type="checkbox"
-                                                                  value="checked">Цикличная</label><br>
-                                                </div>
-
-                                                <button class="ui teal basic button" type="submit"
-                                                        style="margin-bottom: 10px; margin-left: 2.5%;">Добавить
-                                                </button>
-
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                    {% if todo_responsible %}
-                        <div class="resp_head">
-                            <p>
-                                <button class="modal-trigger" data-modal-id="modal-open-{{ tag }}"
-                                        style="font-weight: bold; padding-left: 2%; padding-top: 4%; padding-bottom: 2%;">
-                                    Назначенные
-                                </button>
-                            </p>
-                            <div class="resp_list">
-                                {% for todo in todo_responsible %}
-                                    <div class="task_body"
-                                         style="{% if todo.is_complete==True %}border: solid rgb(171,246,0);   border-radius: 15px; border-width: 2px;text-decoration: line-through;{% else %}border:solid #85B8FF; border-width: 2px; border-radius: 15px;{% endif %}">
-                                        <button class="modal-trigger" data-modal-id="modal-{{ todo.id }}">
-                                            {{ todo.title|safe }}
-                                        </button>
-                                        <div id="modal-{{ todo.id }}" class="modal-overlay">
-                                            <div class="modal-container"
-                                                 style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
-                                                {{ todo.title }}
-                                                <span class="modal-close">&times;</span>
-                                                <div class="modal-body">
-                                                    {{ todo.descr|safe }}
-                                                    <div class="nav" style="margin-top: 2.5%;">
-                                                        {% if todo.is_complete == False %}
-                                                            <span class="ui gray label">В работе</span>
-                                                            <button class="modal-trigger ui yellow basic button"
-                                                                    data-modal-id="modal-change-{{ todo.id }}">
-                                                                Изменить
-                                                            </button>
-
-                                                            <a class="ui primary basic button"
-                                                               href="/update/{{ todo.id }}">Завершить</a>
-                                                        {% else %}
-                                                            <span class="ui green label">Завершено</span>
-                                                            <a class="ui blue basic button"
-                                                               href="/update/{{ todo.id }}">Возобновить</a>
-                                                        {% endif %}
-                                                        <a class="ui negative basic button"
-                                                           href="/delete/{{ todo.id }}">Удалить</a>
-                                                        {% if todo.is_cycle == 'checked' %}
-                                                            <p>Цикличная: Да</p>
-                                                        {% else %}
-                                                            <p>Цикличная: Нет</p>
-                                                        {% endif %}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div id="modal-change-{{ todo.id }}" class="modal-overlay">
-                                            <div class="modal-container"
-                                                 style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
-                                                {{ todo.title }}
-                                                <span class="modal-close">&times;</span>
-                                                <form class="modal-body" action="/change_content/{{ todo.id }}"
-                                                      method="post">
-                                                    <input type="text" name="title"
-                                                           placeholder="Введите название задачи"
-                                                           style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
-                                                           value="{{ todo.title }}"><br>
-                                                    <textarea name="task-description"
-                                                              class="ckeditor">{{ todo.descr|safe }}</textarea>
-                                                    <button class="ui teal basic button" type="submit"
-                                                            style="margin: 10px; margin-left: 2.5%;">Сохранить
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {% endfor %}
-                            </div>
-                        </div>
                     {% endif %}
+                    {% endfor %}
 
-                    <button class="modal-trigger" data-modal-id="modal-create-new-{{ result }}"
-                            style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black; background-color: #E9ECEF;{% endif %} border: solid #E9ECEF; box-shadow: 0px 8px 8px -3px rgba(0, 0, 0, 0.2);  border-radius: 6px; text-align: center; cursor: pointer; width: 30vh; height: 2.5vh; margin-top:2%; margin-right: 50%;">
-                        + Добавить проект
-                    </button>
 
-                    {% for workspace in workspace_list %}
-                        <div id="modal-create-new-{{ result }}" class="modal-overlay">
-                            <div class="modal-container"
-                                 style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
-                                <h3 class="modal-title">Новый проект</h3>
-                                <span class="modal-close">&times;</span>
-                                {{ current_workspace.title }}
-                                <div class="modal-body">
-                                    <form class="ui form" action="/add_tag/{{ current_workspace.id }}" method="post"
-                                          style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
-                                          name="creator">
-                                        <div class="field">
-                                            <input type="text" name="title" placeholder="Введите название проекта"
-                                                   style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %} width: 100%;">
-                                            <br>
-                                            <textarea name="task-description" class="ckeditor"
-                                                      style="visibility: hidden; display: none;">Введите описание проекта</textarea>
-                                            <button class="ui teal basic button" type="submit"
-                                                    style="margin-bottom: 10px;">Добавить
-                                            </button>
-                                        </div>
+                    <div class="tities_list">
+                        {% for todo in todo_list %}
+                        {% for title in task %}
+                        {% if todo.title == title %}
+                        <div class="task_body"
+                            style="{% if todo.is_complete==True %}border: solid rgb(171,246,0);   border-radius: 15px; border-width: 2px;text-decoration: line-through;{% else %}border:solid #85B8FF; border-width: 2px; border-radius: 15px;{% endif %}">
+                            <button class="modal-trigger" data-modal-id="modal-{{ todo.id }}">
+                                {{ title|safe }}
+                            </button>
+                            <img src="{{ url_for('userava') }}"
+                                style="width: 1.5vw; height: 1.5vw; border: solid white; border-radius: 50%; margin-top: 20%; margin-left: auto;">
+                            <div id="modal-{{ todo.id }}" class="modal-overlay">
+                                <div class="modal-container"
+                                    style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
+                                    {{ todo.title }}
+                                    <span class="modal-close">&times;</span>
+                                    <div class="modal-body">
+                                        {{ todo.descr|safe }}
+                                        {% if todo.is_complete == False %}
+                                        <span class="ui gray label">В работе</span>
+                                        <button class="modal-trigger ui yellow basic button"
+                                            data-modal-id="modal-change-{{ todo.id }}">
+                                            Изменить
+                                        </button>
+                                        <a class="ui primary basic button" href="/update/{{ todo.id }}">Завершить</a>
+                                        {% else %}
+                                        <span class="ui green label">Завершено</span>
+                                        <a class="ui blue basic button" href="/update/{{ todo.id }}">Возобновить</a>
+                                        {% endif %}
+                                        <a class="ui negative basic button" href="/delete/{{ todo.id }}">Удалить</a>
+                                        {% if todo.is_cycle == 'checked' %}
+                                        <p>Цикличная: Да</p>
+                                        {% else %}
+                                        <p>Цикличная: Нет</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="modal-change-{{ todo.id }}" class="modal-overlay">
+                                <div class="modal-container"
+                                    style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
+                                    {{ todo.title }}
+                                    <span class="modal-close">&times;</span>
+                                    <form class="modal-body" action="/change_content/{{ todo.id }}" method="post">
+                                        <input type="text" name="title" placeholder="Введите название задачи"
+                                            style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
+                                            value="{{ todo.title }}"><br>
+                                        <textarea name="task-description"
+                                            class="ckeditor">{{ todo.descr|safe }}</textarea>
+                                        <input type="text" name="responsible" placeholder="Добавить ответственного"
+                                            style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
+                                        <button class="ui teal basic button" type="submit"
+                                            style="margin: 10px; margin-left: 2.5%;">
+                                            Сохранить
+                                        </button>
                                     </form>
                                 </div>
                             </div>
                         </div>
+                        {% endif %}
+                        {% endfor %}
+                        {% endfor %}
+
+                    </div>
+                    <button class="modal-trigger" data-modal-id="modal-create-{{ tag }}"
+                        style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %} background-color: #F1F2F4; color: black;{% endif %} margin-top: 5%; width: 100%; text-align: center; display: block; background: none; cursor: pointer; padding-bottom: 5%;">
+                        + Добавить задачу
+                    </button>
+
+                    <div id="modal-create-{{ tag }}" class="modal-overlay">
+                        <div class="modal-container"
+                            style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
+                            <h3 class="modal-title">Новая задача</h3>
+                            <span class="modal-close">&times;</span>
+                            <div class="modal-body">
+                                <form class="ui form" action="/add" method="post"
+                                    style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
+                                    name="creator">
+                                    <div class="field">
+                                        <input type="text" name="title" placeholder="Введите название задачи"
+                                            style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"><br>
+                                        <textarea name="task-description" class="ckeditor"
+                                            style="visibility: hidden; display: none;">Введите описание задачи</textarea>
+                                        <input type="text" name="tag" placeholder={{ tag }}
+                                            style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %}background-color:rgb(56,56,56);color:white;{% endif %}"
+                                            value="{{ tag }}"><br>
+                                        <div class="additional">
+                                            <label style="width: 50%; display: inline;"><input name="checker"
+                                                    type="checkbox" value="checked"
+                                                    style="margin-top: 0.5%; margin-right: 0.5%;">Цикличная</label>
+                                            <div class="container_check"
+                                                style="width: 50%; display: inline; margin-left: 1.5em;">
+                                                <label class="add_button" onclick="CheckClicked(this)">Добавить
+                                                    чек-лист</label>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+                                    <button class="ui teal basic button" type="submit"
+                                        style="margin-bottom: 10px; margin-left: 2.5%;">Добавить
+                                    </button>
+
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% if todo_responsible %}
+            <div class="resp_head">
+                <p>
+                    <button class="modal-trigger" data-modal-id="modal-open-{{ tag }}"
+                        style="font-weight: bold; padding-left: 2%; padding-top: 4%; padding-bottom: 2%;">
+                        Назначенные
+                    </button>
+                </p>
+                <div class="resp_list">
+                    {% for todo in todo_responsible %}
+                    <div class="task_body"
+                        style="{% if todo.is_complete==True %}border: solid rgb(171,246,0);   border-radius: 15px; border-width: 2px;text-decoration: line-through;{% else %}border:solid #85B8FF; border-width: 2px; border-radius: 15px;{% endif %}">
+                        <button class="modal-trigger" data-modal-id="modal-{{ todo.id }}">
+                            {{ todo.title|safe }}
+                        </button>
+                        <div id="modal-{{ todo.id }}" class="modal-overlay">
+                            <div class="modal-container"
+                                style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
+                                {{ todo.title }}
+                                <span class="modal-close">&times;</span>
+                                <div class="modal-body">
+                                    {{ todo.descr|safe }}
+                                    <div class="nav" style="margin-top: 2.5%;">
+                                        {% if todo.is_complete == False %}
+                                        <span class="ui gray label">В работе</span>
+                                        <button class="modal-trigger ui yellow basic button"
+                                            data-modal-id="modal-change-{{ todo.id }}">
+                                            Изменить
+                                        </button>
+
+                                        <a class="ui primary basic button" href="/update/{{ todo.id }}">Завершить</a>
+                                        {% else %}
+                                        <span class="ui green label">Завершено</span>
+                                        <a class="ui blue basic button" href="/update/{{ todo.id }}">Возобновить</a>
+                                        {% endif %}
+                                        <a class="ui negative basic button" href="/delete/{{ todo.id }}">Удалить</a>
+                                        {% if todo.is_cycle == 'checked' %}
+                                        <p>Цикличная: Да</p>
+                                        {% else %}
+                                        <p>Цикличная: Нет</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="modal-change-{{ todo.id }}" class="modal-overlay">
+                            <div class="modal-container"
+                                style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
+                                {{ todo.title }}
+                                <span class="modal-close">&times;</span>
+                                <form class="modal-body" action="/change_content/{{ todo.id }}" method="post">
+                                    <input type="text" name="title" placeholder="Введите название задачи"
+                                        style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
+                                        value="{{ todo.title }}"><br>
+                                    <textarea name="task-description" class="ckeditor">{{ todo.descr|safe }}</textarea>
+                                    <button class="ui teal basic button" type="submit"
+                                        style="margin: 10px; margin-left: 2.5%;">Сохранить
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                     {% endfor %}
                 </div>
-            {% endblock %}
+            </div>
+            {% endif %}
+
+            <button class="modal-trigger" data-modal-id="modal-create-new-{{ result }}"
+                style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black; background-color: #E9ECEF;{% endif %} border: solid #E9ECEF; box-shadow: 0px 8px 8px -3px rgba(0, 0, 0, 0.2);  border-radius: 6px; text-align: center; cursor: pointer; width: 30vh; height: 2.5vh; margin-top:2%; margin-right: 50%;">
+                + Добавить проект
+            </button>
+
+            {% for workspace in workspace_list %}
+            <div id="modal-create-new-{{ result }}" class="modal-overlay">
+                <div class="modal-container"
+                    style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
+                    <h3 class="modal-title">Новый проект</h3>
+                    <span class="modal-close">&times;</span>
+                    {{ current_workspace.title }}
+                    <div class="modal-body">
+                        <form class="ui form" action="/add_tag/{{ current_workspace.id }}" method="post"
+                            style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
+                            name="creator">
+                            <div class="field">
+                                <input type="text" name="title" placeholder="Введите название проекта"
+                                    style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %} width: 100%;">
+                                <br>
+                                <textarea name="task-description" class="ckeditor"
+                                    style="visibility: hidden; display: none;">Введите описание проекта</textarea>
+                                <button class="ui teal basic button" type="submit" style="margin-bottom: 10px;">Добавить
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
+        {% endblock %}
     </div>
-    <!--Модальные окна-->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            function initCKEditor(textarea) {
-                if (CKEDITOR.instances[textarea.name]) {
-                    CKEDITOR.instances[textarea.name].destroy();
-                }
+</div>
+
+
+<!--Модальные окна-->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        function initCKEditor(textarea) {
+            if (CKEDITOR.instances[textarea.name]) {
+                CKEDITOR.instances[textarea.name].destroy();
             }
+        }
 
-            function initModals() {
-                document.querySelectorAll('.modal-trigger').forEach(button => {
-                    button.addEventListener('click', function () {
-                        const modalId = this.getAttribute('data-modal-id');
-                        const modal = document.getElementById(modalId);
+        function initModals() {
+            document.querySelectorAll('.modal-trigger').forEach(button => {
+                button.addEventListener('click', function () {
+                    const modalId = this.getAttribute('data-modal-id');
+                    const modal = document.getElementById(modalId);
 
-                        if (modal) {
-                            const textarea = modal.querySelector('.ckeditor');
-                            const task_description = modal.querySelector('.task-description');
-                            const workspace_description = modal.querySelector('.workspace-description');
-                            if (task_description) {
-                                task_description.style.display = 'none';
-                                task_description.style.visibility = 'hidden';
-                            }
-                            if (workspace_description) {
-                                workspace_description.style.display = 'none';
-                                workspace_description.style.visibility = 'hidden';
-                            }
-                            if (textarea) {
-                                initCKEditor(textarea);
-                            }
-
-                            modal.style.display = 'block';
-                            document.body.style.overflow = 'hidden';
+                    if (modal) {
+                        const textarea = modal.querySelector('.ckeditor');
+                        const task_description = modal.querySelector('.task-description');
+                        const workspace_description = modal.querySelector('.workspace-description');
+                        if (task_description) {
+                            task_description.style.display = 'none';
+                            task_description.style.visibility = 'hidden';
                         }
-                    });
-                });
-
-                document.querySelectorAll('.modal-close').forEach(closeBtn => {
-                    closeBtn.addEventListener('click', function () {
-                        const modal = this.closest('.modal-overlay');
-                        if (modal) {
-
-                            const textarea = modal.querySelector('.ckeditor');
-                            if (textarea && CKEDITOR.instances[textarea.name]) {
-                                CKEDITOR.instances[textarea.name].destroy();
-                            }
-                            modal.style.display = 'none';
-                            document.body.style.overflow = '';
+                        if (workspace_description) {
+                            workspace_description.style.display = 'none';
+                            workspace_description.style.visibility = 'hidden';
                         }
-                    });
-                });
-
-                document.querySelectorAll('.modal-overlay').forEach(modal => {
-                    modal.addEventListener('click', function (event) {
-                        if (event.target === this) {
-
-                            const textarea = this.querySelector('.ckeditor');
-                            if (textarea && CKEDITOR.instances[textarea.name]) {
-                                CKEDITOR.instances[textarea.name].destroy();
-                            }
-                            this.style.display = 'none';
-                            document.body.style.overflow = '';
+                        if (textarea) {
+                            initCKEditor(textarea);
                         }
-                    });
-                });
-            }
 
-            document.addEventListener('keydown', function (event) {
-                if (event.key === 'Escape') {
-                    document.querySelectorAll('.modal-overlay:not([style*="display: none"])').forEach(modal => {
+                        modal.style.display = 'block';
+                        document.body.style.overflow = 'hidden';
+                    }
+                });
+            });
+
+            document.querySelectorAll('.modal-close').forEach(closeBtn => {
+                closeBtn.addEventListener('click', function () {
+                    const modal = this.closest('.modal-overlay');
+                    if (modal) {
+
                         const textarea = modal.querySelector('.ckeditor');
                         if (textarea && CKEDITOR.instances[textarea.name]) {
                             CKEDITOR.instances[textarea.name].destroy();
                         }
                         modal.style.display = 'none';
                         document.body.style.overflow = '';
-                    });
-                }
-            });
-
-            document.querySelectorAll('form').forEach(form => {
-                form.addEventListener('submit', function (e) {
-                    const textarea = this.querySelector('.ckeditor');
-                    if (textarea && CKEDITOR.instances[textarea.name]) {
-
-                        console.log(CKEDITOR.instances[textarea.name].getData());
-                        textarea.value = CKEDITOR.instances[textarea.name].getData();
                     }
                 });
             });
 
-            CKEDITOR.config.autoUpdateElement = true;
-            CKEDITOR.config.removePlugins = 'elementspath,resize';
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.addEventListener('click', function (event) {
+                    if (event.target === this) {
 
-            initModals();
-
-            const scrollContainer = document.querySelector(".list");
-
-            let isDragging = false;
-            let startX, scrollStart;
-
-            scrollContainer.addEventListener("pointerdown", (e) => {
-                isDragging = true;
-                startX = e.clientX;
-                scrollStart = scrollContainer.scrollLeft;
-
-                scrollContainer.style.cursor = "grabbing";
+                        const textarea = this.querySelector('.ckeditor');
+                        if (textarea && CKEDITOR.instances[textarea.name]) {
+                            CKEDITOR.instances[textarea.name].destroy();
+                        }
+                        this.style.display = 'none';
+                        document.body.style.overflow = '';
+                    }
+                });
             });
+        }
 
-            scrollContainer.addEventListener("pointerup", () => {
-                isDragging = false;
-                scrollContainer.style.cursor = "grab";
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay:not([style*="display: none"])').forEach(modal => {
+                    const textarea = modal.querySelector('.ckeditor');
+                    if (textarea && CKEDITOR.instances[textarea.name]) {
+                        CKEDITOR.instances[textarea.name].destroy();
+                    }
+                    modal.style.display = 'none';
+                    document.body.style.overflow = '';
+                });
+            }
+        });
+
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                const textarea = this.querySelector('.ckeditor');
+                if (textarea && CKEDITOR.instances[textarea.name]) {
+
+                    console.log(CKEDITOR.instances[textarea.name].getData());
+                    textarea.value = CKEDITOR.instances[textarea.name].getData();
+                }
             });
+        });
 
-            scrollContainer.addEventListener("pointerleave", () => {
-                isDragging = false;
-                scrollContainer.style.cursor = "grab";
-            });
+        CKEDITOR.config.autoUpdateElement = true;
+        CKEDITOR.config.removePlugins = 'elementspath,resize';
 
-            scrollContainer.addEventListener("pointermove", (e) => {
-                if (!isDragging) return;
-                e.preventDefault();
+        initModals();
 
-                const currentX = e.clientX;
-                const deltaX = currentX - startX;
+        const scrollContainer = document.querySelector(".list");
 
-                scrollContainer.scrollLeft = scrollStart - deltaX;
-            });
+        let isDragging = false;
+        let startX, scrollStart;
 
+        scrollContainer.addEventListener("pointerdown", (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            scrollStart = scrollContainer.scrollLeft;
+
+            scrollContainer.style.cursor = "grabbing";
+        });
+
+        scrollContainer.addEventListener("pointerup", () => {
+            isDragging = false;
             scrollContainer.style.cursor = "grab";
         });
-    </script>
+
+        scrollContainer.addEventListener("pointerleave", () => {
+            isDragging = false;
+            scrollContainer.style.cursor = "grab";
+        });
+
+        scrollContainer.addEventListener("pointermove", (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+
+            const currentX = e.clientX;
+            const deltaX = currentX - startX;
+
+            scrollContainer.scrollLeft = scrollStart - deltaX;
+        });
+
+        scrollContainer.style.cursor = "grab";
+    });
+</script>
 
 
+<!--Умная сортировка-->
+<script>
+    function onSelectChange(event) {
+        const selectedValue = event.target.value;
+        if (selectedValue == '')
+            pass;
 
-    <!--Умная сортировка-->
-    <script>
-        function onSelectChange(event) {
-            const selectedValue = event.target.value;
-            if (selectedValue == '')
-                pass;
+        else
+            document.location.href = `http://192.168.0.17:5555/sort/${selectedValue}`;
+        // 'selectedValue' теперь доступно для дальнейшего использования
+    }
+</script>
 
-            else
-                document.location.href = `http://192.168.0.17:5555/sort/${selectedValue}`;
-            // 'selectedValue' теперь доступно для дальнейшего использования
-        }
-    </script>
-    <!--Динамический лист чек-боксов-->
-    <script>
-        function CheckClicked(button) {
-            let modal = button.closest('.modal-overlay');
 
-            if (!modal) {
-                console.error("Модальное окно не найдено.");
-                return;
-            }
+<!--Динамический лист чек-боксов-->
+<script>
+    function CheckClicked(button) {
+        let modal = button.closest('.modal-overlay');
 
-            let container = modal.querySelector('.container_check');
-
-            if (!container) {
-                console.error("Контейнер чек-листа не найден.");
-                return;
-            }
-
-            let div = document.createElement('div');
-            div.classList.add('checklist-item');
-            div.style.marginTop = '5px';
-
-            let checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.name = 'checklist[]';
-
-            let input = document.createElement('input');
-            input.type = 'text';
-            input.name = 'checklist_text[]';
-            input.placeholder = 'Введите пункт чек-листа';
-            input.style.marginLeft = '5px';
-
-            div.appendChild(checkbox);
-            div.appendChild(input);
-            container.appendChild(div);
+        if (!modal) {
+            console.error("Модальное окно не найдено.");
+            return;
         }
 
-    </script>
+        let container = modal.querySelector('.container_check');
+
+        if (!container) {
+            console.error("Контейнер чек-листа не найден.");
+            return;
+        }
+
+        let div = document.createElement('div');
+        div.classList.add('checklist-item');
+        div.style.marginTop = '5px';
+
+        let checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.name = 'checklist[]';
+        checkbox.style.marginTop = '2%';
+
+        let input = document.createElement('input');
+        input.type = 'text';
+        input.name = 'checklist_text[]';
+        input.placeholder = 'Введите пункт чек-листа';
+        input.style.marginLeft = '5px';
+        input.style.width = '50%';
+
+        div.appendChild(checkbox);
+        div.appendChild(input);
+        container.appendChild(div);
+    }
+
+</script>
 {% endblock %}
