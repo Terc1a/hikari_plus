@@ -239,6 +239,10 @@ def add():
     get_tag = Tag.query.filter_by(title=request.form.get('tag'), uid=current_user.id).first()
     tag_id = get_tag.id
     descr = request.form.get('task-description')
+    checkers = request.form.getlist('checklist[]')
+    checkers_text = request.form.getlist('checklist_text[]')
+    print(checkers)
+    print(checkers_text)
     if is_cycle == None:
         new_todo = ToDo(title=title, descr=descr, tag_id=tag_id, create_date=timed_raw, is_complete=False)
         db.session.add(new_todo)
