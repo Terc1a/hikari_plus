@@ -183,7 +183,6 @@
                                     <span class="modal-close">&times;</span>
                                     <div class="modal-body">
                                         {{ todo.descr|safe }}
-                                        <div class="nav" style="margin-top: 2.5%;">
                                             {% if todo.is_complete == False %}
                                             <span class="ui gray label">В работе</span>
                                             <button class="modal-trigger ui yellow basic button"
@@ -202,7 +201,6 @@
                                             {% else %}
                                             <p>Цикличная: Нет</p>
                                             {% endif %}
-                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -254,14 +252,18 @@
                                         <input type="text" name="tag" placeholder={{ tag }}
                                             style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %}background-color:rgb(56,56,56);color:white;{% endif %}"
                                             value="{{ tag }}"><br>
-                                        <label><input name="checker" type="checkbox" value="checked">Цикличная</label>
-                                    </div>
-                                    <div class="checklist">
+                                            <div class="container_check">
+                                                <label class="add_button" onclick="CheckClicked()">Добавить чек-лист</label>
+                                              </div>
 
+
+                                        <label><input name="checker" type="checkbox" value="checked">Цикличная</label><br>
                                     </div>
+
                                     <button class="ui teal basic button" type="submit"
                                         style="margin-bottom: 10px; margin-left: 2.5%;">Добавить
                                     </button>
+
                                 </form>
                             </div>
                         </div>
@@ -300,6 +302,7 @@
                                             data-modal-id="modal-change-{{ todo.id }}">
                                             Изменить
                                         </button>
+                                        
                                         <a class="ui primary basic button" href="/update/{{ todo.id }}">Завершить</a>
                                         {% else %}
                                         <span class="ui green label">Завершено</span>
@@ -371,7 +374,7 @@
         {% endblock %}
     </div>
 </div>
-
+<!--Модальные окна-->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         function initCKEditor(textarea) {
@@ -385,10 +388,22 @@
                 button.addEventListener('click', function () {
                     const modalId = this.getAttribute('data-modal-id');
                     const modal = document.getElementById(modalId);
+
                     if (modal) {
                         const textarea = modal.querySelector('.ckeditor');
                         const task_description = modal.querySelector('.task-description');
                         const workspace_description = modal.querySelector('.workspace-description');
+                        let container = document.querySelector(".container_check");
+                        let add_button = document.querySelector(".add_button");
+                        let i = 0;
+                        i++;
+                        let button = document.createElement("button_ch");
+                        let br = document.createElement("br");
+                        button.className = "button";
+                        button.innerHTML = "+";
+                        container.append(button);
+                        container.append(br);
+                        addInput();
                         if (task_description) {
                             task_description.style.display = 'none';
                             task_description.style.visibility = 'hidden';
@@ -502,7 +517,7 @@
         scrollContainer.style.cursor = "grab";
     });
 </script>
-
+<!--Умная сортировка-->
 <script>
     function onSelectChange(event) {
         const selectedValue = event.target.value;
@@ -514,4 +529,6 @@
         // 'selectedValue' теперь доступно для дальнейшего использования
     }
 </script>
+<!--Динамический лист чек-боксов-->
+
 {% endblock %}

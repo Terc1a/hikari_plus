@@ -1,0 +1,73 @@
+<script src="https://cdn.ckeditor.com/4.10.0/standard/ckeditor.js"></script>
+{% block content %} {{ ckeditor.load() }}
+<div class="container_check">
+  <!-- <button class="add_button" type="button">Добавить чек-лист</button> -->
+  <label class="add_button" onclick="CheckClicked()">Добавить чек-лист</label>
+</div>
+
+<script>
+  let container = document.querySelector(".container_check");
+  let add_button = document.querySelector(".add_button");
+  let i = 0;
+
+  function CheckClicked() {
+    i++;
+    let button = document.createElement("button");
+    let br = document.createElement("br");
+    button.className = "button";
+    button.innerHTML = "+";
+    container.append(button);
+    container.append(br);
+    addInput();
+  };
+
+  function addInput() {
+    let buttons = document.querySelectorAll(".button");
+    buttons.forEach(function (elem) {
+      elem.onclick = function () {
+        let input = document.createElement("input");
+        input.setAttribute("type", "checkbox");
+        let input2 = document.createElement("input");
+        let br = document.createElement("br");
+        container.append(input);
+        container.append(input2);
+        container.append(br);
+      };
+    });
+  }
+</script>
+
+<script>
+  let container = document.querySelector(".container_check");
+  let add_button = document.querySelector(".add_button");
+  let i = 0;
+
+  add_button.addEventListener("click", function () {
+    i++;
+    let button = document.createElement("button");
+    let br = document.createElement("br");
+    button.className = "button";
+    button.innerHTML = "+";
+    container.append(button);
+    container.append(br);
+    addInput();
+  });
+
+  function addInput() {
+    let buttons = document.querySelectorAll(".button");
+    buttons.forEach(function (elem) {
+      elem.onclick = function () {
+        let input = document.createElement("input");
+        input.setAttribute("type", "checkbox");
+        let input2 = document.createElement("input");
+        let br = document.createElement("br");
+        container.append(input);
+        container.append(input2);
+        container.append(br);
+      };
+    });
+  }
+</script>
+
+
+{% endblock %}

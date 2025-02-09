@@ -1027,4 +1027,5 @@ def upload():
 
 @app.get('/test_menu')
 def test_menu():
-    return render_template('todo/main/test_menu.html')
+    return render_template('todo/tmpl/task.html')
+
