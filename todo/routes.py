@@ -5,17 +5,18 @@ import pytz
 import flask_login
 import plotly.graph_objs as go
 import plotly.utils
-from flask import Flask, request, render_template, url_for, redirect, session, make_response, flash, send_from_directory
-from todo.models import ToDo, db, Tag, News, Users, Workspace
+from flask import Flask, request, render_template, url_for, redirect, session, make_response, flash, send_from_directory, jsonify
+from todo.models import ToDo, db, Tag, News, Users, Workspace, Checks
 from datetime import datetime
 from flask_ckeditor import CKEditor
 from flask_login import current_user, login_user, login_required, UserMixin ,logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
+from flask_wtf.csrf import CSRFProtect
 
 logfile = '/home/tercia/Documents/todo/backend.log'
 logging.basicConfig(format=u'%(levelname)-8s [%(asctime)s] %(message)s', level='INFO', filename=logfile)
-
+csrf = CSRFProtect()
 ckeditor = CKEditor()
 login_manager = flask_login.LoginManager()
 UPLOAD_FOLDER = '/path/to/the/uploads'
@@ -46,7 +47,7 @@ def create_app():
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     app.secret_key = 'a1dcbe59291f58c089qwer4feaf8ee8e2f44f05cdd4465e0d9c726938b2eeaab'
     db.init_app(app)
-
+    csrf.init_app(app)
     ckeditor.init_app(app)
     login_manager.init_app(app)
     return app
@@ -81,6 +82,7 @@ def home():
             get_curr_user_tags = Tag.query.filter(Tag.ws_id.in_((ws_ids))).all()
             tags_ids = []
             tags_names = []
+            todo_ids = []
             default_value = 0
             for el in get_curr_user_tags:
                 tags_ids.append(el.id)
@@ -123,6 +125,9 @@ def home():
             # Рендер списков задач
             todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
             todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).all()
+            for task in todo_list1:
+                todo_ids.append(task.id)
+            check_list = Checks.query.filter(Checks.todo_id.in_((todo_ids))).all()
             # Формируем список проектов и задач на отправку
             result = {}
             for tag in tags_ids:
@@ -174,13 +179,12 @@ def home():
                         user_ids.append(el_tag.uid) #Получаем список юзеров, которые создали эти проекты
                         result2[f'{el_tag.uid}'] = [f'{el_todo.id}', f'{el_todo.title}',f'{el_todo.descr}', f'{el_todo.is_cycle}'] #Формируем массив
                 logging.info(f'{result2}, res2')
-                print(tag_ids)
 
 
             return render_template('todo/main/index.html', todo_list=todo_list1, todoc_list=todoc_list, todo_tags=todo_tags,
                                    todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,
                                    title='CUBI Prot.', default_value=default_value, workspace_list=todo_workspaces,
-                                   result=result, current_workspace=get_curr_ws, todo_responsible=todo_responsible)
+                                   result=result, current_workspace=get_curr_ws, todo_responsible=todo_responsible, check_list=check_list)
         else:
             return redirect(url_for('todo/auth/login.html'))
     if request.method == 'POST':
@@ -195,11 +199,15 @@ def home():
                     ws_ids.append(ws.id)
                 get_curr_user_tags = Tag.query.filter(Tag.ws_id.in_((ws_ids))).all()
                 tags_ids = []
+                todo_ids = []
                 for el in get_curr_user_tags:
                     tags_ids.append(el.id)
                 todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(
                     ToDo.id.desc()).all()
                 todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.id.desc()).all()
+                for task in todo_list1:
+                    todo_ids.append(task.id)
+                check_list = Checks.query.filter(Checks.todo_id.in_((todo_ids))).all()
                 todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(
                     ToDo.id.desc()).all()
                 todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(
@@ -224,7 +232,7 @@ def home():
 
                 return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags,
                                        todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,
-                                       title='CUBI Prot.', default_value=default_value, result=result, workspace_list=todo_workspaces, current_workspace=get_curr_ws, todo_responsible=todo_responsible)
+                                       title='CUBI Prot.', default_value=default_value, result=result, workspace_list=todo_workspaces, current_workspace=get_curr_ws, todo_responsible=todo_responsible, check_list=check_list)
         else:
             return redirect(url_for('todo/auth/login.html'))
 
@@ -239,20 +247,40 @@ def add():
     get_tag = Tag.query.filter_by(title=request.form.get('tag'), uid=current_user.id).first()
     tag_id = get_tag.id
     descr = request.form.get('task-description')
-    checkers = request.form.getlist('checklist[]')
+    # check_list = {}
+    # checkers = request.form.getlist('checklist[]')
+    # print(checkers)
     checkers_text = request.form.getlist('checklist_text[]')
-    print(checkers)
     print(checkers_text)
+    # for ctext in checkers_text:
+    #     if not checkers:
+    #         check_list[f'{ctext}'] = 'off'
+    #     else:
+    #         for cel in checkers:
+    #             check_list[f'{ctext}'] = 'on' 
+    #             if not cel:
+    #                 print(f'{ctext}:off')
+    #                 check_list[f'{ctext}'] = ['off']
+    # print(check_list)
+
     if is_cycle == None:
         new_todo = ToDo(title=title, descr=descr, tag_id=tag_id, create_date=timed_raw, is_complete=False)
         db.session.add(new_todo)
         db.session.commit()
+        for el in checkers_text:
+            new_chel = Checks(todo_id=new_todo.id, text=el, is_checked=False)
+            db.session.add(new_chel)
+            db.session.commit()
     else:
         cycle_series = 0
         new_todo = ToDo(title=title, descr=descr, tag_id=tag_id, create_date=timed_raw, is_complete=False,
                         is_cycle=is_cycle, cycle_series=cycle_series)
         db.session.add(new_todo)
         db.session.commit()
+        for el in checkers_text:
+            new_chel = Checks(todo_id=new_todo.id, text=el, is_checked=False)
+            db.session.add(new_chel)
+            db.session.commit()
     db.session.close()
 
     return redirect(url_for('home'))
@@ -717,7 +745,6 @@ def change_tag(tag_id):
 @app.get('/delete_tag/<int:tag_id>')
 @login_required
 def delete_tag(tag_id):
-    print(tag_id)
     tag = Tag.query.filter_by(id=tag_id).first()
     tasks_on_tag = ToDo.query.filter_by(tag_id=tag.id).all()
     for task in tasks_on_tag:
@@ -852,10 +879,15 @@ def login():
         if user and check_password_hash(user.password, request.form['psw']):
             session['username'] = request.form['name']
             user = User(user.id)
-            login_user(user)
-            return redirect(url_for('home'))
-
-        flash("Неверная пара логин/пароль", "error")
+            try:
+                login_user(user)
+                return redirect(url_for('home'))
+            except Exception:
+                logging.exception('some err')
+                return redirect(url_for('login'))
+        else:
+            logging.exception('cant login')
+            return redirect(url_for('login'))
 
 
 # Регистрируемся
@@ -994,7 +1026,6 @@ def userava():
 @app.route('/getavatar/<int:uid>')
 @login_required
 def get_avatar(uid):
-    print(uid)
     img = Users.query.filter_by(id=uid).first()
     if not img:
         return ""
@@ -1033,3 +1064,18 @@ def upload():
 def test_menu():
     return render_template('todo/tmpl/task.html')
 
+@app.route('/update_checkbox', methods=['POST'])
+@login_required
+def update_checkbox():
+    data = request.get_json()
+    print(data)
+    try:
+        
+        check_item = Checks.query.filter_by(id=int(data['id'])).first()
+        print(check_item.text)
+        check_item.is_checked = data['is_checked']
+        db.session.commit()
+        return jsonify(success=True)
+    except Exception as e:
+        db.session.rollback()
+        return jsonify(error=str(e)), 400

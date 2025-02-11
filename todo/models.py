@@ -17,6 +17,15 @@ class ToDo(db.Model):
     cycle_series = db.Column(db.Integer)
     time_to_complete = db.Column(db.String(100))
     responsible = db.Column(db.Integer)
+    # chlist = db.Column(db.PickleType) неактуально после добавления модели Checks, не удаляю окончательно, так как не до конца понятны недостатки нового подхода
+
+
+class Checks(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    todo_id = db.Column(db.Integer)
+    text = db.Column(db.String(1000))
+    is_checked = db.Column(db.Boolean)
+
 
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -40,6 +49,7 @@ class News(db.Model):
     version = db.Column(db.String(10))
     create_date = db.Column(db.String(25))
     to_send = db.Column(db.Boolean)
+
 
 class Users(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
