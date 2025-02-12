@@ -247,22 +247,7 @@ def add():
     get_tag = Tag.query.filter_by(title=request.form.get('tag'), uid=current_user.id).first()
     tag_id = get_tag.id
     descr = request.form.get('task-description')
-    # check_list = {}
-    # checkers = request.form.getlist('checklist[]')
-    # print(checkers)
     checkers_text = request.form.getlist('checklist_text[]')
-    print(checkers_text)
-    # for ctext in checkers_text:
-    #     if not checkers:
-    #         check_list[f'{ctext}'] = 'off'
-    #     else:
-    #         for cel in checkers:
-    #             check_list[f'{ctext}'] = 'on' 
-    #             if not cel:
-    #                 print(f'{ctext}:off')
-    #                 check_list[f'{ctext}'] = ['off']
-    # print(check_list)
-
     if is_cycle == None:
         new_todo = ToDo(title=title, descr=descr, tag_id=tag_id, create_date=timed_raw, is_complete=False)
         db.session.add(new_todo)
@@ -422,8 +407,11 @@ def update_task(todo_id):
     todo.title = request.form.get('title')
     todo.descr = request.form.get('task-description')
     responsible = request.form.get('responsible')
-    get_uid = Users.query.filter_by(username=responsible).first()
-    todo.responsible = get_uid.id
+    if not responsible:
+        pass
+    else:
+        get_uid = Users.query.filter_by(username=responsible).first()
+        todo.responsible = get_uid.id
     todo.create_date = timed_raw
     db.session.commit()
     db.session.close()
@@ -1069,8 +1057,7 @@ def test_menu():
 def update_checkbox():
     data = request.get_json()
     print(data)
-    try:
-        
+    try:  
         check_item = Checks.query.filter_by(id=int(data['id'])).first()
         print(check_item.text)
         check_item.is_checked = data['is_checked']

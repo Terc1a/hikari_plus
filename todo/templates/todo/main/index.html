@@ -122,11 +122,14 @@
                     {% for tagg in todo_tags %}
                     {% if tag==tagg.title %}
                     <div id="modal-change-tag-{{ tag }}" class="modal-overlay">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/> 
                         <div class="modal-container"
                             style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/> 
                             <h3 class="modal-title">{{ tag }}</h3>
                             <span class="modal-close">&times;</span>
                             <form class="modal-body" action="/change_tag/{{ tagg.id }}" method="post">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/> 
                                 <input type="text" name="title" placeholder="Введите название проекта"
                                     style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
                                     value="{{ tagg.title }}"><br>
@@ -158,13 +161,22 @@
                                     {{ todo.title }}
                                     <span class="modal-close">&times;</span>
                                     <div class="modal-body">
-                                        {{ todo.descr|safe }}
-                                        При изменении статуса элемента(значения чекбокса) отправлять запрос на обновление значения элемента в БД через action или onchange
+                                        {{ todo.descr|safe }}<br>
+                                        {% set total_checks = check_list|selectattr('todo_id', 'equalto', todo.id)|list|length %}
+
+{% set completed_checks = check_list|selectattr('todo_id', 'equalto', todo.id)|selectattr('is_checked')|list|length %}
+
+{% set progress = (completed_checks / total_checks * 100)|round(0) if total_checks > 0 else 0 %}
+
+<progress class="progress-bar" value={{progress}} max=100 style="">
+    
+</progress>
+
+
                                         <form class="chlist">
-                                            Чек-лист:<br>
                                             {% for check in check_list %}
                                             {% if todo.id == check.todo_id %}
-                                            <input type="checkbox" data-check-id={{ check.id }} data-task-id={{ todo.id }} onchange="onCheckChange(event)" {%if check.is_checked==0 %}{% else %}checked{% endif %}>{{check.text}}<br>
+                                            <input type="checkbox" data-check-id={{ check.id }} data-task-id={{ todo.id }} onchange="onCheckChange(event)" {%if check.is_checked==0 %}{% else %}checked{% endif %}> {{check.text}}<br>
                                             {% endif %}
                                             {% endfor %}
                                         </form>
@@ -190,11 +202,13 @@
                             </div>
 
                             <div id="modal-change-{{ todo.id }}" class="modal-overlay">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/> 
                                 <div class="modal-container"
                                     style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
                                     {{ todo.title }}
                                     <span class="modal-close">&times;</span>
                                     <form class="modal-body" action="/change_content/{{ todo.id }}" method="post">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/> 
                                         <input type="text" name="title" placeholder="Введите название задачи"
                                             style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
                                             value="{{ todo.title }}"><br>
@@ -337,15 +351,21 @@
 
             {% for workspace in workspace_list %}
             <div id="modal-create-new-{{ result }}" class="modal-overlay">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>                                    
+
                 <div class="modal-container"
                     style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
                     <h3 class="modal-title">Новый проект</h3>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>                                    
+
                     <span class="modal-close">&times;</span>
                     {{ current_workspace.title }}
                     <div class="modal-body">
                         <form class="ui form" action="/add_tag/{{ current_workspace.id }}" method="post"
                             style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
                             name="creator">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>                                   
+
                             <div class="field">
                                 <input type="text" name="title" placeholder="Введите название проекта"
                                     style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %} width: 100%;">
@@ -559,8 +579,11 @@
         const taskItem = checkbox.closest('.task_body'); // Находим родительский контейнер задачи
         const taskId = checkbox.dataset.taskId; // Получаем ID из data-атрибута
         const checkId = checkbox.dataset.checkId;
-        console.log(taskId)
-        console.log(checkId)
+        const progressBar = checkbox.closest('.task_body').querySelector('.progress-bar');
+        const totalChecks = checkbox.parentElement.querySelectorAll('input[type="checkbox"]').length;
+        const completedChecks = checkbox.parentElement.querySelectorAll('input[type="checkbox"]:checked').length;
+        const newProgress = (completedChecks / totalChecks * 100).toFixed(0);
+        
         try {
             const response = await fetch('/update_checkbox', {
                 method: 'POST',
@@ -574,6 +597,7 @@
                     id: checkId
                 })
             });
+            progressBar.value = newProgress;
         } catch (error) {
             console.error('Ошибка:', error);
         }
