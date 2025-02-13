@@ -8,7 +8,9 @@
 {% endif %}
 {% endwith %}
 <div id="wrapper">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 <form action="/login" method="post" class="form-contact" name="login" id="signin">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
     <input type="text" id="user" name="name" placeholder="Логин" />
     <input type="password" id="pass" name="psw" placeholder="Пароль" />
 <!--<p><input type="checkbox" name="remainme" /> Запомнить меня-->

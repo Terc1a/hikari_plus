@@ -149,16 +149,19 @@
                         {% for title in task %}
                         {% if todo.title == title %}
                         <div class="task_body"
-                            style="{% if todo.is_complete==True %}border: solid rgb(171,246,0);   border-radius: 15px; border-width: 2px;text-decoration: line-through;{% else %}border:solid #85B8FF; border-width: 2px; border-radius: 15px;{% endif %}">
-                            <button class="modal-trigger" data-modal-id="modal-{{ todo.id }}" style="display: inline; word-wrap: break-word; width: 80%;">
+                            style="border: solid white;   border-radius: 15px; display: grid;
+                            grid-template-columns: auto 1fr;">
+                            <div class="task-header" style="display: flex; flex-direction: column; width: 10vw; height: 100%; order: -1; margin-top: -1px; grid-column: 1;">
+                            <div class="status-line" style="{% if todo.is_complete==True %}background-color: rgb(171,246,0); height: 5px;{% else %}background-color: #85B8FF; height: 5px;{% endif %} width: 100%;"></div>
+                            <button class="modal-trigger" data-modal-id="modal-{{ todo.id }}" style="display: inline; word-wrap: break-word; width: 100%; ">
                                 {{ title|safe }}
                             </button>
-                            
+                        </div>
                             <div class="side_menu" style="display: flex; flex-direction: column; margin-top: auto; margin-left: auto;">
                             {% set total_checks = check_list|selectattr('todo_id', 'equalto', todo.id)|list|length %}
                             {% if total_checks > 0 %}
                             {% set completed_checks = check_list|selectattr('todo_id', 'equalto', todo.id)|selectattr('is_checked')|list|length %}
-                            {% set progress = (completed_checks / total_checks * 100)|round(0) if total_checks > 0 else 0 %}
+                            {% set progress = (completed_checks / total_checks * 100)|round|int if total_checks > 0 else 0 %}
                             <div class="percentage" style="color: gray">
                                 {{progress}}%
                             </div>
