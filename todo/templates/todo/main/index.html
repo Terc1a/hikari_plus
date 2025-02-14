@@ -1,5 +1,5 @@
-{% extends 'todo/main/layout.html' %}
 <script src="https://cdn.ckeditor.com/4.10.0/standard/ckeditor.js"></script>
+{% extends 'todo/main/layout.html' %}
 {% block content %}
 {{ ckeditor.load() }}
 <div class='container' style="display: grid; grid-template-rows:10% 90%; width: 100vw; ">
@@ -418,26 +418,8 @@
             }
             // if (editor) { editor.destroy(true); }
             // CKEDITOR.replaceAll();
-            console.log(ed)
+            console.log(editor)
         }
-
-        function destroyCKEditors() {
-    Object.keys(CKEDITOR.instances).forEach(instance => {
-        CKEDITOR.instances[instance].destroy();
-    });
-}
-
-function initEditors() {
-    document.querySelectorAll('.ckeditor').forEach(textarea => {
-        if (!CKEDITOR.instances[textarea.name]) {
-            CKEDITOR.replace(textarea.name, {
-                // Ваши настройки редактора
-                removePlugins: 'elementspath,resize',
-                autoUpdateElement: true
-            });
-        }
-    });
-}
 
         function initModals() {
             document.querySelectorAll('.modal-trigger').forEach(button => {
@@ -518,8 +500,7 @@ function initEditors() {
         
         // Обновляем основную область с задачами
         document.querySelector('body').innerHTML = data.html;
-        destroyCKEditors();
-        initEditors();
+
         
     } catch (error) {
         console.error('Ошибка:', error);
