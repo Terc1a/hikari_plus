@@ -76,6 +76,8 @@
                     <div class="modal-body">
                         <form class="ui form" action="/add_tag" method="post"
                             style="width: 100%; background-color: rgb(56, 55, 55);" name="creator">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
                             <div class="field">
                                 <input type="text" name="title" placeholder="Введите название тега"
                                     style="background-color: rgb(56, 55, 55); color: white;"><br>
@@ -101,6 +103,8 @@
                     <div class="modal-body">
                         <form class="ui form" action="/change_tag" method="post"
                             style="width: 100%; background-color: rgb(56, 55, 55);" name="creator">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
                             <div class="field">
                                 <input type="text" name="title" placeholder="Введите название тега"
                                     style="background-color: rgb(56, 55, 55); color: white;"><br>
@@ -126,6 +130,8 @@
                     <div class="modal-body">
                         <form class="ui form" action="/create_news" method="post"
                             style="width: 100%; background-color: rgb(56, 55, 55);" name="creator">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
                             <div class="field">
                                 <input type="text" name="title" placeholder="Введите название новости"
                                     style="background-color: rgb(56, 55, 55); color: white;"><br>

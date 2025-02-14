@@ -17,6 +17,8 @@
 
     <div class="modal_changer" data-modal-id="modal_changer">
         <form action="/upload" method="POST" enctype="multipart/form-data" id="av_change_form" style="display: none;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
             <input type="file" class="file" name="file">
             <input type="submit" value="Загрузить" style="color: black;">
         </form>

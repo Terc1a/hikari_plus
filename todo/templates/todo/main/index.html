@@ -28,6 +28,7 @@
             </style>
             <form action="/search" class="search_bar" method="post"
                   style="margin-top: 1em; margin-left: 5%; width: 15vw; border: solid white; border-radius: 1.5vh; height: 3vh; ">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                 <button class="search_button" type="submit" style="anchor-name: search_bar;">🔍</button>
                 <input type="text" name="search_bar" placeholder="Найти задачу"
                        style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black;background-color: rgb(209,205,194);{% endif %} width: 60%; background: none; overflow: hidden;">
@@ -65,6 +66,8 @@
                             <form class="ui form" action="/add_ws" method="post"
                                   style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
                                   name="creator">
+                                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
                                 <div class="field">
                                     <input type="text" name="title" placeholder="Введите название области"
                                            style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"><br>
@@ -81,8 +84,10 @@
             </div>
 
             <div class="avatar" style="float: right; padding: 5%;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
                 <a href="/profile"><img src="{{ url_for('userava') }}"
-                                        style="width: 3vw; height: 3vh; border: solid white; border-radius: 50%; margin-left: 20.5%; "></a>
+                                        style="width: 3vw; height: 3vw; border: solid white; border-radius: 50%; margin-left: 20.5%; "></a>
             </div>
         </div>
 
@@ -100,13 +105,16 @@
                                             style="font-weight: bold; padding-left: 2%; padding-top: 4%; padding-bottom: 2%;">
                                         {{ tag }}
                                     </button>
+
                                 </p>
                                 {% for tagg in todo_tags %}
                                     {% if tag==tagg.title %}
                                         <div id="modal-open-{{ tag }}" class="modal-overlay">
                                             <div class="modal-container"
                                                  style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
-                                                <h3 class="modal-title">{{ tag }}</h3>
+                                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+                                                 <h3 class="modal-title">{{ tag }}</h3>
                                                 <span class="modal-close">&times;</span>
                                                 {{ tagg.descr|safe }}
                                                 <button class="modal-trigger ui yellow basic button"
@@ -375,6 +383,8 @@
                                                 <span class="modal-close">&times;</span>
                                                 <form class="modal-body" action="/change_content/{{ todo.id }}"
                                                       method="post">
+                                                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
                                                     <input type="text" name="title"
                                                            placeholder="Введите название задачи"
                                                            style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
