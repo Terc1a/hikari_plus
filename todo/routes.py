@@ -272,23 +272,26 @@ def add():
 
 
 # Сортируем по проектам
-@app.route('/sort/<string:workspace>', methods=['POST', 'GET'])
+@app.route('/sort', methods = ['POST'])
 @login_required
-def sort(workspace):
-    if request.method == 'GET':
-        default_value = 0
-        get_curr_user_ws = Workspace.query.filter_by(uid=current_user.id, title=workspace).first()
+def sort():
+    data = request.get_json()
+    try:
+        get_curr_user_ws = Workspace.query.filter_by(uid=current_user.id, title=data['destination']).first()
         ws_ids = []
         tags_ids = []
+        todo_ids = []
         ws_ids.append(get_curr_user_ws.id)
         tag_list = Tag.query.filter(Tag.ws_id.in_((ws_ids))).all()
         for el in tag_list:
             tags_ids.append(el.id)
-        todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
         todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).all()
+        for task in todo_list1:
+            todo_ids.append(task.id)
         todo_tags = Tag.query.filter(Tag.ws_id.in_((ws_ids))).distinct(Tag.title).all()
         todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
-        current_workspace = Workspace.query.filter_by(title=workspace, uid=current_user.id).first()
+        current_workspace = Workspace.query.filter_by(title=data['destination'], uid=current_user.id).first()
+        check_list = Checks.query.filter(Checks.todo_id.in_((todo_ids))).all()
         result = {}
         for tag in tags_ids:
             if not todo_list1:
@@ -308,53 +311,22 @@ def sort(workspace):
                         result[f'{tag_name.title}'].append(row.title)
                     else:
                         result[f'{tag_name.title}'] = [row.title]
-        return render_template('todo/main/index.html', todo_list=todo_list1,todo_tags=todo_tags,
-                        title='CUBI Prot.', default_value=default_value, workspace_list=todo_workspaces,
-                        result=result, current_workspace=current_workspace)
 
-    if request.method == 'POST':
-        if current_user:
-            check_flag = request.form.get('hider')
-            if check_flag == '1':
-                return redirect(url_for('home'))
-            else:
-                ws_ids = []
-                get_curr_ws = Workspace.query.filter_by(uid=current_user.id).all()
-                for ws in get_curr_ws:
-                    ws_ids.append(ws.id)
-                get_curr_user_tags = Tag.query.filter(Tag.ws_id.in_((ws_ids))).all()
-                tags_ids = []
-                for el in get_curr_user_tags:
-                    tags_ids.append(el.id)
-                todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(
-                    ToDo.id.desc()).all()
-                todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.id.desc()).all()
-                todo_completed = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=1).order_by(
-                    ToDo.id.desc()).all()
-                todo_uncompleted = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(
-                    ToDo.id.desc()).all()
-                completed = len(todo_completed)
-                uncompleted = len(todo_uncompleted)
-                default_value = 1
-                all = len(todo_list1)
-                todo_tags = Tag.query.filter_by(uid=current_user.id).distinct(Tag.title)
-                todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
-                current_workspace = Workspace.query.filter_by(title=workspace, uid=current_user.id).first()
 
-                result = {}
-                for tag in tags_ids:
-                    for row in todo_list:
-                        if tag == row.tag_id:
-                            tag_name = Tag.query.filter_by(id=row.tag_id).first()
-                            if tag_name.title in result:
-                                result[f'{tag_name.title}'].append(row.title)
-                            else:
-                                result[f'{tag_name.title}'] = [row.title]
-                return render_template('todo/main/index.html', todo_list=todo_list, todo_tags=todo_tags, 
-                                todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all, title='CUBI Prot.', 
-                                default_value=default_value, result=result, workspace_list=todo_workspaces, current_workspace=current_workspace)
-        else:
-            return redirect(url_for('todo/auth/login.html'))
+        return jsonify(success=True,            html=render_template(
+                'todo/main/index.html',  # Создадим отдельный шаблон
+                todo_list=todo_list1,
+                result=result,
+                current_workspace=current_workspace,
+                todo_tags=todo_tags,
+                workspace_list=todo_workspaces,
+                check_list=check_list,
+            ))
+    except Exception as e:
+        db.session.rollback()
+        return jsonify(error=str(e)), 400
+        print(e)
+        
 
 
 # Изменяем статус задачи
@@ -1056,10 +1028,8 @@ def test_menu():
 @login_required
 def update_checkbox():
     data = request.get_json()
-    print(data)
     try:  
         check_item = Checks.query.filter_by(id=int(data['id'])).first()
-        print(check_item.text)
         check_item.is_checked = data['is_checked']
         db.session.commit()
         return jsonify(success=True)

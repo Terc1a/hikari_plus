@@ -42,10 +42,12 @@
             {% block workspaces %}
             {% endblock %}
             <div class="head" style="margin-left: 30%; margin-right: 40%; font-size: 24px;">
-                <select id="fruits" onchange="onSelectChange(event)" style="outline: none;">
-                    <option value=''>Workspace</option>
+                <select onchange="sort(event)" id="fruits" style="outline: none;">
                     {% for workspace in workspace_list %}
-                    <option value='{{ workspace.title }}'>{{ workspace.title }}</option>
+                    <option value="{{ workspace.title }}" 
+                            {% if workspace.id == current_workspace.id %}selected{% endif %}>
+                        {{ workspace.title }}
+                    </option>
                     {% endfor %}
                 </select>
                 <button class="modal-trigger" data-modal-id="modal-create-id"
@@ -410,17 +412,40 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         function initCKEditor(textarea) {
+            var editor = CKEDITOR.instances['Description'];
             if (CKEDITOR.instances[textarea.name]) {
                 CKEDITOR.instances[textarea.name].destroy();
             }
+            // if (editor) { editor.destroy(true); }
+            // CKEDITOR.replaceAll();
+            console.log(ed)
         }
+
+        function destroyCKEditors() {
+    Object.keys(CKEDITOR.instances).forEach(instance => {
+        CKEDITOR.instances[instance].destroy();
+    });
+}
+
+function initEditors() {
+    document.querySelectorAll('.ckeditor').forEach(textarea => {
+        if (!CKEDITOR.instances[textarea.name]) {
+            CKEDITOR.replace(textarea.name, {
+                // Ваши настройки редактора
+                removePlugins: 'elementspath,resize',
+                autoUpdateElement: true
+            });
+        }
+    });
+}
 
         function initModals() {
             document.querySelectorAll('.modal-trigger').forEach(button => {
                 button.addEventListener('click', function () {
                     const modalId = this.getAttribute('data-modal-id');
                     const modal = document.getElementById(modalId);
-
+                    console.log(modalId)
+                    console.log('Clicked')
                     if (modal) {
                         const textarea = modal.querySelector('.ckeditor');
                         const task_description = modal.querySelector('.task-description');
@@ -472,6 +497,37 @@
                 });
             });
         }
+
+        window.sort = async function(event) {
+        const selectedValue = event.target.value;
+        console.log(selectedValue);
+
+        try {
+            const response = await fetch('/sort', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    destination: selectedValue,
+                })
+            });
+            const data = await response.json();
+        if (!response.ok) throw new Error(data.error || 'Unknown error');
+        
+        // Обновляем основную область с задачами
+        document.querySelector('body').innerHTML = data.html;
+        destroyCKEditors();
+        initEditors();
+        
+    } catch (error) {
+        console.error('Ошибка:', error);
+        alert('Произошла ошибка при обновлении списка');
+        }
+    }
+
+
 
         document.addEventListener('keydown', function (event) {
             if (event.key === 'Escape') {
@@ -536,21 +592,10 @@
         });
 
         scrollContainer.style.cursor = "grab";
+
+
+
     });
-</script>
-
-
-<!--Умная сортировка-->
-<script>
-    function onSelectChange(event) {
-        const selectedValue = event.target.value;
-        if (selectedValue == '')
-            pass;
-
-        else
-            document.location.href = `http://192.168.0.17:5555/sort/${selectedValue}`;
-        // 'selectedValue' теперь доступно для дальнейшего использования
-    }
 </script>
 
 
@@ -625,4 +670,6 @@
         }
     }
 </script>
+
+
 {% endblock %}
