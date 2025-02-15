@@ -1,6 +1,8 @@
 {% extends 'todo/main/layout.html' %}
 {% block content %}
                 Тема: <br>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
                 <form action="/change_theme" method="post">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 

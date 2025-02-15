@@ -5,6 +5,7 @@ import pytz
 import flask_login
 import plotly.graph_objs as go
 import plotly.utils
+from sqlalchemy import desc
 from flask import Flask, request, render_template, url_for, redirect, session, make_response, flash, send_from_directory, jsonify
 from todo.models import ToDo, db, Tag, News, Users, Workspace, Checks
 from datetime import datetime
@@ -124,7 +125,7 @@ def home():
                         db.session.close()
             # Рендер списков задач
             todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(ToDo.id.desc()).all()
-            todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).all()
+            todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).order_by(ToDo.id).all()
             for task in todo_list1:
                 todo_ids.append(task.id)
             check_list = Checks.query.filter(Checks.todo_id.in_((todo_ids))).all()
@@ -204,7 +205,7 @@ def home():
                     tags_ids.append(el.id)
                 todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).filter_by(is_complete=0).order_by(
                     ToDo.id.desc()).all()
-                todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.id.desc()).all()
+                todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).order_by(desc(ToDo.id)).all()
                 for task in todo_list1:
                     todo_ids.append(task.id)
                 check_list = Checks.query.filter(Checks.todo_id.in_((todo_ids))).all()
@@ -285,7 +286,7 @@ def sort():
         tag_list = Tag.query.filter(Tag.ws_id.in_((ws_ids))).all()
         for el in tag_list:
             tags_ids.append(el.id)
-        todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).all()
+        todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).order_by(desc(ToDo.id)).all()
         for task in todo_list1:
             todo_ids.append(task.id)
         todo_tags = Tag.query.filter(Tag.ws_id.in_((ws_ids))).distinct(Tag.title).all()
@@ -1036,3 +1037,40 @@ def update_checkbox():
     except Exception as e:
         db.session.rollback()
         return jsonify(error=str(e)), 400
+
+
+
+@app.route('/update_content', methods=['POST'])
+@login_required
+def update_task_content():
+    # timed_raw = timedt().timed
+    # todo = ToDo.query.filter_by(id=todo_id).first()
+    # todo.title = request.form.get('title')
+    # todo.descr = request.form.get('task-description')
+    # responsible = request.form.get('responsible')
+    # checklist = request.form.get('checklist')
+    # checklist_content = request.form.get('checklist_content')
+    # if not responsible:
+    #     pass
+    # else:
+    #     get_uid = Users.query.filter_by(username=responsible).first()
+    #     todo.responsible = get_uid.id
+    # if not checklist:
+    #     pass
+    # if not checklist_content:
+    #     pass
+    # todo.create_date = timed_raw
+    # db.session.commit()
+    # db.session.close()
+    data = request.get_json()
+    print(data)
+    try:
+        return jsonify(success=True)
+    except Exception as e:
+        db.session.rollback()
+        return jsonify(error=str(e)), 400
+
+
+@app.get('/testtt')
+def testim():
+    return render_template('todo/main/testtt.html')

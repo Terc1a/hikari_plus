@@ -1,0 +1,42 @@
+{% extends 'todo/main/layout.html' %}
+{% block content %}
+{{ ckeditor.load() }}
+<div class="content-wrap">
+    <h3>Enter your message in textarea</h3>
+    <textarea name="textarea" id="textarea" cols="30" rows="10" class="ckeditor"></textarea>
+    <button id="button">Click to decrypt</button>
+    
+    <div id='keydiv'></div>
+    </div>
+
+
+<script>
+    button.onclick = function (){
+// 1. Найти textarea, связанную с редактором
+const form = button.closest('.content-wrap');
+const textarea = form.querySelector('.ckeditor');
+
+// 2. Получить экземпляр редактора
+const editor = CKEDITOR.instances[textarea.name];
+
+// 3. Проверить существование редактора
+if (editor) {
+    // 4. Получить содержимое
+    const content = editor.getData();
+    console.log('Текст редактора:', content);
+    
+    // Для получения чистого текста (без HTML):
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = content;
+    const plainText = tempDiv.textContent;
+    console.log('Чистый текст:', plainText);
+} else {
+    console.error('Редактор не инициализирован');
+}
+      }
+    </script>    
+      
+      
+      
+      
+      {% endblock %}
