@@ -703,18 +703,72 @@ def change_tag(tag_id):
 
 
 # Удаляем проект
-@app.get('/delete_tag/<int:tag_id>')
+@app.route('/delete_tag', methods=['POST'])
 @login_required
-def delete_tag(tag_id):
-    tag = Tag.query.filter_by(id=tag_id).first()
-    tasks_on_tag = ToDo.query.filter_by(tag_id=tag.id).all()
-    for task in tasks_on_tag:
-        db.session.delete(task)
-        db.session.commit()
-    db.session.delete(tag)
-    db.session.commit()
-    db.session.close()
-    return redirect(url_for('home'))
+def delete_tag():
+    data = request.get_json()
+    tag = Tag.query.filter_by(id=int(data['tag_id'])).first()
+    try:  
+        tasks_on_tag = ToDo.query.filter_by(tag_id=int(data['tag_id'])).all()
+        if tasks_on_tag:
+            for task in tasks_on_tag:
+                db.session.delete(task)
+                db.session.commit()
+            db.session.delete(tag)
+            db.session.commit()
+        else:
+            db.session.delete(tag)
+            db.session.commit()
+            
+
+        get_curr_user_ws = Workspace.query.filter_by(uid=current_user.id, id=int(data['ws_id'])).first()
+        ws_ids = []
+        tags_ids = []
+        todo_ids = []
+        ws_ids.append(get_curr_user_ws.id)
+        tag_list = Tag.query.filter(Tag.ws_id.in_((ws_ids))).all()
+        for el in tag_list:
+            tags_ids.append(el.id)
+        todo_list1 = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).order_by(desc(ToDo.id)).all()
+        for task in todo_list1:
+            todo_ids.append(task.id)
+        todo_tags = Tag.query.filter(Tag.ws_id.in_((ws_ids))).distinct(Tag.title).all()
+        todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
+        current_workspace = Workspace.query.filter_by(uid=current_user.id, id=int(data['ws_id'])).first()
+        check_list = Checks.query.filter(Checks.todo_id.in_((todo_ids))).all()
+        result = {}
+        for tag in tags_ids:
+            if not todo_list1:
+                tag_name = Tag.query.filter_by(id=tag).first()
+                result[f'{tag_name.title}'] = ['empty']
+            for row in todo_list1:
+                if tag != row.tag_id:
+                    tag_name = Tag.query.filter_by(id=tag).first()
+                    if tag_name.title in result:
+                        pass
+                    else:
+                        result[f'{tag_name.title}'] = ['empty']
+
+                else:
+                    tag_name = Tag.query.filter_by(id=row.tag_id).first()
+                    if tag_name.title in result:
+                        result[f'{tag_name.title}'].append(row.title)
+                    else:
+                        result[f'{tag_name.title}'] = [row.title]
+
+        db.session.close()
+        return jsonify(success=True,            html=render_template(
+                    'todo/main/index.html',  # Создадим отдельный шаблон
+                    todo_list=todo_list1,
+                    result=result,
+                    current_workspace=current_workspace,
+                    todo_tags=todo_tags,
+                    workspace_list=todo_workspaces,
+                    check_list=check_list,
+                ))
+    except Exception as e:
+        db.session.rollback()
+        return jsonify(error=str(e)), 400
 
 
 # Получаем полное описание задачи

@@ -121,7 +121,7 @@
                                 data-modal-id="modal-change-tag-{{ tag }}">
                                 Изменить
                             </button>
-                            <a class="ui negative basic button" href="/delete_tag/{{ tagg.id }}">Удалить</a>
+                            <button class="ui negative basic button" data-tag-ws-id="{{tagg.ws_id}}" data-modal-id="{{tagg.id}}" onclick="onDelete(this)">Удалить</button>
                             <button class="ui teal basic button" type="submit"
                                 style="margin: 10px; margin-left: 2.5%;">Сохранить
                             </button>
@@ -504,7 +504,9 @@
                 console.error('Ошибка:', error);
                 alert('Произошла ошибка при обновлении списка');
             }
-        }
+        };
+
+
 
         // Модальные окна
         function initModals() {
@@ -719,36 +721,55 @@
         } else {
             console.error('Редактор не инициализирован');
         }
-    // Находим textarea с редактором
 
-        // const taskItem = checkbox.closest('.task_body'); // Находим родительский контейнер задачи
-        // const taskId = checkbox.dataset.taskId; // Получаем ID из data-атрибута
-        // const checkId = checkbox.dataset.checkId;
-        // const progressBar = checkbox.closest('.task_body').querySelector('.progress-bar');
-        // const percent = checkbox.closest('.task_body').querySelector('.percentage');
-        // const totalChecks = checkbox.parentElement.querySelectorAll('input[type="checkbox"]').length;
-        // const completedChecks = checkbox.parentElement.querySelectorAll('input[type="checkbox"]:checked').length;
-        // const newProgress = (completedChecks / totalChecks * 100).toFixed(0);
-
-    //     try {
-    //         await fetch('/update_checkbox', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //                 'X-CSRFToken': '{{ csrf_token() }}'
-    //             },
-    //             body: JSON.stringify({
-    //                 task_id: taskId,
-    //                 is_checked: checkbox.checked,
-    //                 id: checkId
-    //             })
-    //         });
-    //         progressBar.value = newProgress;
-    //         percent.textContent = `${newProgress}%`;
-    //     } catch (error) {
-    //         console.error('Ошибка:', error);
-    //     }
     }
+
+    async function onDelete(button) {
+        let tag_id = button.getAttribute('data-modal-id');
+        let ws_id = button.getAttribute('data-tag-ws-id');
+        const modal = button.closest('.modal-overlay');
+        console.log(modal)
+        console.log(tag_id);
+        console.log(ws_id);
+
+        try {
+            const response = await fetch('/delete_tag', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    tag_id: tag_id,
+                    ws_id: ws_id,
+
+                })
+            });
+            const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Unknown error');
+
+                const tempContainer = document.createElement('div');
+                tempContainer.innerHTML = data.html;
+
+                const newTasksArea = tempContainer.querySelector('.tasks_area');
+                if (newTasksArea) {
+                        modal.style.display = 'none';
+                        document.body.style.overflow = ''; 
+                    
+
+                    const currentTasksArea = document.querySelector('.tasks_area');
+                    currentTasksArea.innerHTML = newTasksArea.innerHTML;
+
+                } else {
+                    console.error('Could not find tasks area in the response');
+                }
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
+    }
+
+    
+    
 </script>
 
 
