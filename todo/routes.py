@@ -770,7 +770,7 @@ def delete_tag():
         db.session.rollback()
         return jsonify(error=str(e)), 400
 
-#aboba
+#aboba1
 
 # Получаем полное описание задачи
 # @app.get('/get_detail/<int:todo_id>')

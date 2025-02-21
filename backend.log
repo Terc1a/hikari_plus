@@ -8326,3 +8326,7 @@ INFO     [2025-02-21 11:59:38,835]  * Detected change in '/home/tercia/Documents
 INFO     [2025-02-21 11:59:39,029]  * Restarting with stat
 WARNING  [2025-02-21 11:59:39,666]  * Debugger is active!
 INFO     [2025-02-21 11:59:39,667]  * Debugger PIN: 119-753-853
+INFO     [2025-02-21 12:05:03,404]  * Detected change in '/home/tercia/Documents/todo/todo/routes.py', reloading
+INFO     [2025-02-21 12:05:03,597]  * Restarting with stat
+WARNING  [2025-02-21 12:05:04,138]  * Debugger is active!
+INFO     [2025-02-21 12:05:04,139]  * Debugger PIN: 119-753-853
