@@ -375,20 +375,30 @@ def finish(todo_id):
 @app.post('/change_content/<int:todo_id>')
 @login_required
 def update_task(todo_id):
+
     timed_raw = timedt().timed
     todo = ToDo.query.filter_by(id=todo_id).first()
     todo.title = request.form.get('title')
     todo.descr = request.form.get('task-description')
-    responsible = request.form.get('responsible')
-    if not responsible:
-        pass
-    else:
-        get_uid = Users.query.filter_by(username=responsible).first()
-        todo.responsible = get_uid.id
     todo.create_date = timed_raw
     db.session.commit()
     db.session.close()
     return redirect(url_for('home'))
+
+    # timed_raw = timedt().timed
+    # todo = ToDo.query.filter_by(id=todo_id).first()
+    # todo.title = request.form.get('title')
+    # todo.descr = request.form.get('task-description')
+    # # responsible = request.form.get('responsible')
+    # # if responsible is None:
+    # #     pass
+    # # else:
+    # #     get_uid = Users.query.filter_by(username=responsible).first()
+    # #     todo.responsible = get_uid.id
+    # todo.create_date = timed_raw
+    # db.session.commit()
+    # db.session.close()
+    # return redirect(url_for('home'))
 
 
 # Удаляем задачу
@@ -770,7 +780,6 @@ def delete_tag():
         db.session.rollback()
         return jsonify(error=str(e)), 400
 
-#aboba1
 
 # Получаем полное описание задачи
 # @app.get('/get_detail/<int:todo_id>')
@@ -1076,9 +1085,12 @@ def upload():
     return redirect(url_for('profile'))
 
 
-@app.get('/test_menu')
+@app.route('/test_menu', methods = ["GET", "POST"])
 def test_menu():
-    return render_template('todo/tmpl/task.html')
+    if request.method == 'GET':
+        return render_template('todo/tmpl/task.html')
+    else:
+        return render_template('todo/tmpl/task.html')
 
 @app.route('/update_checkbox', methods=['POST'])
 @login_required
@@ -1095,35 +1107,6 @@ def update_checkbox():
 
 
 
-@app.route('/update_content', methods=['POST'])
-@login_required
-def update_task_content():
-    # timed_raw = timedt().timed
-    # todo = ToDo.query.filter_by(id=todo_id).first()
-    # todo.title = request.form.get('title')
-    # todo.descr = request.form.get('task-description')
-    # responsible = request.form.get('responsible')
-    # checklist = request.form.get('checklist')
-    # checklist_content = request.form.get('checklist_content')
-    # if not responsible:
-    #     pass
-    # else:
-    #     get_uid = Users.query.filter_by(username=responsible).first()
-    #     todo.responsible = get_uid.id
-    # if not checklist:
-    #     pass
-    # if not checklist_content:
-    #     pass
-    # todo.create_date = timed_raw
-    # db.session.commit()
-    # db.session.close()
-    data = request.get_json()
-    print(data)
-    try:
-        return jsonify(success=True)
-    except Exception as e:
-        db.session.rollback()
-        return jsonify(error=str(e)), 400
 
 
 @app.get('/testtt')

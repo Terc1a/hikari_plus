@@ -1,73 +1,23 @@
-<script src="https://cdn.ckeditor.com/4.10.0/standard/ckeditor.js"></script>
-{% block content %} {{ ckeditor.load() }}
-<div class="container_check">
-  <!-- <button class="add_button" type="button">Добавить чек-лист</button> -->
-  <label class="add_button" onclick="CheckClicked()">Чек-лист</label>
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.8/dist/trix.css">
+<script type="text/javascript" src="https://unpkg.com/trix@2.0.8/dist/trix.umd.min.js"></script>
+{% block content %} 
+<div class="modal-body">
+<trix-editor></trix-editor>
+<button class="ui teal basic button" type="submit" onclick="onUpdChange(this)"
+style="margin: 10px; margin-left: 2.5%;">
+Сохранить
+</button>
 </div>
 
 <script>
-  let container = document.querySelector(".container_check");
-  let add_button = document.querySelector(".add_button");
-  let i = 0;
+async function onUpdChange(button) {
+  const form = button.closest('.modal-body');
+  console.log(form)
+  var getNum = form.querySelector('#trix-input-1').value;
+  console.log(getNum);
+      
 
-  function CheckClicked() {
-    i++;
-    let button = document.createElement("button");
-    let br = document.createElement("br");
-    button.className = "button";
-    button.innerHTML = "+";
-    container.append(button);
-    container.append(br);
-    addInput();
-  };
 
-  function addInput() {
-    let buttons = document.querySelectorAll(".button");
-    buttons.forEach(function (elem) {
-      elem.onclick = function () {
-        let input = document.createElement("input");
-        input.setAttribute("type", "checkbox");
-        let input2 = document.createElement("input");
-        let br = document.createElement("br");
-        container.append(input);
-        container.append(input2);
-        container.append(br);
-      };
-    });
   }
 </script>
-
-<script>
-  let container = document.querySelector(".container_check");
-  let add_button = document.querySelector(".add_button");
-  let i = 0;
-
-  add_button.addEventListener("click", function () {
-    i++;
-    let button = document.createElement("button");
-    let br = document.createElement("br");
-    button.className = "button";
-    button.innerHTML = "+";
-    container.append(button);
-    container.append(br);
-    addInput();
-  });
-
-  function addInput() {
-    let buttons = document.querySelectorAll(".button");
-    buttons.forEach(function (elem) {
-      elem.onclick = function () {
-        let input = document.createElement("input");
-        input.setAttribute("type", "checkbox");
-        let input2 = document.createElement("input");
-        let br = document.createElement("br");
-        container.append(input);
-        container.append(input2);
-        container.append(br);
-      };
-    });
-  }
-</script>
-
-
 {% endblock %}
