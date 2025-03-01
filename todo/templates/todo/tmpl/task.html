@@ -1,23 +1,8 @@
-<link rel="stylesheet" type="text/css" href="https://unpkg.com/trix@2.0.8/dist/trix.css">
-<script type="text/javascript" src="https://unpkg.com/trix@2.0.8/dist/trix.umd.min.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+
 {% block content %} 
-<div class="modal-body">
-<trix-editor></trix-editor>
-<button class="ui teal basic button" type="submit" onclick="onUpdChange(this)"
-style="margin: 10px; margin-left: 2.5%;">
-Сохранить
-</button>
-</div>
+<label for="nav-toggle" class="nav-toggle" onclick
+style="background-image: url('static/HikariLogo.png'); background-color: rgb(0,0,0, 0.00); background-size: cover; width: 10vh; height: 10vh; margin-bottom: 10%;"></label>
 
-<script>
-async function onUpdChange(button) {
-  const form = button.closest('.modal-body');
-  console.log(form)
-  var getNum = form.querySelector('#trix-input-1').value;
-  console.log(getNum);
-      
-
-
-  }
-</script>
 {% endblock %}

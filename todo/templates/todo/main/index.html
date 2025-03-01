@@ -4,12 +4,12 @@
 <div class='container' style="display: grid; grid-template-rows:10% 90%; width: 100vw; ">
     <div class="header"
         style="display: grid; grid-template-columns: 10% 15% 70% 5%; width: 100vw; height: 4em; background-color: rgb(0,0,0, 0.44);">
-        <div class="dron" style="width: 8vw; margin-top: 3%;  ">
+        <div class="dron" style="width: 8vw;">
             <input type="checkbox" id="nav-toggle" hidden>
             <nav class="nav" style="background: black; ">
 
                 <label for="nav-toggle" class="nav-toggle" onclick
-                    style="background-image: url('static/Logo.png'); background-color: rgb(0,0,0, 0.00); background-size: cover; width: 14vh; height: 2vh; margin-left: 10%;"></label>
+                    style="background-image: url('static/HikariLogo1.png'); background-color: rgb(0,0,0, 0.00); background-size: cover; width: 8vh; height: 4vh; margin-left:5%;"></label>
                 <ul>
                     <li><a href="/">Главная</a>
                     <li><a href="/task_stats">Статистика</a>
@@ -163,7 +163,7 @@
                             <div class="task-header"
                                 style="display: flex; flex-direction: column; width: 10vw; height: 100%; order: -1; margin-top: -1px; grid-column: 1;">
                                 <div class="status-line"
-                                    style="{% if todo.is_complete==True %}background-color: rgb(171,246,0); height: 5px;{% else %}background-color: #85B8FF; height: 5px;{% endif %} width: 100%;">
+                                    style="{% if todo.is_complete==True %}background-color: rgb(171,246,0); height: 5px;{% else %}background-color: #85B8FF; height: 5px;{% endif %} width: 95%; margin-top: 3%; margin-bottom: 5%; margin-right: 5%;">
                                 </div>
                                 <button class="modal-trigger" data-modal-id="modal-{{ todo.id }}"
                                     style="display: inline; word-wrap: break-word; width: 100%; ">
@@ -192,7 +192,8 @@
                                     {{ todo.title }}
                                     <span class="modal-close">&times;</span>
                                     <div class="modal-body">
-                                        {{ todo.descr|safe }}<br>
+                                        {{ todo.descr|safe }}
+                                        <hr><br>
                                         {% set total_checks = check_list|selectattr('todo_id', 'equalto',
                                         todo.id)|list|length %}
 
@@ -402,8 +403,8 @@
             {% endif %}
 
             <button class="modal-trigger" data-modal-id="modal-create-new-{{ result }}"
-                style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black; background-color: #E9ECEF;{% endif %} border: solid #E9ECEF; box-shadow: 0px 8px 8px -3px rgba(0, 0, 0, 0.2);  border-radius: 6px; text-align: center; cursor: pointer; width: 30vh; height: 2.5vh; margin-top:2%; margin-right: 50%;">
-                + Добавить проект
+                style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black; background-color: #E9ECEF;{% endif %} border: solid #E9ECEF; box-shadow: 0px 8px 8px -3px rgba(0, 0, 0, 0.2);  border-radius: 6px; text-align: center; cursor: pointer; width: 10vh; height: 3%; margin-top:5%;">
+                +
             </button>
 
             {% for workspace in workspace_list %}
