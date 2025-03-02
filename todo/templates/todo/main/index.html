@@ -4,12 +4,12 @@
 <div class='container' style="display: grid; grid-template-rows:10% 90%; width: 100vw; ">
     <div class="header"
         style="display: grid; grid-template-columns: 10% 15% 70% 5%; width: 100vw; height: 4em; background-color: rgb(0,0,0, 0.44);">
-        <div class="dron" style="width: 8vw;">
+        <div class="dron" style="width: 8vw; margin-bottom: 10%;">
             <input type="checkbox" id="nav-toggle" hidden>
             <nav class="nav" style="background: black; ">
-
+                
                 <label for="nav-toggle" class="nav-toggle" onclick
-                    style="background-image: url('static/HikariLogo1.png'); background-color: rgb(0,0,0, 0.00); background-size: cover; width: 8vh; height: 4vh; margin-left:5%;"></label>
+                    style="background-image: url('static/NewLogo.png'); background-color: rgb(0,0,0, 0.00); background-size: cover; width: 10vh; height: 4vh; margin-left:5%;"></label>
                 <ul>
                     <li><a href="/">Главная</a>
                     <li><a href="/task_stats">Статистика</a>
@@ -25,7 +25,8 @@
                 --responsive-font-size-primary: min(1em, max(0.5em, 5vmin));
             }
         </style>
-        <form action="/search" class="search_bar" method="post"
+        <!-- Форма поиска(не работает в данный момент) -->
+        <form action="/" class="search_bar" method="post"
             style="margin-top: 1em; margin-left: 5%; width: 15vw; border: solid white; border-radius: 1.5vh; height: 3vh; ">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <button class="search_button" type="submit" style="anchor-name: search_bar;">🔍</button>
