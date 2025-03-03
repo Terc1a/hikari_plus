@@ -1,4 +1,6 @@
 {% extends 'todo/main/layout.html' %}
+{% include '/todo/main/test_menu.html' %}
+
 {% block content %}
                 Тема: <br>
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>

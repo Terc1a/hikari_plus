@@ -1088,9 +1088,9 @@ def upload():
 @app.route('/test_menu', methods = ["GET", "POST"])
 def test_menu():
     if request.method == 'GET':
-        return render_template('todo/tmpl/task.html')
+        return render_template('todo/main/test_menu.html')
     else:
-        return render_template('todo/tmpl/task.html')
+        return render_template('todo/main/test_menu.html')
 
 @app.route('/update_checkbox', methods=['POST'])
 @login_required

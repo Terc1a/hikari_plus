@@ -1,5 +1,5 @@
 {% extends 'todo/main/layout.html' %}
-{% include '/todo/menu/menu_w.html' %}
+{% include '/todo/main/test_menu.html' %}
 
 {% block content %}
     <div class="pages" style="display: flex; background-color: rgb(56, 55, 55); padding: 1em;">
@@ -7,9 +7,7 @@
         <a href="/project_stats" style="margin-left: 5%; margin-right: 5%; background-color: green;">Задачи по проектам</a>
         <a href="/user_stats" style="margin-left: 5%; margin-right: 5%;">Задачи по пользователям</a>
     </div>
-
-    <h1>Задачи</h1>
-    <form action="/project_stats" method="post">
+    <form action="/project_stats" method="post" style="background-color: #0D0E0E; color: white;">
     <select id="fruits" name="tags-list">
         {% for tag in todo_tags %}
         
