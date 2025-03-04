@@ -93,8 +93,8 @@
 
     <div class="tasks_area" style="">
         {% block tasks %}
-        <div class="list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(30vh, 1fr));
-            grid-auto-flow: column; overflow-x: auto; height: auto; grid-gap: 15px;">
+        <div class="list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(30vh, 5vh));
+            grid-auto-flow: column; overflow-x: auto; height: auto; width: 100vw; grid-column-gap: 20px;">
             {% for tag, task in result.items() %}
             <div class="task_head">
                 <div class="task-list">
@@ -419,6 +419,8 @@
                     <span class="modal-close">&times;</span>
                     {{ current_workspace.title }}
                     <div class="modal-body">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
                         <form class="ui form" action="/add_tag/{{ current_workspace.id }}" method="post"
                             style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
                             name="creator">
