@@ -26,11 +26,11 @@
         </style>
         <!-- Форма поиска(не работает в данный момент) -->
         <form action="/" class="search_bar" method="post"
-            style="margin-top: 1em; margin-left: 5%; width: 15vw; border: solid white; border-radius: 1.5vh; height: 3vh; ">
+            style="margin-top: 1em; margin-left: 5%; width: 15vw; height: 3vh; ">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <button class="search_button" type="submit" style="anchor-name: search_bar;">🔍</button>
-            <input type="text" name="search_bar" placeholder="Найти задачу"
-                style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black;background-color: rgb(209,205,194);{% endif %} width: 60%; background: none; overflow: hidden;">
+            <input type="text" name="search_bar" placeholder=""
+                style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black;background-color: rgb(209,205,194);{% endif %} width: 60%; background: none; overflow: hidden; font-size: 1.5vh; border: solid white; border-radius: 1.5vh; ">
+            <button class="search_button" type="submit" style="anchor-name: search_bar; font-size: 2vh;">🔍</button>
 
         </form>
         <!--<form method="post" >
@@ -101,7 +101,7 @@
                     <p
                         style="{% if request.cookies.get('font')=='black' %}background-color:#515151;color:white;{% else %}background-color: #FCD1A8;color: black;{% endif %}; text-align: left; margin-bottom: 2.5%; border: solid white; border-radius: 15px 15px 0px 0px;">
                         <button class="modal-trigger" data-modal-id="modal-open-{{ tag }}"
-                            style="font-weight: bold; padding-left: 2%; padding-top: 4%; padding-bottom: 2%;">
+                            style="font-weight: bold; padding-left: 2%; padding-top: 4%; padding-bottom: 2%; font-size: 2vh;">
                             {{ tag }}
                         </button>
 
@@ -165,13 +165,15 @@
                                 <div class="status-line"
                                     style="{% if todo.is_complete==True %}background-color: rgb(171,246,0); height: 5px;{% else %}background-color: #85B8FF; height: 5px;{% endif %} width: 95%; margin-top: 3%; margin-bottom: 5%; margin-right: 5%;">
                                 </div>
+                                <!-- Название задачи -->
                                 <button class="modal-trigger" data-modal-id="modal-{{ todo.id }}"
-                                    style="display: inline; word-wrap: break-word; width: 100%; ">
+                                style=" padding-left: 2%; padding-top: 4%; padding-bottom: 2%; font-size: 2vh; hyphens: auto;">
+
                                     {{ title|safe }}
                                 </button>
                             </div>
                             <div class="side_menu"
-                                style="display: flex; flex-direction: column; margin-top: auto; margin-left: auto;">
+                                style="display: flex; flex-direction: column; margin-left: auto; margin-bottom: auto;">
                                 {% set total_checks = check_list|selectattr('todo_id', 'equalto', todo.id)|list|length
                                 %}
                                 {% if total_checks > 0 %}
@@ -179,12 +181,13 @@
                                 todo.id)|selectattr('is_checked')|list|length %}
                                 {% set progress = (completed_checks / total_checks * 100)|round|int if total_checks > 0
                                 else 0 %}
-                                <div class="percentage" style="color: gray">
+                                <div class="percentage" style="color: gray; font-size: 2vh;">
                                     {{ progress }}%
                                 </div>
                                 {% endif %}
-                                <img src="{{ url_for('userava') }}"
-                                    style="width: 1.5vw; height: 1.5vw; border: solid white; border-radius: 50%; margin-left: auto; margin-top: 20%;">
+                                <!-- Если раз проект все равно не будет использоваться несколькими юзерами пока что, я это временно убираю -->
+                                <!-- <img src="{{ url_for('userava') }}"
+                                    style="width: 1.5vw; height: 1.5vw; border: solid white; border-radius: 50%; margin-left: auto; margin-top: 20%;"> -->
                             </div>
                             <div id="modal-{{ todo.id }}" class="modal-overlay">
                                 <div class="modal-container"
@@ -286,7 +289,7 @@
 
                     </div>
                     <button class="modal-trigger" data-modal-id="modal-create-{{ tag }}"
-                        style="{% if request.cookies.get('font')=='black' %}background-color:#515151;color:white;{% else %}background-color: #FCD1A8;color: black;{% endif %} margin-top: 5%; width: 100%; text-align: center; display: block; cursor: pointer; padding-bottom: 5%; border: solid white; border-radius:0px 0px 15px 15px ;">
+                        style="{% if request.cookies.get('font')=='black' %}background-color:#515151;color:white;{% else %}background-color: #FCD1A8;color: black;{% endif %} margin-top: 5%; width: 100%; text-align: center; display: block; cursor: pointer; padding-bottom: 5%; border: solid white; border-radius:0px 0px 15px 15px; font-size: 2vh;">
                         + Добавить задачу
                     </button>
 
