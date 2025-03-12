@@ -1,5 +1,64 @@
+/* Header */
 .header {
-    word-break: normal; /* Так длинные слова будут переноситься */
+    word-break: normal;
+    /* Так длинные слова будут переноситься */
+    display: grid;
+    grid-template-columns: 10% 15% 70% 5%;
+    width: 100vw;
+    height: 4em;
+    background-color: rgb(0, 0, 0, 0.44);
+}
+
+.container {
+    display: grid;
+    grid-template-rows: 10% 90%;
+    width: 100vw;
+}
+
+.search_bar {
+    margin-top: 1em;
+    margin-left: 5%;
+    width: 15vw;
+    height: 3vh;
+}
+
+.sb_input {
+    width: 60%;
+    background: none;
+    overflow: hidden;
+    font-size: 1.5vh;
+    border: solid white;
+    border-radius: 1.5vh;
+}
+
+.list {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(30vh, 5vh));
+            grid-auto-flow: column; overflow-x: auto; height: auto; width: 100vw; grid-column-gap: 20px;
+}
+
+.task-list {
+}
+
+.search_button {
+    anchor-name: search_bar;
+    font-size: 2vh;
+}
+
+.workspaces {
+    color: white;
+    margin-right: 2%;
+    margin-top: 0.5em
+}
+
+.head {
+    margin-left: 30%;
+    margin-right: 40%;
+    font-size: 24px;
+}
+
+.avatar {
+    float: right;
+    padding: 5%;
 }
 
 @font-face {
@@ -10,12 +69,12 @@
 
 
 .open-sans-300 {
-  font-family: "Open Sans", serif;
-  font-optical-sizing: auto;
-  font-weight: 300;
-  font-style: normal;
-  font-variation-settings:
-    "wdth" 100;
+    font-family: "Open Sans", serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
+    font-variation-settings:
+        "wdth" 100;
 }
 
 body {
@@ -31,19 +90,24 @@ body {
 .modal-trigger {
     font-family: Roboto;
     font-weight: 400;
+    font-size: 24px;
+    color: white;
+    text-align: center;
+    background: none;
+    cursor: pointer;
 }
 
 .task_body {
     font-family: Roboto;
     font-weight: 400;
-    width: 95%; 
+    width: 95%;
     margin-left: 2.25%;
-    margin-right:2.25%;  
+    margin-right: 2.25%;
     background-color: white;
-    align-items: center; 
-    justify-content: center; 
-    display: flex;   
-
+    align-items: center;
+    justify-content: center;
+    border: solid white;   border-radius: 15px; display: grid;
+    grid-template-columns: auto 1fr; 
 }
 
 .task_head {
@@ -51,17 +115,17 @@ body {
 }
 
 .task-list {
-    background-color: #e9ecef;  
-    box-shadow: 0px 8px 8px 5px rgba(0, 0, 0, 0.2); 
-    border: solid #F1F2F4; 
-    border-radius: 15px; 
-    border-width: 2px; 
-    margin-top: 2%; 
+    background-color: #e9ecef;
+    box-shadow: 0px 8px 8px 5px rgba(0, 0, 0, 0.2);
+    border: solid #F1F2F4;
+    border-radius: 15px;
+    border-width: 2px;
+    margin-top: 2%;
     margin-left: 2%;
 }
 
 .tities_list {
-    max-height: 75vh; 
+    max-height: 75vh;
     overflow-y: auto;
 }
 
@@ -151,7 +215,8 @@ a:hover {
     top: 0;
     width: 100%;
     height: 80%;
-    overflow: auto; /* разрешаем прокрутку */
+    overflow: auto;
+    /* разрешаем прокрутку */
     background-color: rgba(0, 0, 0, 0.4);
 }
 
@@ -162,7 +227,8 @@ a:hover {
 
 /* Содержимое модального окна */
 .modal-content {
-    margin: 15% auto; /* отступ сверху и центрирование по горизонтали */
+    margin: 15% auto;
+    /* отступ сверху и центрирование по горизонтали */
     padding: 20px;
     border: 1px solid #888;
     width: 60%;
@@ -252,13 +318,17 @@ a:hover {
     border-bottom-left-radius: 8px;
 }
 
-#signin input[type="text"], #signin input[type="password"], #signin button[type="submit"] {
+#signin input[type="text"],
+#signin input[type="password"],
+#signin button[type="submit"] {
     background: rgb(28, 30, 33);
-    box-shadow: inset -100px -100px 0 rgb(28, 30, 33); /*Prevent yellow autofill color*/
+    box-shadow: inset -100px -100px 0 rgb(28, 30, 33);
+    /*Prevent yellow autofill color*/
     color: rgb(52, 56, 61);
 }
 
-#signin input[type="text"], #signin input[type="password"] {
+#signin input[type="text"],
+#signin input[type="password"] {
     position: relative;
     display: block;
     width: 280px;
@@ -270,7 +340,8 @@ a:hover {
     font-weight: 700;
 }
 
-#signin input[type="text"]:focus, #signin input[type="password"]:focus {
+#signin input[type="text"]:focus,
+#signin input[type="password"]:focus {
     color: rgb(255, 255, 255);
 }
 
@@ -307,12 +378,12 @@ a:hover {
     margin: 5px 0 0 0;
 }
 
-#signin p > a {
+#signin p>a {
     color: rgb(111, 119, 135);
     text-decoration: none;
 }
 
-#signin p > a:hover {
+#signin p>a:hover {
     border-bottom: 1px solid;
 }
 
@@ -345,7 +416,7 @@ a:hover {
 }
 
 .search-bar input:focus,
-.search-bar input:not(:focus) + .search-btn:focus {
+.search-bar input:not(:focus)+.search-btn:focus {
     outline: transparent;
 }
 
@@ -424,33 +495,35 @@ a:hover {
 }
 
 /* Active state */
-.search-bar input:focus + .search-btn,
-.search-bar input:valid + .search-btn {
+.search-bar input:focus+.search-btn,
+.search-bar input:valid+.search-btn {
     background: #2762f3;
     border-radius: 0 0.375em 0.375em 0;
     transform: scale(1);
 }
 
-.search-bar input:focus + .search-btn:before,
-.search-bar input:focus + .search-btn:after,
-.search-bar input:valid + .search-btn:before,
-.search-bar input:valid + .search-btn:after {
+.search-bar input:focus+.search-btn:before,
+.search-bar input:focus+.search-btn:after,
+.search-bar input:valid+.search-btn:before,
+.search-bar input:valid+.search-btn:after {
     opacity: 1;
 }
 
-.search-bar input:focus + .search-btn:hover,
-.search-bar input:valid + .search-btn:hover,
-.search-bar input:valid:not(:focus) + .search-btn:focus {
+.search-bar input:focus+.search-btn:hover,
+.search-bar input:valid+.search-btn:hover,
+.search-bar input:valid:not(:focus)+.search-btn:focus {
     background: #0c48db;
 }
 
-.search-bar input:focus + .search-btn:active,
-.search-bar input:valid + .search-btn:active {
+.search-bar input:focus+.search-btn:active,
+.search-bar input:valid+.search-btn:active {
     transform: translateY(1px);
 }
 
 @media screen and (prefers-color-scheme: dark) {
-    body, input {
+
+    body,
+    input {
         color: #f1f1f1;
     }
 
@@ -490,7 +563,8 @@ a:hover {
 }
 
 .hider:hover {
-    transform: scale(1.1); /* Увеличиваем масштаб */
+    transform: scale(1.1);
+    /* Увеличиваем масштаб */
 
 }
 
@@ -498,16 +572,16 @@ a:hover {
     opacity: 0.8;
 }
 
-p{
+p {
     transition: 0.5s;
 }
 
 
 
 .modal-trigger {
-    transition: 0.5s ;
-    border:none; 
-    background: none; 
+    transition: 0.5s;
+    border: none;
+    background: none;
     cursor: pointer;
 }
 
@@ -516,22 +590,22 @@ p{
 .modal-trigger2 {
     font-family: Roboto;
     font-weight: 400;
-    transition: 0.5s ;
-    border:none; 
-    background: none; 
+    transition: 0.5s;
+    border: none;
+    background: none;
     cursor: pointer;
 }
 
 
 .task_body {
-    padding: 10px; 
+    padding: 10px;
     box-shadow: 0px 8px 8px -3px rgba(0, 0, 0, 0.2);
     margin-bottom: 10px;
-    transition: 0.5s ;
+    transition: 0.5s;
 }
 
 .dropbtn2 {
-    
+
     color: white;
     font-size: 16px;
     border: none;
@@ -578,16 +652,17 @@ p{
 }
 
 .dropdown2:hover {
-    transform: scale(1.1); /* Увеличиваем масштаб */
+    transform: scale(1.1);
+    /* Увеличиваем масштаб */
 }
 
 .resp_head {
-    background-color: #e9ecef;  
-    box-shadow: 0px 8px 8px 5px rgba(0, 0, 0, 0.2); 
-    border: solid #F1F2F4; 
-    border-radius: 15px; 
-    border-width: 2px; 
-    margin-top: 2%; 
+    background-color: #e9ecef;
+    box-shadow: 0px 8px 8px 5px rgba(0, 0, 0, 0.2);
+    border: solid #F1F2F4;
+    border-radius: 15px;
+    border-width: 2px;
+    margin-top: 2%;
     margin-left: 2%;
     height: 82vh;
 
@@ -595,7 +670,7 @@ p{
 }
 
 .resp_list {
-    max-height: 75vh; 
+    max-height: 75vh;
     overflow-y: auto;
 }
 
@@ -625,12 +700,12 @@ p{
     /* поверх других элементов */
     z-index: 2000;
 }
- 
+
 /**
  * Кнопка переключения панели
  * тег <label>
  */
- 
+
 .nav-toggle {
     /* абсолютно позиционируем */
     position: absolute;
@@ -658,121 +733,122 @@ p{
     -moz-transition: color .25s ease-in-out;
     transition: color .25s ease-in-out;
 }
- 
+
 /* определяем текст кнопки 
  * символ Unicode (TRIGRAM FOR HEAVEN)
 */
- 
+
 .nav-toggle:after {
     text-decoration: none;
 }
- 
+
 /* цвет текста при наведении */
- 
+
 .nav-toggle:hover {
     color: #f4f4f4;
 }
- 
+
 /**
  * Скрытый чекбокс (флажок)
  * невидим и недоступен :)
  * имя селектора атрибут флажка
  */
- 
+
 [id='nav-toggle'] {
     position: absolute;
     display: none;
 }
- 
+
 /**
  * изменение положения переключателя 
  * при просмотре на мобильных устройствах
  * когда навигация раскрыта, распологаем внутри панели
 */
- 
-[id='nav-toggle']:checked ~ .nav > .nav-toggle {
+
+[id='nav-toggle']:checked~.nav>.nav-toggle {
     left: auto;
     right: 2px;
     top: 1em;
 }
- 
+
 /**
  * Когда флажок установлен, открывается панель
  * используем псевдокласс:checked
  */
- 
-[id='nav-toggle']:checked ~ .nav {
+
+[id='nav-toggle']:checked~.nav {
     left: 0;
-    box-shadow:4px 0px 20px 0px rgba(0,0,0, 0.5);
-    -moz-box-shadow:4px 0px 20px 0px rgba(0,0,0, 0.5);
-    -webkit-box-shadow:4px 0px 20px 0px rgba(0,0,0, 0.5);
+    box-shadow: 4px 0px 20px 0px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 4px 0px 20px 0px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 4px 0px 20px 0px rgba(0, 0, 0, 0.5);
     overflow-y: auto;
 }
- 
+
 /* 
  * смещение контента страницы
  * на размер ширины панели,
  * фишка необязательная, на любителя
 */
- 
-[id='nav-toggle']:checked ~ main > article {
+
+[id='nav-toggle']:checked~main>article {
     -webkit-transform: translateX(320px);
     -moz-transform: translateX(320px);
     transform: translateX(320px);
 }
- 
+
 /*
  * изменение символа переключателя,
  * привычный крестик (MULTIPLICATION X), 
  * вы можете испльзовать любой другой значок
 */
- 
-[id='nav-toggle']:checked ~ .nav > .nav-toggle:after {
-}
- 
+
+[id='nav-toggle']:checked~.nav>.nav-toggle:after {}
+
 /**
  * профиксим баг в Android <= 4.1.2
  * см: http://timpietrusky.com/advanced-checkbox-hack
  */
- 
-body {
-}
- 
+
+body {}
+
 /* @-webkit-keyframes bugfix {
     to {
       padding: 0;
     }
 } */
- 
+
 /**
  * позаботьтимся о средних и маленьких экранах
  * мобильных устройств
  */
- 
+
 @media screen and (min-width: 320px) {
+
     html,
     body {
-      margin: 0;
-      overflow-x: hidden;
+        margin: 0;
+        overflow-x: hidden;
     }
 }
- 
+
 @media screen and (max-width: 320px) {
+
     html,
     body {
-      margin: 0;
-      overflow-x: hidden;
+        margin: 0;
+        overflow-x: hidden;
     }
+
     .nav {
-      width: 100%;
-      box-shadow: none
+        width: 100%;
+        box-shadow: none
     }
 }
- 
+
 /**
  * Формируем стиль заголовка (логотип) панели 
 */
- 
+
 .nav h2 {
     width: 90%;
     padding: 0;
@@ -795,38 +871,38 @@ body {
     -moz-transition: opacity 0.8s, -moz-transform 0.8s;
     -webkit-transition: opacity 0.8s, -webkit-transform 0.8s;
 }
- 
+
 .nav h2 a {
     color: #dadada;
     text-decoration: none;
     text-transform: uppercase;
 }
- 
- 
+
+
 /*плавное появление заголовка (логотипа) при раскрытии панели */
- 
-[id='nav-toggle']:checked ~ .nav h2 {
+
+[id='nav-toggle']:checked~.nav h2 {
     opacity: 1;
     transform: scale(1, 1);
     -ms-transform: scale(1, 1);
     -moz-transform: scale(1, 1);
     -webkit-transform: scale(1, 1);
 }
- 
+
 /**
  * формируем непосредственно само меню
  * используем неупорядоченный список для пунктов меню
  * прикрутим трансфомации и плавные переходы
  */
- 
-.nav > ul {
+
+.nav>ul {
     display: block;
     margin: 0;
     padding: 0;
     list-style: none;
 }
- 
-.nav > ul > li {
+
+.nav>ul>li {
     line-height: 2.5;
     opacity: 0;
     -webkit-transform: translateX(-50%);
@@ -838,53 +914,53 @@ body {
     -ms-transition: opacity .5s .1s, -ms-transform .5s .1s;
     transition: opacity .5s .1s, transform .5s .1s;
 }
- 
-[id='nav-toggle']:checked ~ .nav > ul > li {
+
+[id='nav-toggle']:checked~.nav>ul>li {
     opacity: 1;
     -webkit-transform: translateX(0);
     -moz-transform: translateX(0);
     -ms-transform: translateX(0);
     transform: translateX(0);
 }
- 
+
 /* определяем интервалы появления пунктов меню */
- 
-.nav > ul > li:nth-child(2) {
+
+.nav>ul>li:nth-child(2) {
     -webkit-transition: opacity .5s .2s, -webkit-transform .5s .2s;
     transition: opacity .5s .2s, transform .5s .2s;
 }
- 
-.nav > ul > li:nth-child(3) {
+
+.nav>ul>li:nth-child(3) {
     -webkit-transition: opacity .5s .3s, -webkit-transform .5s .3s;
     transition: opacity .5s .3s, transform .5s .3s;
 }
- 
-.nav > ul > li:nth-child(4) {
+
+.nav>ul>li:nth-child(4) {
     -webkit-transition: opacity .5s .4s, -webkit-transform .5s .4s;
     transition: opacity .5s .4s, transform .5s .4s;
 }
- 
-.nav > ul > li:nth-child(5) {
+
+.nav>ul>li:nth-child(5) {
     -webkit-transition: opacity .5s .5s, -webkit-transform .5s .5s;
     transition: opacity .5s .5s, transform .5s .5s;
 }
- 
-.nav > ul > li:nth-child(6) {
+
+.nav>ul>li:nth-child(6) {
     -webkit-transition: opacity .5s .6s, -webkit-transform .5s .6s;
     transition: opacity .5s .6s, transform .5s .6s;
 }
- 
-.nav > ul > li:nth-child(7) {
+
+.nav>ul>li:nth-child(7) {
     -webkit-transition: opacity .5s .7s, -webkit-transform .5s .7s;
     transition: opacity .5s .7s, transform .5s .7s;
 }
- 
- 
+
+
 /**
  * оформление ссылок пунктов меню
  */
- 
-.nav > ul > li > a {
+
+.nav>ul>li>a {
     display: inline-block;
     position: relative;
     padding: 0;
@@ -899,22 +975,22 @@ body {
     -moz-transition: color .5s ease, padding .5s ease;
     transition: color .5s ease, padding .5s ease;
 }
- 
+
 /**
  * состояние ссылок меню при наведении
  */
- 
-.nav > ul > li > a:hover,
-.nav > ul > li > a:focus {
+
+.nav>ul>li>a:hover,
+.nav>ul>li>a:focus {
     color: white;
     padding-left: 15px;
 }
- 
+
 /**
  * линия подчеркивания ссылок меню
  */
- 
-.nav > ul > li > a:before {
+
+.nav>ul>li>a:before {
     content: '';
     display: block;
     position: absolute;
@@ -925,8 +1001,8 @@ body {
     -webkit-transition: width 0s ease;
     transition: width 0s ease;
 }
- 
-.nav > ul > li > a:after {
+
+.nav>ul>li>a:after {
     content: '';
     display: block;
     position: absolute;
@@ -938,23 +1014,22 @@ body {
     -webkit-transition: width .5s ease;
     transition: width .5s ease;
 }
- 
+
 /**
  * анимируем линию подчеркивания 
  * ссылок при наведении
  */
- 
-.nav > ul > li > a:hover:before {
+
+.nav>ul>li>a:hover:before {
     width: 0%;
     background: #3bc1a0;
     -webkit-transition: width .5s ease;
     transition: width .5s ease;
 }
- 
-.nav > ul > li > a:hover:after {
+
+.nav>ul>li>a:hover:after {
     width: 0%;
     background: transparent;
     -webkit-transition: width 0s ease;
     transition: width 0s ease;
 }
- 

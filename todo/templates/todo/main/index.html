@@ -1,9 +1,9 @@
 {% extends 'todo/main/layout.html' %}
 {% block content %}
 {{ ckeditor.load() }}
-<div class='container' style="display: grid; grid-template-rows:10% 90%; width: 100vw; ">
+<div class='container' style=" ">
     <div class="header"
-        style="display: grid; grid-template-columns: 10% 15% 70% 5%; width: 100vw; height: 4em; background-color: rgb(0,0,0, 0.44);">
+        style="">
         <div class="dron" style="width: 8vw; margin-bottom: 10%;">
             <input type="checkbox" id="nav-toggle" hidden>
             <nav class="nav" style="background: black; ">
@@ -26,11 +26,11 @@
         </style>
         <!-- Форма поиска(не работает в данный момент) -->
         <form action="/" class="search_bar" method="post"
-            style="margin-top: 1em; margin-left: 5%; width: 15vw; height: 3vh; ">
+            style="">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-            <input type="text" name="search_bar" placeholder=""
-                style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black;background-color: rgb(209,205,194);{% endif %} width: 60%; background: none; overflow: hidden; font-size: 1.5vh; border: solid white; border-radius: 1.5vh; ">
-            <button class="search_button" type="submit" style="anchor-name: search_bar; font-size: 2vh;">🔍</button>
+            <input class="sb_input" type="text" name="search_bar" placeholder=""
+                style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black;background-color: rgb(209,205,194);{% endif %} ">
+            <button class="search_button" type="submit" style="">🔍</button>
 
         </form>
         <!--<form method="post" >
@@ -38,20 +38,19 @@
                     {% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }}
                         ;color:white;{% else %}color: black;{% endif %} border: solid; border-radius: 6px; min-width: 1vw;max-width: 10vw; text-align: center; display: block; font-size: var(--responsive-font-size-primary);">Скрыть готовые</button>
     </form>-->
-        <div class="workspaces" style="color: white;margin-right: 2%;  margin-top: 0.5em">
+        <div class="workspaces" style="">
             {% block workspaces %}
             {% endblock %}
-            <div class="head" style="margin-left: 30%; margin-right: 40%; font-size: 24px;">
+            <div class="head" style="">
                 <select onchange="sort(event)" id="fruits" style="outline: none;">
                     {% for workspace in workspace_list %}
-                    <option value="{{ workspace.title }}" {% if workspace.id==current_workspace.id %}selected{% endif
-                        %}>
+                    <option value="{{ workspace.title }}" {% if workspace.id==current_workspace.id %}selected{% endif %}>
                         {{ workspace.title }}
                     </option>
                     {% endfor %}
                 </select>
                 <button class="modal-trigger" data-modal-id="modal-create-id"
-                    style="font-size: 24px; color: white; text-align: center; background: none; cursor: pointer;">
+                    style="">
                     +
                 </button>
             </div>
@@ -82,7 +81,7 @@
             </div>
         </div>
 
-        <div class="avatar" style="float: right; padding: 5%;">
+        <div class="avatar" style="">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
 
             <a href="/profile"><img src="{{ url_for('userava') }}"
@@ -93,13 +92,13 @@
 
     <div class="tasks_area" style="">
         {% block tasks %}
-        <div class="list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(30vh, 5vh));
-            grid-auto-flow: column; overflow-x: auto; height: auto; width: 100vw; grid-column-gap: 20px;">
+        <div class="list" style="">
             {% for tag, task in result.items() %}
             <div class="task_head">
                 <div class="task-list">
                     <p
-                        style="{% if request.cookies.get('font')=='black' %}background-color:#515151;color:white;{% else %}background-color: #FCD1A8;color: black;{% endif %}; text-align: left; margin-bottom: 2.5%; border: solid white; border-radius: 15px 15px 0px 0px;">
+                        style="     text-align: left; margin-bottom: 2.5%; border: solid white; border-radius: 15px 15px 0px 0px;
+{% if request.cookies.get('font')=='black' %}background-color:#515151;color:white;{% else %}background-color: #FCD1A8;color: black;{% endif %}; ">
                         <button class="modal-trigger" data-modal-id="modal-open-{{ tag }}"
                             style="font-weight: bold; padding-left: 2%; padding-top: 4%; padding-bottom: 2%; font-size: 2vh;">
                             {{ tag }}
@@ -158,8 +157,7 @@
                         {% for todo in todo_list %}
                         {% for title in task %}
                         {% if todo.title == title %}
-                        <div class="task_body" style="border: solid white;   border-radius: 15px; display: grid;
-                            grid-template-columns: auto 1fr; {% if request.cookies.get('font')=='black' %}background-color:#383838;color:white;{% else %}background-color: #FCD1A8;color: black;{% endif %}" >
+                        <div class="task_body" style="{% if request.cookies.get('font')=='black' %}background-color:#383838;color:white;{% else %}background-color: #FCD1A8;color: black;{% endif %}" >
                             <div class="task-header"
                                 style="display: flex; flex-direction: column; width: 10vw; height: 100%; order: -1; margin-top: -1px; grid-column: 1;">
                                 <div class="status-line"
@@ -406,7 +404,7 @@
             {% endif %}
 
             <button class="modal-trigger" data-modal-id="modal-create-new-{{ result }}"
-                style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black; background-color: #E9ECEF;{% endif %} border: solid #E9ECEF; box-shadow: 0px 8px 8px -3px rgba(0, 0, 0, 0.2);  border-radius: 6px; text-align: center; cursor: pointer; width: 10vh; height: 3%; margin-top:5%;">
+                style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black; background-color: #E9ECEF;{% endif %} border: solid #E9ECEF; box-shadow: 0px 8px 8px -3px rgba(0, 0, 0, 0.2);  border-radius: 6px; text-align: center; cursor: pointer; width: 10vh; height: 3%; margin-top:5%; font-size: 2vh;">
                 +
             </button>
 
