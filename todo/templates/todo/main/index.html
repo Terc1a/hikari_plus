@@ -4,7 +4,7 @@
 <div class='container' style=" ">
     <div class="header"
         style="">
-        <div class="dron" style="width: 8vw; margin-bottom: 10%;">
+        <div class="dron" style="">
             <input type="checkbox" id="nav-toggle" hidden>
             <nav class="nav" style="background: black; ">
                 
@@ -42,7 +42,7 @@
             {% block workspaces %}
             {% endblock %}
             <div class="head" style="">
-                <select onchange="sort(event)" id="fruits" style="outline: none;">
+                <select onchange="sort(event)" id="fruits" style="">
                     {% for workspace in workspace_list %}
                     <option value="{{ workspace.title }}" {% if workspace.id==current_workspace.id %}selected{% endif %}>
                         {{ workspace.title }}
@@ -97,10 +97,10 @@
             <div class="task_head">
                 <div class="task-list">
                     <p
-                        style="     text-align: left; margin-bottom: 2.5%; border: solid white; border-radius: 15px 15px 0px 0px;
+                        style="     
 {% if request.cookies.get('font')=='black' %}background-color:#515151;color:white;{% else %}background-color: #FCD1A8;color: black;{% endif %}; ">
-                        <button class="modal-trigger" data-modal-id="modal-open-{{ tag }}"
-                            style="font-weight: bold; padding-left: 2%; padding-top: 4%; padding-bottom: 2%; font-size: 2vh;">
+                        <button class="modal-trigger" id="prj_tag" data-modal-id="modal-open-{{ tag }}"
+                            style="">
                             {{ tag }}
                         </button>
 
@@ -121,8 +121,8 @@
                             </button>
                             <button class="ui negative basic button" data-tag-ws-id="{{tagg.ws_id}}"
                                 data-modal-id="{{tagg.id}}" onclick="onDelete(this)">Удалить</button>
-                            <button class="ui teal basic button" type="submit"
-                                style="margin: 10px; margin-left: 2.5%;">Сохранить
+                            <button class="ui teal basic button" id="sv_btn" type="submit"
+                                style="">Сохранить
                             </button>
                         </div>
                     </div>
@@ -159,19 +159,19 @@
                         {% if todo.title == title %}
                         <div class="task_body" style="{% if request.cookies.get('font')=='black' %}background-color:#383838;color:white;{% else %}background-color: #FCD1A8;color: black;{% endif %}" >
                             <div class="task-header"
-                                style="display: flex; flex-direction: column; width: 10vw; height: 100%; order: -1; margin-top: -1px; grid-column: 1;">
+                                style="">
                                 <div class="status-line"
                                     style="{% if todo.is_complete==True %}background-color: rgb(171,246,0); height: 5px;{% else %}background-color: #85B8FF; height: 5px;{% endif %} width: 95%; margin-top: 3%; margin-bottom: 5%; margin-right: 5%;">
                                 </div>
                                 <!-- Название задачи -->
-                                <button class="modal-trigger" data-modal-id="modal-{{ todo.id }}"
-                                style=" padding-left: 2%; padding-top: 4%; padding-bottom: 2%; font-size: 2vh; hyphens: auto;">
+                                <button class="modal-trigger" id="open_btn" data-modal-id="modal-{{ todo.id }}"
+                                style=" ">
 
                                     {{ title|safe }}
                                 </button>
                             </div>
                             <div class="side_menu"
-                                style="display: flex; flex-direction: column; margin-left: auto; margin-bottom: auto;">
+                                style="">
                                 {% set total_checks = check_list|selectattr('todo_id', 'equalto', todo.id)|list|length
                                 %}
                                 {% if total_checks > 0 %}
@@ -179,7 +179,7 @@
                                 todo.id)|selectattr('is_checked')|list|length %}
                                 {% set progress = (completed_checks / total_checks * 100)|round|int if total_checks > 0
                                 else 0 %}
-                                <div class="percentage" style="color: gray; font-size: 2vh;">
+                                <div class="percentage" style="">
                                     {{ progress }}%
                                 </div>
                                 {% endif %}
@@ -273,8 +273,8 @@
                                         </div><br> -->
                                         <!-- <input type="text" name="responsible" placeholder="Добавить ответственного"
                                             style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"> -->
-                                        <button class="ui teal basic button" type="submit"
-                                            style="margin: 10px; margin-left: 2.5%;">
+                                        <button class="ui teal basic button" type="submit" id="sv_btn2"
+                                            style="">
                                             Сохранить
                                         </button>
                                     </form>
@@ -305,16 +305,16 @@
                                         <input type="text" name="title" placeholder="Введите название задачи"
                                             style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"><br>
                                         <textarea name="task-description" class="ckeditor"
-                                            style="visibility: hidden; display: none;">Введите описание задачи</textarea>
+                                            style="">Введите описание задачи</textarea>
                                         <input type="text" name="tag" placeholder={{ tag }}
                                             style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %}background-color:rgb(56,56,56);color:white;{% endif %}"
                                             value="{{ tag }}"><br>
                                         <div class="additional">
-                                            <label style="width: 50%; display: inline;"><input name="checker"
+                                            <label style=""><input name="checker"
                                                     type="checkbox" value="checked"
-                                                    style="margin-top: 0.5%; margin-right: 0.5%;">Цикличная</label>
+                                                    style="">Цикличная</label>
                                             <div class="container_check"
-                                                style="width: 50%; display: inline; margin-left: 1.5em;">
+                                                style="">
                                                 <label class="add_button" onclick="CheckClicked(this)">Добавить
                                                     чек-лист</label>
                                             </div>
@@ -337,8 +337,8 @@
             {% if todo_responsible %}
             <div class="resp_head">
                 <p>
-                    <button class="modal-trigger" data-modal-id="modal-open-{{ tag }}"
-                        style="font-weight: bold; padding-left: 2%; padding-top: 4%; padding-bottom: 2%;">
+                    <button class="modal-trigger" data-modal-id="modal-open-{{ tag }}" id="resp_name"
+                        style="">
                         Назначенные
                     </button>
                 </p>
@@ -356,7 +356,7 @@
                                 <span class="modal-close">&times;</span>
                                 <div class="modal-body">
                                     {{ todo.descr|safe }}
-                                    <div class="nav" style="margin-top: 2.5%;">
+                                    <div class="nav" style="">
                                         {% if todo.is_complete == False %}
                                         <span class="ui gray label">В работе</span>
                                         <button class="modal-trigger ui yellow basic button"
@@ -391,8 +391,7 @@
                                         style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
                                         value="{{ todo.title }}"><br>
                                     <textarea name="task-description" class="ckeditor">{{ todo.descr|safe }}</textarea>
-                                    <button class="ui teal basic button" type="submit"
-                                        style="margin: 10px; margin-left: 2.5%;">Сохранить
+                                    <button class="ui teal basic button" type="submit" id="sv_btn">Сохранить
                                     </button>
                                 </form>
                             </div>
