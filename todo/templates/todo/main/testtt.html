@@ -1,7 +1,454 @@
 {% extends 'todo/main/layout.html' %}
-{% block content %}
+{% include '/todo/main/test_menu.html' %}
 {{ ckeditor.load() }}
 
-      
-      
-      {% endblock %}
+{% block content %}
+<!-- {% for todo in todo_list %}
+{{todo.title}}<br>-------------------<br>
+{% endfor %}       -->
+
+
+
+<!-- {% for tag, task in result.items() %}
+<div class="flt_task">
+{{tag}}<br>
+{{task}}<br>
+</div> 
+{% endfor %}-->
+
+
+{% for el in one_todo %}
+<div class="task_flt" style="width: 20%; margin-left: 40%; margin-right: 40%;">
+
+<div class="task_body" style="{% if request.cookies.get('font')=='black' %}background-color:#383838;color:white;{% else %}background-color: #FCD1A8;color: black;{% endif %}" >
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+      <div class="task-header"
+          style="margin-left: 30%; margin-right: 30%;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+          <div class="status-line"
+              style="{% if el.is_complete==True %}background-color: rgb(171,246,0); height: 5px;{% else %}background-color: #85B8FF; height: 5px;{% endif %} width: 95%; margin-top: 3%; margin-bottom: 5%; margin-right: 5%;">
+          </div>
+          <!-- Название задачи -->
+          <button class="modal-trigger" id="open_btn" data-modal-id="modal-{{ el.id }}"
+          style=" {% if request.cookies.get('font')=='black' %}color:white;{% else %}color: black;{% endif %}; ">
+
+              {{ el.title|safe }}
+          </button>
+      </div>
+      <div class="side_menu"
+          style="">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+          {% set total_checks = check_list|selectattr('todo_id', 'equalto', el.id)|list|length
+          %}
+          {% if total_checks > 0 %}
+          {% set completed_checks = check_list|selectattr('todo_id', 'equalto',
+          el.id)|selectattr('is_checked')|list|length %}
+          {% set progress = (completed_checks / total_checks * 100)|round|int if total_checks > 0
+          else 0 %}
+          <div class="percentage" style="">
+              {{ progress }}%
+          </div>
+          {% endif %}
+          <!-- Если раз проект все равно не будет использоваться несколькими юзерами пока что, я это временно убираю -->
+          <!-- <img src="{{ url_for('userava') }}"
+              style="width: 1.5vw; height: 1.5vw; border: solid white; border-radius: 50%; margin-left: auto; margin-top: 20%;"> -->
+      </div>
+      <div id="modal-{{ el.id }}" class="modal-overlay">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+          <div class="modal-container"
+              style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
+              {{ el.title }}
+              <span class="modal-close">&times;</span>
+              <div class="modal-body">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+                  {{ el.descr|safe }}
+                  <hr><br>
+                  {% set total_checks = check_list|selectattr('todo_id', 'equalto',
+                  el.id)|list|length %}
+
+                  {% set completed_checks = check_list|selectattr('todo_id', 'equalto',
+                  el.id)|selectattr('is_checked')|list|length %}
+
+                  {% set progress = (completed_checks / total_checks * 100)|round(0) if
+                  total_checks > 0 else 0 %}
+                  {% if total_checks > 0 %}
+                  <progress class="progress-bar" value={{ progress }} max=100 style="">
+
+                  </progress>
+                  {% endif %}
+
+                  <form class="chlist">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+                      {% for check in check_list %}
+                      {% if el.id == check.todo_id %}
+                      <input type="checkbox" data-check-id={{ check.id }} data-task-id={{ todo.id
+                          }} onchange="onCheckChange(event)" {% if check.is_checked==0 %}{% else
+                          %}checked{% endif %}>
+                      {{ check.text }}<br>
+                      {% endif %}
+                      {% endfor %}
+                  </form>
+                  {% if el.is_complete == False %}
+                  <span class="ui gray label">В работе</span>
+                  <button class="modal-trigger ui yellow basic button"
+                      data-modal-id="modal-change-{{ el.id }}">
+                      Изменить
+                  </button>
+                  <a class="ui primary basic button" href="/update/{{ el.id }}">Завершить</a>
+                  {% else %}
+                  <span class="ui green label">Завершено</span>
+                  <a class="ui blue basic button" href="/update/{{ el.id }}">Возобновить</a>
+                  {% endif %}
+                  <a class="ui negative basic button" href="/delete/{{ el.id }}">Удалить</a>
+                  {% if el.is_cycle == 'checked' %}
+                  <p>Цикличная: Да</p>
+                  {% else %}
+                  <p>Цикличная: Нет</p>
+                  {% endif %}
+              </div>
+          </div>
+      </div>
+
+      <div id="modal-change-{{ el.id }}" class="modal-overlay">
+          
+          <div class="modal-container"
+              style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
+              <h3>Изменить задачу</h3>
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
+              <span class="modal-close">&times;</span>
+              <form class="modal-body" action="/change_content/{{el.id}}" method="post">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                  <input type="text" name="title" placeholder="Введите название задачи"
+                      style="width: 100%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}"
+                      value="{{ el.title }}"><br>
+                  <textarea name="task-description"
+                      class="ckeditor">{{ el.descr|safe }}</textarea>
+
+
+
+                  <button class="ui teal basic button" type="submit" id="sv_btn2"
+                      style="">
+                      Сохранить
+                  </button>
+              </form>
+          </div>
+      </div>
+  </div>
+
+
+</div>
+{% endfor %}
+<!--Модальные окна-->
+<script>
+      document.addEventListener('DOMContentLoaded', function () {
+          function initCKEditor() {
+              document.querySelectorAll('.ckeditor').forEach(textarea => {
+                  CKEDITOR.replace(textarea);
+                  if (CKEDITOR.instances[textarea.name]) {
+                      CKEDITOR.instances[textarea.name].destroy();
+                  }
+  
+                  // я хуй знает, возможно оно не работает и его можно выпилить
+                  if (textarea.closest('.modal-body').querySelectorAll('.ckeditor').length !== 1) {
+                      if (CKEDITOR.instances[textarea.name]) {
+                          CKEDITOR.instances[textarea.name].destroy();
+                      }
+                  }
+                  console.log(CKEDITOR.instances)
+              });
+          }
+  
+          window.sort = async function (event) {
+              const selectedValue = event.target.value;
+  
+              try {
+                  const response = await fetch('/sort', {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json',
+                          'X-CSRFToken': '{{ csrf_token() }}'
+                      },
+                      body: JSON.stringify({
+                          destination: selectedValue,
+                      })
+                  });
+  
+                  const data = await response.json();
+                  if (!response.ok) throw new Error(data.error || 'Unknown error');
+  
+                  const tempContainer = document.createElement('div');
+                  tempContainer.innerHTML = data.html;
+  
+                  const newTasksArea = tempContainer.querySelector('.tasks_area');
+                  if (newTasksArea) {
+                      for (const name in CKEDITOR.instances) {
+                          CKEDITOR.instances[name].destroy();
+                      }
+  
+                      const currentTasksArea = document.querySelector('.tasks_area');
+                      currentTasksArea.innerHTML = newTasksArea.innerHTML;
+  
+                      initModals();
+                      initDragScroll();
+                      initCKEditor();
+                  } else {
+                      console.error('Could not find tasks area in the response');
+                  }
+  
+              } catch (error) {
+                  console.error('Ошибка:', error);
+                  alert('Произошла ошибка при обновлении списка');
+              }
+          };
+  
+  
+  
+          // Модальные окна
+          function initModals() {
+              document.querySelectorAll('.modal-trigger').forEach(button => {
+                  button.replaceWith(button.cloneNode(true));
+              });
+              console.log('CKEDITOR instances:', CKEDITOR.instances);
+  
+              document.querySelectorAll('.modal-close').forEach(closeBtn => {
+                  closeBtn.replaceWith(closeBtn.cloneNode(true));
+              });
+  
+              document.querySelectorAll('.modal-trigger').forEach(button => {
+                  button.addEventListener('click', function () {
+                      console.log('CKEDITOR instances:', CKEDITOR.instances);
+  
+                      const modalId = this.getAttribute('data-modal-id');
+                      const modal = document.getElementById(modalId);
+  
+                      if (modal) {
+                          const textarea = modal.querySelector('.ckeditor');
+                          const task_description = modal.querySelector('.task-description');
+                          const workspace_description = modal.querySelector('.workspace-description');
+                          const change_task_description = modal.querySelector('.change-task-description')
+  
+                          if (task_description) {
+                              task_description.style.display = 'none';
+                              task_description.style.visibility = 'hidden';
+                          }
+                          if (workspace_description) {
+                              workspace_description.style.display = 'none';
+                              workspace_description.style.visibility = 'hidden';
+                          }
+  
+                          if (change_task_description) {
+                              change_task_description.style.display = 'none';
+                              change_task_description.style.visibility = 'hidden';
+                          }
+  
+                          if (textarea && !textarea.closest('.cke')) {
+                              if (CKEDITOR.instances[textarea.name]) {
+                                  CKEDITOR.instances[textarea.name].destroy();
+                              }
+                              // Инициализируем CKEditor ТОЛЬКО если его нет в модальном окне. Хуй знает как, но это работает
+                              if (!textarea.closest('.modal-body').querySelector('.cke')) {
+                                  CKEDITOR.replace(textarea);
+                              }
+                          }
+  
+                          modal.style.display = 'block';
+                          document.body.style.overflow = 'hidden';
+                      }
+                  });
+              });
+  
+              document.querySelectorAll('.modal-close').forEach(closeBtn => {
+                  closeBtn.addEventListener('click', function () {
+                      const modal = this.closest('.modal-overlay');
+                      if (modal) {
+                          const textarea = modal.querySelector('.ckeditor');
+                          if (textarea && CKEDITOR.instances[textarea.name]) {
+                              CKEDITOR.instances[textarea.name].destroy();
+                          }
+                          modal.style.display = 'none';
+                          document.body.style.overflow = '';
+                      }
+                  });
+              });
+  
+              document.querySelectorAll('.modal-overlay').forEach(modal => {
+                  modal.addEventListener('click', function (event) {
+                      if (event.target === this) {
+                          const textarea = this.querySelector('.ckeditor');
+                          if (textarea && CKEDITOR.instances[textarea.name]) {
+                              CKEDITOR.instances[textarea.name].destroy();
+                          }
+                          this.style.display = 'none';
+                          document.body.style.overflow = '';
+                      }
+                  });
+              });
+          }
+  
+          // Скролл списка задач
+          function initDragScroll() {
+              const scrollContainer = document.querySelector(".list");
+              if (!scrollContainer) return;
+  
+              let isDragging = false;
+              let startX, scrollStart;
+  
+              scrollContainer.addEventListener("pointerdown", (e) => {
+                  isDragging = true;
+                  startX = e.clientX;
+                  scrollStart = scrollContainer.scrollLeft;
+                  scrollContainer.style.cursor = "grabbing";
+              });
+  
+              scrollContainer.addEventListener("pointerup", () => {
+                  isDragging = false;
+                  scrollContainer.style.cursor = "grab";
+              });
+  
+              scrollContainer.addEventListener("pointerleave", () => {
+                  isDragging = false;
+                  scrollContainer.style.cursor = "grab";
+              });
+  
+              scrollContainer.addEventListener("pointermove", (e) => {
+                  if (!isDragging) return;
+                  e.preventDefault();
+                  const currentX = e.clientX;
+                  const deltaX = currentX - startX;
+                  scrollContainer.scrollLeft = scrollStart - deltaX;
+              });
+  
+              scrollContainer.style.cursor = "grab";
+          }
+  
+          initModals();
+          initDragScroll();
+  
+      });
+  
+  
+      <!--Динамический лист чек-боксов-->
+      function CheckClicked(button) {
+          let modal = button.closest('.modal-overlay');
+  
+          if (!modal) {
+              console.error("Модальное окно не найдено.");
+              return;
+          }
+  
+          let container = modal.querySelector('.container_check');
+  
+          if (!container) {
+              console.error("Контейнер чек-листа не найден.");
+              return;
+          }
+          let div = document.createElement('div');
+          div.classList.add('checklist-item');
+          div.style.marginTop = '5px';
+  
+          let checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.name = 'checklist[]';
+          checkbox.style.marginTop = '2%';
+  
+          let input = document.createElement('input');
+          input.type = 'text';
+          input.name = 'checklist_text[]';
+          input.placeholder = 'Введите пункт чек-листа';
+          input.style.marginLeft = '5px';
+          input.style.width = '50%';
+  
+          // div.appendChild(checkbox);
+          div.appendChild(input);
+          container.appendChild(div);
+      }
+  
+      async function onCheckChange(event) {
+          const checkbox = event.target;
+          const taskItem = checkbox.closest('.task_body'); // Находим родительский контейнер задачи
+          const taskId = checkbox.dataset.taskId; // Получаем ID из data-атрибута
+          const checkId = checkbox.dataset.checkId;
+          const progressBar = checkbox.closest('.task_body').querySelector('.progress-bar');
+          const percent = checkbox.closest('.task_body').querySelector('.percentage');
+          const totalChecks = checkbox.parentElement.querySelectorAll('input[type="checkbox"]').length;
+          const completedChecks = checkbox.parentElement.querySelectorAll('input[type="checkbox"]:checked').length;
+          const newProgress = (completedChecks / totalChecks * 100).toFixed(0);
+  
+          try {
+              await fetch('/update_checkbox', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'X-CSRFToken': '{{ csrf_token() }}'
+                  },
+                  body: JSON.stringify({
+                      task_id: taskId,
+                      is_checked: checkbox.checked,
+                      id: checkId
+                  })
+              });
+              progressBar.value = newProgress;
+              percent.textContent = `${newProgress}%`;
+          } catch (error) {
+              console.error('Ошибка:', error);
+          }
+      }
+  
+  
+  
+  
+      async function onDelete(button) {
+          let tag_id = button.getAttribute('data-modal-id');
+          let ws_id = button.getAttribute('data-tag-ws-id');
+          const modal = button.closest('.modal-overlay');
+          console.log(modal)
+          console.log(tag_id);
+          console.log(ws_id);
+  
+          try {
+              const response = await fetch('/delete_tag', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                      'X-CSRFToken': '{{ csrf_token() }}'
+                  },
+                  body: JSON.stringify({
+                      tag_id: tag_id,
+                      ws_id: ws_id,
+  
+                  })
+              });
+              const data = await response.json();
+              if (!response.ok) throw new Error(data.error || 'Unknown error');
+  
+              const tempContainer = document.createElement('div');
+              tempContainer.innerHTML = data.html;
+  
+              const newTasksArea = tempContainer.querySelector('.tasks_area');
+              if (newTasksArea) {
+                  modal.style.display = 'none';
+                  document.body.style.overflow = '';
+  
+  
+                  const currentTasksArea = document.querySelector('.tasks_area');
+                  currentTasksArea.innerHTML = newTasksArea.innerHTML;
+  
+              } else {
+                  console.error('Could not find tasks area in the response');
+              }
+          } catch (error) {
+              console.error('Ошибка:', error);
+          }
+      }
+  
+  
+  
+  </script>
+{% endblock %}

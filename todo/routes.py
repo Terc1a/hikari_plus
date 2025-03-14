@@ -810,7 +810,7 @@ def search():
     todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).all()
     one_todo = ToDo.query.filter(ToDo.title.like(search), ToDo.tag_id.in_((tags_ids))).all()
     todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
-    current_workspace = Workspace.query.filter_by(uid=current_user.id).first()
+    #check_list = Checks.query.filter(Checks.todo_id.in_((todo_ids))).all()
 
     #Формируем список проектов и задач на отправку
     result = {}
@@ -835,7 +835,7 @@ def search():
                         result[f'{tag_name.title}'] = [row.title]
     if not search:
         return redirect(url_for('/'))
-    return render_template('todo/main/index.html',todo_list=todo_list, result=result, workspace_list=todo_workspaces, current_workspace=current_workspace)
+    return render_template('todo/main/testtt.html',todo_list=todo_list, result=result, one_todo=one_todo)
 
 
 # Открываем страницу настроек

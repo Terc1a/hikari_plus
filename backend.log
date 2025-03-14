@@ -10684,3 +10684,232 @@ INFO     [2025-03-14 02:40:31,893] 192.168.0.17 - - [14/Mar/2025 02:40:31] "GET 
 INFO     [2025-03-14 02:40:32,068] 192.168.0.17 - - [14/Mar/2025 02:40:32] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
 INFO     [2025-03-14 02:40:32,299] 192.168.0.17 - - [14/Mar/2025 02:40:32] "GET /userava HTTP/1.1" 200 -
 INFO     [2025-03-14 02:40:32,326] 192.168.0.17 - - [14/Mar/2025 02:40:32] "[36mGET /static/NewLogo.png HTTP/1.1[0m" 304 -
+INFO     [2025-03-14 13:18:39,062]  * Detected change in '/home/tercia/Documents/todo/todo/routes.py', reloading
+INFO     [2025-03-14 13:18:39,260]  * Restarting with stat
+WARNING  [2025-03-14 13:18:39,858]  * Debugger is active!
+INFO     [2025-03-14 13:18:39,858]  * Debugger PIN: 119-753-853
+INFO     [2025-03-14 13:18:43,479] 192.168.0.17 - - [14/Mar/2025 13:18:43] "GET / HTTP/1.1" 200 -
+INFO     [2025-03-14 13:18:43,605] 192.168.0.17 - - [14/Mar/2025 13:18:43] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-14 13:18:44,079] 192.168.0.17 - - [14/Mar/2025 13:18:44] "GET /userava HTTP/1.1" 200 -
+INFO     [2025-03-14 13:18:45,001] 192.168.0.17 - - [14/Mar/2025 13:18:45] "GET /static/NewLogo.png HTTP/1.1" 200 -
+INFO     [2025-03-14 13:18:45,183] 192.168.0.17 - - [14/Mar/2025 13:18:45] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-14 13:18:48,899] 192.168.0.17 - - [14/Mar/2025 13:18:48] "POST / HTTP/1.1" 200 -
+INFO     [2025-03-14 13:18:49,712] 192.168.0.17 - - [14/Mar/2025 13:18:49] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     [2025-03-14 13:18:50,326] 192.168.0.17 - - [14/Mar/2025 13:18:50] "GET /userava HTTP/1.1" 200 -
+INFO     [2025-03-14 13:18:50,663] 192.168.0.17 - - [14/Mar/2025 13:18:50] "[36mGET /static/NewLogo.png HTTP/1.1[0m" 304 -
+INFO     [2025-03-14 13:18:58,105] 192.168.0.17 - - [14/Mar/2025 13:18:58] "GET / HTTP/1.1" 200 -
+INFO     [2025-03-14 13:18:58,196] 192.168.0.17 - - [14/Mar/2025 13:18:58] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     [2025-03-14 13:18:58,847] 192.168.0.17 - - [14/Mar/2025 13:18:58] "GET /userava HTTP/1.1" 200 -
+INFO     [2025-03-14 13:18:59,255] 192.168.0.17 - - [14/Mar/2025 13:18:59] "[36mGET /static/NewLogo.png HTTP/1.1[0m" 304 -
+INFO     [2025-03-14 16:22:23,443] 192.168.0.17 - - [14/Mar/2025 16:22:23] "GET /settings HTTP/1.1" 200 -
+INFO     [2025-03-14 16:22:23,583] 192.168.0.17 - - [14/Mar/2025 16:22:23] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     [2025-03-14 16:22:23,942] 192.168.0.17 - - [14/Mar/2025 16:22:23] "[36mGET /static/NewLogo.png HTTP/1.1[0m" 304 -
+INFO     [2025-03-14 16:22:44,193] 192.168.0.17 - - [14/Mar/2025 16:22:44] "[32mPOST /change_theme HTTP/1.1[0m" 302 -
+INFO     [2025-03-14 16:22:44,373] 192.168.0.17 - - [14/Mar/2025 16:22:44] "GET / HTTP/1.1" 200 -
+INFO     [2025-03-14 16:22:44,516] 192.168.0.17 - - [14/Mar/2025 16:22:44] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     [2025-03-14 16:22:45,084] 192.168.0.17 - - [14/Mar/2025 16:22:45] "GET /userava HTTP/1.1" 200 -
+INFO     [2025-03-14 16:22:45,494] 192.168.0.17 - - [14/Mar/2025 16:22:45] "[36mGET /static/NewLogo.png HTTP/1.1[0m" 304 -
+INFO     [2025-03-15 00:33:33,202] 192.168.0.17 - - [15/Mar/2025 00:33:33] "GET / HTTP/1.1" 200 -
+INFO     [2025-03-15 00:33:33,362] 192.168.0.17 - - [15/Mar/2025 00:33:33] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     [2025-03-15 00:33:33,624] 192.168.0.17 - - [15/Mar/2025 00:33:33] "GET /userava HTTP/1.1" 200 -
+INFO     [2025-03-15 00:33:33,788] 192.168.0.17 - - [15/Mar/2025 00:33:33] "[36mGET /static/NewLogo.png HTTP/1.1[0m" 304 -
+INFO     [2025-03-15 00:37:49,756] 192.168.0.17 - - [15/Mar/2025 00:37:49] "GET / HTTP/1.1" 200 -
+INFO     [2025-03-15 00:37:49,821] 192.168.0.17 - - [15/Mar/2025 00:37:49] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 01:12:21,058]  * Detected change in '/home/tercia/Documents/todo/todo/routes.py', reloading
+INFO     [2025-03-15 01:12:21,396]  * Restarting with stat
+WARNING  [2025-03-15 01:12:22,578]  * Debugger is active!
+INFO     [2025-03-15 01:12:22,579]  * Debugger PIN: 119-753-853
+INFO     [2025-03-15 01:12:53,666] 192.168.0.17 - - [15/Mar/2025 01:12:53] "GET / HTTP/1.1" 200 -
+INFO     [2025-03-15 01:12:53,880] 192.168.0.17 - - [15/Mar/2025 01:12:53] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 01:12:54,229] 192.168.0.17 - - [15/Mar/2025 01:12:54] "GET /userava HTTP/1.1" 200 -
+INFO     [2025-03-15 01:12:54,955] 192.168.0.17 - - [15/Mar/2025 01:12:54] "GET /static/NewLogo.png HTTP/1.1" 200 -
+INFO     [2025-03-15 01:12:55,162] 192.168.0.17 - - [15/Mar/2025 01:12:55] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 01:13:00,291] 192.168.0.17 - - [15/Mar/2025 01:13:00] "POST / HTTP/1.1" 200 -
+INFO     [2025-03-15 01:13:00,528] 192.168.0.17 - - [15/Mar/2025 01:13:00] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 01:13:00,873] 192.168.0.17 - - [15/Mar/2025 01:13:00] "GET /userava HTTP/1.1" 200 -
+INFO     [2025-03-15 01:13:00,977] 192.168.0.17 - - [15/Mar/2025 01:13:00] "[36mGET /static/NewLogo.png HTTP/1.1[0m" 304 -
+INFO     [2025-03-15 01:13:24,382] 192.168.0.17 - - [15/Mar/2025 01:13:24] "POST / HTTP/1.1" 200 -
+INFO     [2025-03-15 01:13:24,523] 192.168.0.17 - - [15/Mar/2025 01:13:24] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     [2025-03-15 01:13:24,834] 192.168.0.17 - - [15/Mar/2025 01:13:24] "GET /userava HTTP/1.1" 200 -
+INFO     [2025-03-15 01:13:24,953] 192.168.0.17 - - [15/Mar/2025 01:13:24] "[36mGET /static/NewLogo.png HTTP/1.1[0m" 304 -
+INFO     [2025-03-15 01:13:31,014] 192.168.0.17 - - [15/Mar/2025 01:13:31] "POST / HTTP/1.1" 200 -
+INFO     [2025-03-15 01:13:31,192] 192.168.0.17 - - [15/Mar/2025 01:13:31] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     [2025-03-15 01:15:11,467] 192.168.0.17 - - [15/Mar/2025 01:15:11] "GET /userava HTTP/1.1" 200 -
+INFO     [2025-03-15 01:15:11,557] 192.168.0.17 - - [15/Mar/2025 01:15:11] "[36mGET /static/NewLogo.png HTTP/1.1[0m" 304 -
+INFO     [2025-03-15 01:30:01,400]  * Detected change in '/home/tercia/Documents/todo/todo/routes.py', reloading
+INFO     [2025-03-15 01:30:01,743]  * Restarting with stat
+WARNING  [2025-03-15 01:30:02,854]  * Debugger is active!
+INFO     [2025-03-15 01:30:02,855]  * Debugger PIN: 119-753-853
+INFO     [2025-03-15 01:30:05,288] 192.168.0.17 - - [15/Mar/2025 01:30:05] "POST / HTTP/1.1" 200 -
+INFO     [2025-03-15 01:30:05,492] 192.168.0.17 - - [15/Mar/2025 01:30:05] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 01:30:05,895] 192.168.0.17 - - [15/Mar/2025 01:30:05] "GET /userava HTTP/1.1" 200 -
+INFO     [2025-03-15 01:30:06,422] 192.168.0.17 - - [15/Mar/2025 01:30:06] "GET /static/NewLogo.png HTTP/1.1" 200 -
+INFO     [2025-03-15 01:30:06,639] 192.168.0.17 - - [15/Mar/2025 01:30:06] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 01:30:10,576] 192.168.0.17 - - [15/Mar/2025 01:30:10] "POST / HTTP/1.1" 200 -
+INFO     [2025-03-15 01:30:10,876] 192.168.0.17 - - [15/Mar/2025 01:30:10] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     [2025-03-15 01:30:11,240] 192.168.0.17 - - [15/Mar/2025 01:30:11] "GET /userava HTTP/1.1" 200 -
+INFO     [2025-03-15 01:30:11,312] 192.168.0.17 - - [15/Mar/2025 01:30:11] "[36mGET /static/NewLogo.png HTTP/1.1[0m" 304 -
+INFO     [2025-03-15 01:30:36,217]  * Detected change in '/home/tercia/Documents/todo/todo/routes.py', reloading
+INFO     [2025-03-15 01:30:36,628]  * Restarting with stat
+WARNING  [2025-03-15 01:30:37,602]  * Debugger is active!
+INFO     [2025-03-15 01:30:37,603]  * Debugger PIN: 119-753-853
+INFO     [2025-03-15 01:30:40,513] 192.168.0.17 - - [15/Mar/2025 01:30:40] "POST / HTTP/1.1" 200 -
+INFO     [2025-03-15 01:30:40,719] 192.168.0.17 - - [15/Mar/2025 01:30:40] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 01:30:41,040] 192.168.0.17 - - [15/Mar/2025 01:30:41] "GET /userava HTTP/1.1" 200 -
+INFO     [2025-03-15 01:30:41,556] 192.168.0.17 - - [15/Mar/2025 01:30:41] "GET /static/NewLogo.png HTTP/1.1" 200 -
+INFO     [2025-03-15 01:30:41,813] 192.168.0.17 - - [15/Mar/2025 01:30:41] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 01:30:45,210] 192.168.0.17 - - [15/Mar/2025 01:30:45] "POST /search HTTP/1.1" 200 -
+INFO     [2025-03-15 01:30:45,502] 192.168.0.17 - - [15/Mar/2025 01:30:45] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     [2025-03-15 01:31:08,964] 192.168.0.17 - - [15/Mar/2025 01:31:08] "POST /search HTTP/1.1" 200 -
+INFO     [2025-03-15 01:31:09,129] 192.168.0.17 - - [15/Mar/2025 01:31:09] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 01:31:09,858] 192.168.0.17 - - [15/Mar/2025 01:31:09] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:17:47,723] 192.168.0.17 - - [15/Mar/2025 02:17:47] "POST /search HTTP/1.1" 200 -
+INFO     [2025-03-15 02:17:47,823] 192.168.0.17 - - [15/Mar/2025 02:17:47] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:17:48,594] 192.168.0.17 - - [15/Mar/2025 02:17:48] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:20:05,951] 192.168.0.17 - - [15/Mar/2025 02:20:05] "POST /search HTTP/1.1" 200 -
+INFO     [2025-03-15 02:20:06,045] 192.168.0.17 - - [15/Mar/2025 02:20:06] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:20:06,823] 192.168.0.17 - - [15/Mar/2025 02:20:06] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:20:53,044]  * Detected change in '/home/tercia/Documents/todo/todo/routes.py', reloading
+INFO     [2025-03-15 02:20:53,252]  * Restarting with stat
+WARNING  [2025-03-15 02:20:53,894]  * Debugger is active!
+INFO     [2025-03-15 02:20:53,894]  * Debugger PIN: 119-753-853
+INFO     [2025-03-15 02:21:08,619] 192.168.0.17 - - [15/Mar/2025 02:21:08] "POST /search HTTP/1.1" 200 -
+INFO     [2025-03-15 02:21:08,711] 192.168.0.17 - - [15/Mar/2025 02:21:08] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:21:09,473] 192.168.0.17 - - [15/Mar/2025 02:21:09] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:21:15,021] 192.168.0.17 - - [15/Mar/2025 02:21:15] "POST /search HTTP/1.1" 200 -
+INFO     [2025-03-15 02:21:15,090] 192.168.0.17 - - [15/Mar/2025 02:21:15] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:21:15,702] 192.168.0.17 - - [15/Mar/2025 02:21:15] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:21:19,733] 192.168.0.17 - - [15/Mar/2025 02:21:19] "POST /search HTTP/1.1" 200 -
+INFO     [2025-03-15 02:21:19,820] 192.168.0.17 - - [15/Mar/2025 02:21:19] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:21:20,383] 192.168.0.17 - - [15/Mar/2025 02:21:20] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:22:27,315] 192.168.0.17 - - [15/Mar/2025 02:22:27] "[35m[1mPOST /search HTTP/1.1[0m" 500 -
+INFO     [2025-03-15 02:22:27,380] 192.168.0.17 - - [15/Mar/2025 02:22:27] "GET /search?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:22:27,381] 192.168.0.17 - - [15/Mar/2025 02:22:27] "GET /search?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+INFO     [2025-03-15 02:22:27,474] 192.168.0.17 - - [15/Mar/2025 02:22:27] "GET /search?__debugger__=yes&cmd=resource&f=console.png&s=KM92nZnSpZa8ZkYPag7W HTTP/1.1" 200 -
+INFO     [2025-03-15 02:22:27,480] 192.168.0.17 - - [15/Mar/2025 02:22:27] "GET /search?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+INFO     [2025-03-15 02:22:45,238] 192.168.0.17 - - [15/Mar/2025 02:22:45] "POST /search HTTP/1.1" 200 -
+INFO     [2025-03-15 02:22:45,334] 192.168.0.17 - - [15/Mar/2025 02:22:45] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:22:46,056] 192.168.0.17 - - [15/Mar/2025 02:22:46] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:24:38,664] 192.168.0.17 - - [15/Mar/2025 02:24:38] "POST /search HTTP/1.1" 200 -
+INFO     [2025-03-15 02:24:38,766] 192.168.0.17 - - [15/Mar/2025 02:24:38] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:26:19,354] 192.168.0.17 - - [15/Mar/2025 02:26:19] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:35:21,276]  * Detected change in '/home/tercia/Documents/todo/todo/routes.py', reloading
+INFO     [2025-03-15 02:35:21,472]  * Restarting with stat
+WARNING  [2025-03-15 02:35:22,006]  * Debugger is active!
+INFO     [2025-03-15 02:35:22,006]  * Debugger PIN: 119-753-853
+INFO     [2025-03-15 02:35:26,152] The CSRF token has expired.
+INFO     [2025-03-15 02:35:26,154] 192.168.0.17 - - [15/Mar/2025 02:35:26] "[31m[1mPOST /search HTTP/1.1[0m" 400 -
+INFO     [2025-03-15 02:35:26,281] 192.168.0.17 - - [15/Mar/2025 02:35:26] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:35:59,764] The CSRF token has expired.
+INFO     [2025-03-15 02:35:59,764] 192.168.0.17 - - [15/Mar/2025 02:35:59] "[31m[1mPOST /search HTTP/1.1[0m" 400 -
+INFO     [2025-03-15 02:35:59,881] 192.168.0.17 - - [15/Mar/2025 02:35:59] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:36:25,751] The CSRF token has expired.
+INFO     [2025-03-15 02:36:25,751] 192.168.0.17 - - [15/Mar/2025 02:36:25] "[31m[1mPOST /search HTTP/1.1[0m" 400 -
+INFO     [2025-03-15 02:36:25,879] 192.168.0.17 - - [15/Mar/2025 02:36:25] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:39:38,072] The CSRF token has expired.
+INFO     [2025-03-15 02:39:38,072] 192.168.0.17 - - [15/Mar/2025 02:39:38] "[31m[1mPOST /search HTTP/1.1[0m" 400 -
+INFO     [2025-03-15 02:39:38,171] 192.168.0.17 - - [15/Mar/2025 02:39:38] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:39:42,891] The CSRF token has expired.
+INFO     [2025-03-15 02:39:42,892] 192.168.0.17 - - [15/Mar/2025 02:39:42] "[31m[1mPOST /search HTTP/1.1[0m" 400 -
+INFO     [2025-03-15 02:39:47,428] The CSRF token has expired.
+INFO     [2025-03-15 02:39:47,429] 192.168.0.17 - - [15/Mar/2025 02:39:47] "[31m[1mPOST /search HTTP/1.1[0m" 400 -
+INFO     [2025-03-15 02:39:47,555] 192.168.0.17 - - [15/Mar/2025 02:39:47] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:39:53,441] The CSRF token has expired.
+INFO     [2025-03-15 02:39:53,441] 192.168.0.17 - - [15/Mar/2025 02:39:53] "[31m[1mPOST / HTTP/1.1[0m" 400 -
+INFO     [2025-03-15 02:39:53,606] 192.168.0.17 - - [15/Mar/2025 02:39:53] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:39:55,383] 192.168.0.17 - - [15/Mar/2025 02:39:55] "GET / HTTP/1.1" 200 -
+INFO     [2025-03-15 02:39:55,529] 192.168.0.17 - - [15/Mar/2025 02:39:55] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     [2025-03-15 02:39:55,866] 192.168.0.17 - - [15/Mar/2025 02:39:55] "GET /userava HTTP/1.1" 200 -
+INFO     [2025-03-15 02:39:55,898] 192.168.0.17 - - [15/Mar/2025 02:39:55] "[36mGET /static/NewLogo.png HTTP/1.1[0m" 304 -
+INFO     [2025-03-15 02:39:58,861] 192.168.0.17 - - [15/Mar/2025 02:39:58] "[35m[1mPOST /search HTTP/1.1[0m" 500 -
+INFO     [2025-03-15 02:39:59,019] 192.168.0.17 - - [15/Mar/2025 02:39:59] "GET /search?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:39:59,021] 192.168.0.17 - - [15/Mar/2025 02:39:59] "[36mGET /search?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+INFO     [2025-03-15 02:39:59,078] 192.168.0.17 - - [15/Mar/2025 02:39:59] "GET /search?__debugger__=yes&cmd=resource&f=console.png&s=GfVY9R3G96lhV6vkAqNR HTTP/1.1" 200 -
+INFO     [2025-03-15 02:40:18,274] 192.168.0.17 - - [15/Mar/2025 02:40:18] "[35m[1mPOST /search HTTP/1.1[0m" 500 -
+INFO     [2025-03-15 02:40:18,347] 192.168.0.17 - - [15/Mar/2025 02:40:18] "GET /search?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+INFO     [2025-03-15 02:40:18,347] 192.168.0.17 - - [15/Mar/2025 02:40:18] "GET /search?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:40:18,390] 192.168.0.17 - - [15/Mar/2025 02:40:18] "GET /search?__debugger__=yes&cmd=resource&f=console.png&s=GfVY9R3G96lhV6vkAqNR HTTP/1.1" 200 -
+INFO     [2025-03-15 02:40:18,395] 192.168.0.17 - - [15/Mar/2025 02:40:18] "GET /search?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+INFO     [2025-03-15 02:40:45,572] 192.168.0.17 - - [15/Mar/2025 02:40:45] "[35m[1mPOST /search HTTP/1.1[0m" 500 -
+INFO     [2025-03-15 02:40:45,686] 192.168.0.17 - - [15/Mar/2025 02:40:45] "GET /search?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:40:45,686] 192.168.0.17 - - [15/Mar/2025 02:40:45] "GET /search?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+INFO     [2025-03-15 02:40:45,721] 192.168.0.17 - - [15/Mar/2025 02:40:45] "GET /search?__debugger__=yes&cmd=resource&f=console.png&s=GfVY9R3G96lhV6vkAqNR HTTP/1.1" 200 -
+INFO     [2025-03-15 02:40:45,728] 192.168.0.17 - - [15/Mar/2025 02:40:45] "GET /search?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+INFO     [2025-03-15 02:40:58,942] 192.168.0.17 - - [15/Mar/2025 02:40:58] "[35m[1mPOST /search HTTP/1.1[0m" 500 -
+INFO     [2025-03-15 02:40:59,043] 192.168.0.17 - - [15/Mar/2025 02:40:59] "GET /search?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:40:59,044] 192.168.0.17 - - [15/Mar/2025 02:40:59] "GET /search?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+INFO     [2025-03-15 02:40:59,076] 192.168.0.17 - - [15/Mar/2025 02:40:59] "GET /search?__debugger__=yes&cmd=resource&f=console.png&s=GfVY9R3G96lhV6vkAqNR HTTP/1.1" 200 -
+INFO     [2025-03-15 02:40:59,081] 192.168.0.17 - - [15/Mar/2025 02:40:59] "GET /search?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+INFO     [2025-03-15 02:41:10,730] 192.168.0.17 - - [15/Mar/2025 02:41:10] "[35m[1mPOST /search HTTP/1.1[0m" 500 -
+INFO     [2025-03-15 02:41:10,833] 192.168.0.17 - - [15/Mar/2025 02:41:10] "GET /search?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+INFO     [2025-03-15 02:41:10,834] 192.168.0.17 - - [15/Mar/2025 02:41:10] "GET /search?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:41:10,869] 192.168.0.17 - - [15/Mar/2025 02:41:10] "GET /search?__debugger__=yes&cmd=resource&f=console.png&s=GfVY9R3G96lhV6vkAqNR HTTP/1.1" 200 -
+INFO     [2025-03-15 02:41:10,873] 192.168.0.17 - - [15/Mar/2025 02:41:10] "GET /search?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+INFO     [2025-03-15 02:41:20,570] 192.168.0.17 - - [15/Mar/2025 02:41:20] "[35m[1mPOST /search HTTP/1.1[0m" 500 -
+INFO     [2025-03-15 02:41:20,630] 192.168.0.17 - - [15/Mar/2025 02:41:20] "GET /search?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:41:20,634] 192.168.0.17 - - [15/Mar/2025 02:41:20] "GET /search?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+INFO     [2025-03-15 02:41:20,665] 192.168.0.17 - - [15/Mar/2025 02:41:20] "GET /search?__debugger__=yes&cmd=resource&f=console.png&s=GfVY9R3G96lhV6vkAqNR HTTP/1.1" 200 -
+INFO     [2025-03-15 02:41:20,670] 192.168.0.17 - - [15/Mar/2025 02:41:20] "GET /search?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+INFO     [2025-03-15 02:41:28,943] 192.168.0.17 - - [15/Mar/2025 02:41:28] "[35m[1mPOST /search HTTP/1.1[0m" 500 -
+INFO     [2025-03-15 02:41:29,017] 192.168.0.17 - - [15/Mar/2025 02:41:29] "GET /search?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:41:29,018] 192.168.0.17 - - [15/Mar/2025 02:41:29] "GET /search?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+INFO     [2025-03-15 02:41:29,068] 192.168.0.17 - - [15/Mar/2025 02:41:29] "GET /search?__debugger__=yes&cmd=resource&f=console.png&s=GfVY9R3G96lhV6vkAqNR HTTP/1.1" 200 -
+INFO     [2025-03-15 02:41:29,074] 192.168.0.17 - - [15/Mar/2025 02:41:29] "GET /search?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+INFO     [2025-03-15 02:42:19,182] 192.168.0.17 - - [15/Mar/2025 02:42:19] "[35m[1mPOST /search HTTP/1.1[0m" 500 -
+INFO     [2025-03-15 02:42:19,250] 192.168.0.17 - - [15/Mar/2025 02:42:19] "GET /search?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+INFO     [2025-03-15 02:42:19,251] 192.168.0.17 - - [15/Mar/2025 02:42:19] "GET /search?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:42:19,308] 192.168.0.17 - - [15/Mar/2025 02:42:19] "GET /search?__debugger__=yes&cmd=resource&f=console.png&s=GfVY9R3G96lhV6vkAqNR HTTP/1.1" 200 -
+INFO     [2025-03-15 02:42:19,331] 192.168.0.17 - - [15/Mar/2025 02:42:19] "GET /search?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+INFO     [2025-03-15 02:42:29,974] 192.168.0.17 - - [15/Mar/2025 02:42:29] "POST /search HTTP/1.1" 200 -
+INFO     [2025-03-15 02:42:30,056] 192.168.0.17 - - [15/Mar/2025 02:42:30] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:42:30,917] 192.168.0.17 - - [15/Mar/2025 02:42:30] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:43:16,611] 192.168.0.17 - - [15/Mar/2025 02:43:16] "POST /search HTTP/1.1" 200 -
+INFO     [2025-03-15 02:43:16,700] 192.168.0.17 - - [15/Mar/2025 02:43:16] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:43:17,725] 192.168.0.17 - - [15/Mar/2025 02:43:17] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:44:39,997] 192.168.0.17 - - [15/Mar/2025 02:44:39] "POST /search HTTP/1.1" 200 -
+INFO     [2025-03-15 02:44:40,080] 192.168.0.17 - - [15/Mar/2025 02:44:40] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:45:12,371] 192.168.0.17 - - [15/Mar/2025 02:45:12] "POST /search HTTP/1.1" 200 -
+INFO     [2025-03-15 02:45:12,448] 192.168.0.17 - - [15/Mar/2025 02:45:12] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:45:13,159] 192.168.0.17 - - [15/Mar/2025 02:45:13] "GET /static/NewLogo.png HTTP/1.1" 200 -
+INFO     [2025-03-15 02:45:14,542] 192.168.0.17 - - [15/Mar/2025 02:45:14] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:46:51,137] 192.168.0.17 - - [15/Mar/2025 02:46:51] "POST /search HTTP/1.1" 200 -
+INFO     [2025-03-15 02:46:51,238] 192.168.0.17 - - [15/Mar/2025 02:46:51] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:46:51,822] 192.168.0.17 - - [15/Mar/2025 02:46:51] "GET /static/NewLogo.png HTTP/1.1" 200 -
+INFO     [2025-03-15 02:46:52,299] 192.168.0.17 - - [15/Mar/2025 02:46:52] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:47:23,198] 192.168.0.17 - - [15/Mar/2025 02:47:23] "POST /search HTTP/1.1" 200 -
+INFO     [2025-03-15 02:47:23,302] 192.168.0.17 - - [15/Mar/2025 02:47:23] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:47:23,896] 192.168.0.17 - - [15/Mar/2025 02:47:23] "GET /static/NewLogo.png HTTP/1.1" 200 -
+INFO     [2025-03-15 02:47:24,446] 192.168.0.17 - - [15/Mar/2025 02:47:24] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:47:48,820] 192.168.0.17 - - [15/Mar/2025 02:47:48] "POST /search HTTP/1.1" 200 -
+INFO     [2025-03-15 02:47:48,905] 192.168.0.17 - - [15/Mar/2025 02:47:48] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:47:49,353] 192.168.0.17 - - [15/Mar/2025 02:47:49] "GET /static/NewLogo.png HTTP/1.1" 200 -
+INFO     [2025-03-15 02:47:49,845] 192.168.0.17 - - [15/Mar/2025 02:47:49] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:48:17,575] 192.168.0.17 - - [15/Mar/2025 02:48:17] "POST /search HTTP/1.1" 200 -
+INFO     [2025-03-15 02:48:17,683] 192.168.0.17 - - [15/Mar/2025 02:48:17] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:48:18,169] 192.168.0.17 - - [15/Mar/2025 02:48:18] "GET /static/NewLogo.png HTTP/1.1" 200 -
+INFO     [2025-03-15 02:48:18,577] 192.168.0.17 - - [15/Mar/2025 02:48:18] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:48:29,694] 192.168.0.17 - - [15/Mar/2025 02:48:29] "POST /search HTTP/1.1" 200 -
+INFO     [2025-03-15 02:48:29,781] 192.168.0.17 - - [15/Mar/2025 02:48:29] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:48:30,310] 192.168.0.17 - - [15/Mar/2025 02:48:30] "GET /static/NewLogo.png HTTP/1.1" 200 -
+INFO     [2025-03-15 02:48:31,689] 192.168.0.17 - - [15/Mar/2025 02:48:31] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:48:44,389] 192.168.0.17 - - [15/Mar/2025 02:48:44] "POST /search HTTP/1.1" 200 -
+INFO     [2025-03-15 02:48:44,498] 192.168.0.17 - - [15/Mar/2025 02:48:44] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:48:44,955] 192.168.0.17 - - [15/Mar/2025 02:48:44] "GET /static/NewLogo.png HTTP/1.1" 200 -
+INFO     [2025-03-15 02:48:45,453] 192.168.0.17 - - [15/Mar/2025 02:48:45] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:49:35,348] 192.168.0.17 - - [15/Mar/2025 02:49:35] "POST /search HTTP/1.1" 200 -
+INFO     [2025-03-15 02:49:35,441] 192.168.0.17 - - [15/Mar/2025 02:49:35] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:49:36,024] 192.168.0.17 - - [15/Mar/2025 02:49:36] "GET /static/NewLogo.png HTTP/1.1" 200 -
+INFO     [2025-03-15 02:49:36,537] 192.168.0.17 - - [15/Mar/2025 02:49:36] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO     [2025-03-15 02:49:44,674] 192.168.0.17 - - [15/Mar/2025 02:49:44] "[32mPOST /change_content/29 HTTP/1.1[0m" 302 -
+INFO     [2025-03-15 02:49:44,861] 192.168.0.17 - - [15/Mar/2025 02:49:44] "GET / HTTP/1.1" 200 -
+INFO     [2025-03-15 02:49:44,991] 192.168.0.17 - - [15/Mar/2025 02:49:44] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     [2025-03-15 02:49:45,007] 192.168.0.17 - - [15/Mar/2025 02:49:45] "GET /userava HTTP/1.1" 200 -
+INFO     [2025-03-15 02:49:45,211] 192.168.0.17 - - [15/Mar/2025 02:49:45] "[36mGET /static/NewLogo.png HTTP/1.1[0m" 304 -
+INFO     [2025-03-15 02:49:48,310] 192.168.0.17 - - [15/Mar/2025 02:49:48] "POST /search HTTP/1.1" 200 -
+INFO     [2025-03-15 02:49:48,495] 192.168.0.17 - - [15/Mar/2025 02:49:48] "GET /static/css/style.css HTTP/1.1" 200 -
+INFO     [2025-03-15 02:49:48,859] 192.168.0.17 - - [15/Mar/2025 02:49:48] "[36mGET /static/NewLogo.png HTTP/1.1[0m" 304 -
+INFO     [2025-03-15 02:49:54,643] 192.168.0.17 - - [15/Mar/2025 02:49:54] "[32mPOST /change_content/29 HTTP/1.1[0m" 302 -
+INFO     [2025-03-15 02:49:54,822] 192.168.0.17 - - [15/Mar/2025 02:49:54] "GET / HTTP/1.1" 200 -
+INFO     [2025-03-15 02:49:54,932] 192.168.0.17 - - [15/Mar/2025 02:49:54] "[36mGET /static/css/style.css HTTP/1.1[0m" 304 -
+INFO     [2025-03-15 02:49:55,124] 192.168.0.17 - - [15/Mar/2025 02:49:55] "GET /userava HTTP/1.1" 200 -
+INFO     [2025-03-15 02:49:55,155] 192.168.0.17 - - [15/Mar/2025 02:49:55] "[36mGET /static/NewLogo.png HTTP/1.1[0m" 304 -
