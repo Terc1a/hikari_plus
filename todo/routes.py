@@ -231,7 +231,7 @@ def home():
                                 result[f'{tag_name.title}'] = [row.title]
                 todo_responsible = ToDo.query.filter_by(responsible=current_user.id).all()
 
-                return render_template('todo/index.html', todo_list=todo_list, todo_tags=todo_tags,
+                return render_template('todo/main/index.html', todo_list=todo_list, todo_tags=todo_tags,
                                        todo_completed=completed, todo_uncompleted=uncompleted, todo_all=all,
                                        title='CUBI Prot.', default_value=default_value, result=result, workspace_list=todo_workspaces, current_workspace=get_curr_ws, todo_responsible=todo_responsible, check_list=check_list)
         else:
@@ -810,6 +810,7 @@ def search():
     todo_list = ToDo.query.filter(ToDo.tag_id.in_((tags_ids))).order_by(ToDo.is_complete).all()
     one_todo = ToDo.query.filter(ToDo.title.like(search), ToDo.tag_id.in_((tags_ids))).all()
     todo_workspaces = Workspace.query.filter_by(uid=current_user.id).distinct(Tag.title)
+    current_workspace = Workspace.query.filter_by(uid=current_user.id).first()
 
     #Формируем список проектов и задач на отправку
     result = {}
@@ -834,7 +835,7 @@ def search():
                         result[f'{tag_name.title}'] = [row.title]
     if not search:
         return redirect(url_for('/'))
-    return render_template('todo/main/index.html',todo_list=todo_list, result=result, workspace_list=todo_workspaces)
+    return render_template('todo/main/index.html',todo_list=todo_list, result=result, workspace_list=todo_workspaces, current_workspace=current_workspace)
 
 
 # Открываем страницу настроек

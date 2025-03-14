@@ -8,6 +8,8 @@
         <a href="/user_stats" style="margin-left: 5%; margin-right: 5%;">Задачи по пользователям</a>
     </div>
     <form action="/project_stats" method="post" style="background-color: #0D0E0E; color: white;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+
     <select id="fruits" name="tags-list">
         {% for tag in todo_tags %}
         
