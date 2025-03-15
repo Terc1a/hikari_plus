@@ -42,7 +42,7 @@
             {% block workspaces %}
             {% endblock %}
             <div class="head" style="">
-                <select onchange="sort(event)" id="fruits" style="">
+                <select onchange="sort(event)" id="fruits" style="{% if request.cookies.get('font')=='black' %}color:white;{% else %}color: black;{% endif %}">
                     {% for workspace in workspace_list %}
                     <option value="{{ workspace.title }}" {% if workspace.id==current_workspace.id %}selected{% endif %}>
                         {{ workspace.title }}
@@ -403,7 +403,7 @@
             {% endif %}
 
             <button class="modal-trigger" data-modal-id="modal-create-new-{{ result }}"
-                style="{% if request.cookies.get('font')=='black' %}background-color:{{ request.cookies.get('font') }};color:white;{% else %}color: black; background-color: #E9ECEF;{% endif %} border: solid #E9ECEF; box-shadow: 0px 8px 8px -3px rgba(0, 0, 0, 0.2);  border-radius: 6px; text-align: center; cursor: pointer; width: 10vh; height: 3%; margin-top:5%; font-size: 2vh;">
+                style="{% if request.cookies.get('font')=='black' %}background-color:rgb(56,56,56);;color:white;{% else %}color: black; background-color: white;{% endif %} border: solid #E9ECEF; box-shadow: 0px 8px 8px -3px rgba(0, 0, 0, 0.2);  border-radius: 6px; text-align: center; cursor: pointer; width: 10vh; height: 3%; margin-top:5%; font-size: 2vh;">
                 +
             </button>
 
