@@ -15,8 +15,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from flask_wtf.csrf import CSRFProtect
 
-logfile = '/home/tercia/Documents/todo/backend.log'
-logging.basicConfig(format=u'%(levelname)-8s [%(asctime)s] %(message)s', level='INFO', filename=logfile)
+#logfile = '/home/tercia/Documents/todo/backend.log'
+#logging.basicConfig(format=u'%(levelname)-8s [%(asctime)s] %(message)s', level='INFO', filename=logfile)
 csrf = CSRFProtect()
 ckeditor = CKEditor()
 login_manager = flask_login.LoginManager()
