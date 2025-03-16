@@ -8,7 +8,7 @@
 <div class="flash {{cat}}">{{msg}}</div>
 {% endfor %}
 <div class="profile_container"
-    style="width: 30wv; height: 20wh; border: solid white; border-radius: 15px; margin-left: 40%; margin-right: 40%;">
+    style="width: 30wv; height: 20wh; border: solid white; border-radius: 15px; margin-left: 40%; margin-right: 40%; {% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
         <div class="profile-ava" style="">
             <img src="{{ url_for('userava') }}" style="width: 10vw; height: 10wh; border: solid white; border-radius: 60px; display: inline; margin-left: 22.5%;">
             <button id="sub_toggle" class="change_av" name="change_av" style="margin-top: 5%; width: 50%; display: inline; margin-left: 22.5%;">Сменить</button>

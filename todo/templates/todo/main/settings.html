@@ -1,7 +1,8 @@
-{% extends 'todo/main/layout.html' %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 {% include '/todo/main/test_menu.html' %}
 
 {% block content %}
+<body                             style="{% if request.cookies.get('font')=='white' %}background-color:white;color:black;{% else %} background-color: rgb(56,56,56); color: white;{% endif %}">
                 Тема: <br>
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
@@ -29,4 +30,5 @@
                         </option>
                     </select>
                 </form>
+            </body>
 {% endblock content %}
