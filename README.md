@@ -11,6 +11,7 @@
 	Mobile: Kotlin
 
 Установка:
+
 `git clone https://github.com/Terc1a/hikari_plus.git`
 
 `cd hikari_plus/`
