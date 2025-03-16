@@ -22,7 +22,7 @@
 <!-- Вернуть функционал смены темы через куки -->
 
 <!--Поставить анимеху на фон в body-->
-<body style="{% if request.cookies.get('font')=='black' %}background-color:#1E1E1E;color:white;{% else %}background-color: #FCD1A8;color: black;{% endif %}">
+<body style="{% if request.cookies.get('font')=='black' %}background-image:  url({{ url_for('static', filename='BackDark.png') }}); background-size: cover;color:white;{% else %}background-image:  url({{ url_for('static', filename='BackLight.png') }}); background-size: cover;color: black;{% endif %}">
       <script src="https://cdn.jsdelivr.net/gh/Alaev-Co/snowflakes/dist/Snow.min.js"></script>
       <script src="https://cdn.ckeditor.com/4.10.0/standard/ckeditor.js"></script>
       <script>
