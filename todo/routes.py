@@ -1,4 +1,5 @@
 import json
+import time
 import logging
 import os
 import pytz
@@ -242,6 +243,7 @@ def home():
 @app.post('/add')
 @login_required
 def add():
+
     timed_raw = timedt().timed
     title = request.form.get('title')
     is_cycle = request.form.get('checker')
@@ -249,14 +251,15 @@ def add():
     tag_id = get_tag.id
     descr = request.form.get('task-description')
     checkers_text = request.form.getlist('checklist_text[]')
-    print(checkers_text)
+    print(checkers_text, 'Проверка что все значения попадают')
     if is_cycle == None:
         new_todo = ToDo(title=title, descr=descr, tag_id=tag_id, create_date=timed_raw, is_complete=False)
         db.session.add(new_todo)
-        
+        db.session.commit()
+        tid = new_todo.id
         if len(checkers_text) > 0:
-            for el in checkers_text:
-                new_chel = Checks(todo_id=new_todo.id, text=el, is_checked=False)
+            for el in checkers_text:   
+                new_chel = Checks(todo_id=tid, text=el, is_checked=False)
                 db.session.add(new_chel)
                 db.session.commit()
             else:
@@ -721,13 +724,23 @@ def change_tag(tag_id):
 @app.route('/delete_tag/<int:tag_id>', methods = ['POST', 'GET'])
 @login_required
 def delete_tag(tag_id):
-    print(tag_id)
+
     tag = Tag.query.filter_by(id=tag_id).first()
     tasks_on_tag = ToDo.query.filter_by(tag_id=tag_id).all()
+
+
+
     if tasks_on_tag:
         for task in tasks_on_tag:
+            checks_on_task = Checks.query.filter_by(todo_id=task.id).all()
+            print(checks_on_task)
+            if checks_on_task:
+                for check in checks_on_task:
+                    
+                    db.session.delete(check)
             db.session.delete(task)
             db.session.commit()
+
         db.session.delete(tag)
         db.session.commit()
     else:
