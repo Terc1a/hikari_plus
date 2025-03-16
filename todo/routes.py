@@ -249,14 +249,18 @@ def add():
     tag_id = get_tag.id
     descr = request.form.get('task-description')
     checkers_text = request.form.getlist('checklist_text[]')
+    print(checkers_text)
     if is_cycle == None:
         new_todo = ToDo(title=title, descr=descr, tag_id=tag_id, create_date=timed_raw, is_complete=False)
         db.session.add(new_todo)
         db.session.commit()
-        for el in checkers_text:
-            new_chel = Checks(todo_id=new_todo.id, text=el, is_checked=False)
-            db.session.add(new_chel)
-            db.session.commit()
+        if len(checkers_text) > 0:
+            for el in checkers_text:
+                new_chel = Checks(todo_id=new_todo.id, text=el, is_checked=False)
+                db.session.add(new_chel)
+                db.session.commit()
+            else:
+                pass
     else:
         cycle_series = 0
         new_todo = ToDo(title=title, descr=descr, tag_id=tag_id, create_date=timed_raw, is_complete=False,
