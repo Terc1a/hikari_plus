@@ -253,7 +253,7 @@ def add():
     if is_cycle == None:
         new_todo = ToDo(title=title, descr=descr, tag_id=tag_id, create_date=timed_raw, is_complete=False)
         db.session.add(new_todo)
-        db.session.commit()
+        
         if len(checkers_text) > 0:
             for el in checkers_text:
                 new_chel = Checks(todo_id=new_todo.id, text=el, is_checked=False)
@@ -271,6 +271,7 @@ def add():
             new_chel = Checks(todo_id=new_todo.id, text=el, is_checked=False)
             db.session.add(new_chel)
             db.session.commit()
+    db.session.commit()
     db.session.close()
 
     return redirect(url_for('home'))
