@@ -424,6 +424,7 @@ a:hover {
 
 #signin input[type="text"],
 #signin input[type="password"],
+#signin input[type="email"],
 #signin button[type="submit"] {
     background: rgb(28, 30, 33);
     box-shadow: inset -100px -100px 0 rgb(28, 30, 33);
@@ -432,6 +433,7 @@ a:hover {
 }
 
 #signin input[type="text"],
+#signin input[type="email"],
 #signin input[type="password"] {
     position: relative;
     display: block;
