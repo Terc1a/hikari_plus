@@ -237,7 +237,7 @@ def home():
         else:
             return redirect(url_for('todo/auth/login.html'))
 
-
+#pupu
 # Создаем пост
 @app.post('/add')
 @login_required
