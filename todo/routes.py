@@ -414,6 +414,11 @@ def update_task(todo_id):
 @login_required
 def delete(todo_id):
     todo = ToDo.query.filter_by(id=todo_id).first()
+    checks_on_task = Checks.query.filter_by(todo_id=todo.id).all()
+    if checks_on_task:
+        for check in checks_on_task:
+            
+            db.session.delete(check)
     db.session.delete(todo)
     db.session.commit()
     db.session.close()
